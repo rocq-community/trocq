@@ -11,9 +11,8 @@
 (*                            * see LICENSE file for the text of the license *)
 (*****************************************************************************)
 
-From Coq Require Import ssreflect.
-From HoTT Require Import HoTT.
-From Trocq Require Import Trocq.
+Require Import ssreflect.
+From Trocq Require Import Stdlib Trocq.
 
 Set Universe Polymorphism.
 

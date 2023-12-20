@@ -1,0 +1,165 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%                            %                     Trocq                      %
+%  _______                   %        Copyright (C) 2023 Inria & MERCE        %
+% |__   __|                  %     (Mitsubishi Electric R&D Centre Europe)    %
+%    | |_ __ ___   ___ __ _  %        Cyril Cohen <cyril.cohen@inria.fr>      %
+%    | | '__/ _ \ / __/ _` | %        Enzo Crance <enzo.crance@inria.fr>      %
+%    | | | | (_) | (_| (_| | %    Assia Mahboubi <assia.mahboubi@inria.fr>    %
+%    |_|_|  \___/ \___\__, | %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%                        | | %   This file is distributed under the terms of  %
+%                        |_| %   GNU Lesser General Public License Version 3  %
+%                            % (see LICENSE file for the text of the license) %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% command to register the univalence axiom
+main [str "Register", str "Univalence", str S] :- !, std.do! [
+  std.assert! (coq.locate S GR) "unknown global reference",
+  coq.univ-instance UI0 [],
+  @uinstance! UI0 => coq.env.global GR U,
+  coq.locate "Univalence" GRU,
+  @uinstance! UI0 => coq.env.global GRU ExpectedUTy,
+  coq.typecheck U UTy ok,
+  std.assert-ok! (coq.unify-eq UTy ExpectedUTy) {std.string.concat "" [
+    "type mismatch, expected ",
+    {coq.term->string ExpectedUTy},
+    ", got ",
+    {coq.term->string UTy},
+    "."
+  ]},
+  GR = const Const,
+  coq.elpi.accumulate _ "trocq.db"
+    (clause _ (before "default-univalence") (trocq.db.univalence Const)),
+  logging.info (coq.info "Univalence axiom successfully registered.")
+].
+
+% command to register the funext axiom
+main [str "Register", str "Funext", str S] :- !, std.do! [
+  std.assert! (coq.locate S GR) "unknown global reference",
+  coq.univ-instance UI0 [],
+  @uinstance! UI0 => coq.env.global GR F,
+  coq.locate "Funext" GRF,
+  @uinstance! UI0 => coq.env.global GRF ExpectedFTy,
+  coq.typecheck F FTy ok,
+  std.assert-ok! (coq.unify-eq FTy ExpectedFTy) {std.string.concat "" [
+    "type mismatch, expected ",
+    {coq.term->string ExpectedFTy},
+    ", got ",
+    {coq.term->string FTy},
+    "."
+  ]},
+  GR = const Const,
+  coq.elpi.accumulate _ "trocq.db"
+    (clause _ (before "default-funext") (trocq.db.funext Const)),
+  logging.info (coq.info "Function extensionality axiom successfully registered.")
+].
+
+% command to add custom witnesses to the database
+% and tells trocq to use it immediately
+main [str "Use", X] :- !, std.do! [
+  util.argument->gref X GRR,
+  coq.env.typeof GRR XTy,
+  param-class.type->classes XTy Class CList GR GR',
+
+  coq.gref->id GR GRId,
+  coq.gref->id GR' GR'Id,
+  coq.gref->id GRR BaseName,
+  logging.info (
+    coq.info "accumulating" GRId "@" Class "(" CList ") ~"
+      GR'Id ":." BaseName
+  ),
+
+  coq.elpi.accumulate _ "trocq.db"
+    (clause _ (before "default-gref")
+      (trocq.db.gref GR Class CList GR' GRR)),
+  std.forall {param-class.all-weakenings-from Class} subclass\
+      sigma WTRR Suffix WName WCRR \
+    if (do-not-fail => trocq.db.gref GR subclass _ _ _) true (std.do! [
+      param-class.weaken-out subclass GRR WTRR,
+
+      param-class.to-string subclass Suffix,
+      WName is BaseName ^ "_weakened_to_" ^ Suffix,
+      (@univpoly! => coq.env.add-const WName WTRR _ @transparent! WCRR),
+      coq.elpi.accumulate _ "trocq.db"
+        (clause _ (before "default-gref")
+          (trocq.db.gref GR subclass CList GR' (const WCRR))),
+
+      logging.info (sigma WCRRId\
+        coq.gref->id (const WCRR) WCRRId,
+        coq.info "accumulating" GRId
+          "@" subclass "(" CList ") ~" GR'Id
+          ":." WCRRId
+      ),
+  ])
+].
+
+% several use in one go!
+main [str "Use", X, Y | Rest] :- !, std.do![
+    main [str "Use", X], main [str "Use", Y | Rest]].
+
+main [str "RelatedWith", Rel, X] :- !, std.do! [
+  util.argument->gref Rel GRRel,
+  util.argument->gref X GRR,
+  coq.env.typeof GRR XTy,
+  param-class.type->classes XTy Class CList GR GR',
+
+  coq.gref->id GR GRId,
+  coq.gref->id GR' GR'Id,
+  coq.gref->id GRR BaseName,
+  coq.gref->id GRRel GRRelId,
+  logging.info (
+    coq.info "accumulating" GRId
+      "@" Class "(" CList ") ~" GR'Id
+      ":." BaseName
+      "attached to relation" GRRelId
+  ),
+
+  coq.elpi.accumulate _ "trocq.db"
+    (clause _ _
+      (trocq.db.known-gref GRRel GR Class CList GR' GRR)),
+  std.forall {param-class.all-weakenings-from Class} subclass\
+      sigma WTRR Suffix WName WCRR \
+    if (do-not-fail => trocq.db.known-gref GRRel GR subclass _ _ _) true (std.do! [
+      param-class.weaken-out subclass GRR WTRR,
+
+      param-class.to-string subclass Suffix,
+      WName is BaseName ^ "_weakened_to_" ^ Suffix,
+      (@univpoly! => coq.env.add-const WName WTRR _ @transparent! WCRR),
+      coq.elpi.accumulate _ "trocq.db"
+        (clause _ _
+          (trocq.db.known-gref GRRel GR subclass CList GR' (const WCRR))),
+
+      logging.info (sigma WCRRId\
+        coq.gref->id (const WCRR) WCRRId,
+        coq.say "accumulating" GRId
+          "@" subclass "(" CList ") ~" GR'Id
+          ":." WCRRId
+          "attached to relation" GRRelId
+      ),
+  ])
+].
+
+% several use in one go!
+main [str "RelatedWith", Rel, X, Y | Rest] :- !, std.do![
+    main [str "RelatedWith",  Rel, X], main [str "RelatedWith", Rel, Y | Rest]].
+
+main [str "Usage"] :- !, coq.info {usage-msg}.
+
+main [str "Logging", str StrLevel] :- !,
+  string->verbosity StrLevel Level,
+  util.accumulate-replacing-named-clause _ "trocq.db" "log-level" (
+    log-level Level
+  ).
+
+main _ :- coq.error {std.string.concat "\n" ["command syntax error", {usage-msg}]}.
+
+pred usage-msg o:string.
+usage-msg U :-
+  std.string.concat "\n" [
+    "usage:",
+    "- Trocq Register Univalence <u>",
+    "- Trocq Register Funext <f>",
+    "- Trocq Use <RTrocq>+",
+    "- Trocq RelatedWith <Relation> <RTrocq>+",
+    "- Trocq Logging [\"off\"|\"info\"|\"debug\"|\"trace\"]",
+    "", "",
+  ] U.

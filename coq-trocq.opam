@@ -40,9 +40,8 @@ sequent-style presentation."""
 build: [make "-j%{jobs}%"]
 install: [make "install"]
 depends: [
-  "coq" {>= "8.17" & < "8.18"}
-  "coq-elpi" {= "dev"}
-  "coq-hott" {>= "8.17" & < "8.18~"}
+  "coq" {>= "8.20" & < "9.1"}
+  "coq-elpi" {= "2.5.2"}
 ]
 
 tags: [
@@ -59,5 +58,6 @@ tags: [
 authors: [
   "Cyril Cohen"
   "Enzo Crance"
+  "Lucie Lahaye"
   "Assia Mahboubi"
 ]

@@ -53,25 +53,24 @@ sequent-style presentation.
 - Author(s):
   - Cyril Cohen (initial)
   - Enzo Crance (initial)
+  - Lucie Lahaye
   - Assia Mahboubi (initial)
 - Coq-community maintainer(s):
   - Cyril Cohen ([**@CohenCyril**](https://github.com/CohenCyril))
   - Enzo Crance ([**@ecranceMERCE**](https://github.com/ecranceMERCE))
+  - Lucie Lahaye ([**@lweqx**](https://github.com/lweqx))
   - Assia Mahboubi ([**@amahboubi**](https://github.com/amahboubi))
 - License: [GNU Lesser General Public License v3.0](LICENSE)
-- Compatible Coq versions: 8.17
+- Compatible Coq versions: 8.20, 9.0
 - Additional dependencies:
-  - [Coq-Elpi custom version](https://github.com/ecranceMERCE/coq-elpi/tree/strat)
-  - [Coq-HoTT 8.17](https://github.com/HoTT/Coq-HoTT)
+  - [Coq-Elpi](https://github.com/LPCIC/coq-elpi)
 - Coq namespace: `Trocq`
 - Related publication(s):
   - [Trocq: Proof Transfer for Free, With or Without Univalence](https://hal.science/hal-04177913/document) 
 
 ## Building and installation instructions
 
-Trocq is a still a prototype. In particular, it depends on a [custom
-version](https://github.com/ecranceMERCE/coq-elpi/tree/strat) of
-Coq-Elpi.  It is not yet packaged in Opam or Nix.
+Trocq is still a prototype. It is not yet packaged in Opam or Nix.
 
 There are however three ways to experiment with it, all documented
 in the [INSTALL.md file](INSTALL.md).
@@ -84,14 +83,20 @@ In short, the plugin provides a tactic:
 - `trocq` (without arguments) which attempts to run a translation on
   a given goal, using the information provided by the user with the
   commands described below.
+- `trocq R1 R2 ...` which works similarly to its argumentless counterpart
+  except that it also uses translations associated to the relations `R1`,
+  `R2`... ; see below regarding how to associated translations to a relation.
 
-And three commands:
+And four commands:
 - `Trocq Use t` to use a translation `t` during the subsequent calls
   to the tactic `trocq`.
 - `Trocq Register Univalence u` to declare a univalence axiom `u`.
 - `Trocq Register Funext fe` to declare a function extensionality
   axiom `fe`.
-
+- `Trocq RelatedWith R t1 t2 ...` to associate `t1`, `t2`, ... to `R`.
+  Subsequent calls to `trocq R` will be able to use the translations `t1`,
+  `t2`, ...
+- `Trocq Logging "off"|"info"|"debug"|"trace"` to set the verbosity level.
 
 ## ESOP 2024 artifact documentation
 

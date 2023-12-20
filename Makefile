@@ -1,10 +1,15 @@
+all: hott std
 .PHONY: all
 
-all: Makefile.coq
-	$(MAKE) -f Makefile.coq all
+hott:
+	$(MAKE) -C hott all
+.PHONY: hott
 
-Makefile.coq:
-	coq_makefile -f _CoqProject -o Makefile.coq
+std:
+	$(MAKE) -C std all
+.PHONY: std
 
-%:: Makefile.coq
-	$(MAKE) -f Makefile.coq $@
+clean:
+	$(MAKE) -C hott clean
+	$(MAKE) -C std clean
+.PHONY: clean

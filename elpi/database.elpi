@@ -1,0 +1,148 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%                            %                     Trocq                      %
+%  _______                   %        Copyright (C) 2023 Inria & MERCE        %
+% |__   __|                  %     (Mitsubishi Electric R&D Centre Europe)    %
+%    | |_ __ ___   ___ __ _  %        Cyril Cohen <cyril.cohen@inria.fr>      %
+%    | | '__/ _ \ / __/ _` | %        Enzo Crance <enzo.crance@inria.fr>      %
+%    | | | | (_) | (_| (_| | %    Assia Mahboubi <assia.mahboubi@inria.fr>    %
+%    |_|_|  \___/ \___\__, | %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%                        | | %   This file is distributed under the terms of  %
+%                        |_| %   GNU Lesser General Public License Version 3  %
+%                            % (see LICENSE file for the text of the license) %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+namespace trocq.db {
+
+pred map->class o:map-class, o:gref.
+
+pred map-class->indc-class o:map-class, o:gref.
+
+pred map-class->term i:map-class, o:term.
+map-class->term Class (pglobal Map UI) :- std.do! [
+  map-class->indc-class Class Map, coq.univ-instance UI [] ].
+
+pred term->map-class i:term, o:map-class.
+term->map-class (pglobal Map _) Class :-
+  map-class->indc-class Class Map.
+
+% Given the class M, obtain {{Id_MapM}}
+pred id-map o:map-class, o:constant.
+
+% Given the class M, obtain {{Id_MapM_sym}}
+pred id-map-sym o:map-class, o:constant.
+
+% Get various values of the ParamMN module from the (M,N) class:
+%   rel (pc M N) {{ParamMN.Rel}} {{ParamMN.BuildRel}}
+%     {{ParamMN.R}} {{ParamMN.covariant}} {{ParamMN.contravariant}}
+pred rel o:param-class, o:gref, o:gref, o:gref, o:gref, o:gref.
+
+% Given {{ParamNM.Rel}, obtain its class (M, N):
+%   gref->class {{ParamNM.Rel}} (pc M N) 
+pred gref->class i:gref, o:param-class.
+gref->class Rel Class :- trocq.db.rel Class Rel _ _ _ _.
+
+pred r o:param-class, o:constant.
+:name "default-r"
+r C R :- var C, !,
+  declare_constraint (r C R) [C].
+
+% Given the class (M, N), obtain {{Id_ParamMN}}
+pred id-param o:param-class, o:constant.
+
+% Given the class (M, N), obtain {{ParamMN_sym}}
+pred param-sym o:param-class, o:constant.
+
+pred ptype o:constant.
+pred pprop o:constant.
+pred weaken o:constant.
+
+% remark: to allow for conditional polymorphicity, `paths` is a predicate
+% outputing a term given a universe instance.
+%
+% For instance:
+% - when a non-polymorphic `path` is used (such `eq` as in Rocq's stdlib),
+%   the universe instance can be ignored and `global {{:gref lib.eq}}`
+%   returned.
+% - when a polymorphic `path` is used, the output can instead be:
+%     `pglobal {{:gref lib.path}} UI`
+%
+% TODO: this is sort of an ad-hoc `coq.env.global` reimplementation.
+% However, actually using this API errors with: "<paths> takes a
+% univ-instance of size 0, 0 but was given an instance of size 0, 1".
+% Understand what's going on and use `coq.env.global` instead.
+pred paths i:univ-instance o:term.
+pred sym-rel o:gref.
+
+pred ptype-or-pprop i:term, o:constant.
+ptype-or-pprop (pglobal (const PCst) _) PCst :- !,
+  (ptype PCst; pprop PCst).
+
+% param-type β α {{ Param(β)_Type(α) }}
+% with α the level of the R field, and β the structure given to it.
+pred param-type o:param-class, o:param-class, o:constant.
+
+% pparam-type (M,N) {{ PParamTypeMN }}
+pred pparam-type o:param-class, o:constant.
+pparam-type C _ :-
+  logging.trace (coq.say "pparam" C), fail.
+:name "default-pparam-type"
+pparam-type C PParamType :- var C, !,
+  declare_constraint (pparam-type C PParamType) [C].
+
+% param-arrow (M,N) {{ ParamArrowMN }}
+pred param-arrow o:param-class, o:constant.
+param-arrow C _ :-
+  logging.trace (coq.say "arrow" C), fail.
+:name "default-param-arrow"
+param-arrow C ParamArrow :- var C, !,
+  declare_constraint (param-arrow C ParamArrow) [C].
+
+% param-forall (M,N) {{ ParamForallMN }}
+pred param-forall o:param-class, o:constant.
+param-forall C _ :-
+  logging.trace (coq.say "forall" C), fail.
+:name "default-param-forall"
+param-forall C ParamForall :- var C, !,
+  declare_constraint (param-forall C ParamForall) [C].
+
+} % trocq.db
+
+namespace trocq.db {
+
+% Dedicated databases to store the univalence/funext axioms.
+%
+% These predicates will be called every time an axiom is required.
+% If an axiom has not been declared, the associated database is empty,
+% and the predicate fails to tell the user that translation cannot happen.
+
+pred univalence o:constant.
+:name "default-univalence"
+univalence _ :- coq.error "univalence axiom required".
+
+pred funext o:constant.
+:name "default-funext"
+funext _ :- coq.error "function extensionality axiom required".
+
+} % trocq.db
+
+% gref GR ω [α_1, ..., α_n] GR' GRR
+% - GR is related to GR' by witness GRR
+% - ω is the output class of GRR
+% - if GR is a type former then GRR : Param(ω) (GR ...) (GR' ...)
+% - the α_i are the classes present in the type of GR, to give the dependency information
+%   e.g. list44 : forall A A' (AR : Param44.Rel A A'), Param44.Rel (list A) (list A')
+%        gref {{ list }} (4, 4) [(4, 4)] {{ list }} {{ list44 }}
+pred trocq.db.gref o:gref, o:param-class, o:list param-class, o:gref, o:gref.
+:name "default-gref"
+trocq.db.gref _ _ _ _ _ :- do-not-fail, !, false.
+trocq.db.gref GR Out _ _ _ :- coq.error "cannot find" GR "at out class" Out.
+
+% The predicate known-gref is similar to the last one with one extra arguments:
+%   known-gref BundleRel GR ω [α_1, ..., α_n] GR' GRR
+% where BundleRel is the underlying relation in use
+%
+% `known-gref` is used to find all translations associated to a given relation
+% so that `trocq.use Rel`, all the associated translations of the form `gref
+% Rel GR ω [α_1, ..., α_n] GR' GRR` will be used, i.e. added to the above
+% database gref.
+pred trocq.db.known-gref o:gref, o:gref, o:param-class, o:list param-class, o:gref, o:gref.

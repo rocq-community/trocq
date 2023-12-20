@@ -11,8 +11,7 @@
 (*                            * see LICENSE file for the text of the license *)
 (*****************************************************************************)
 
-From Coq Require Import Prelude.
-From Coq Require Import Setoid Morphisms.
+Require Import Prelude Setoid Morphisms.
 
 (* what it can do *)
 Section Test.
