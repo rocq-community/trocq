@@ -606,8 +606,41 @@ Proof.
   destruct (false_ne_true Habs).
 Qed.
 
+Definition path_unit_name_bool_left: (unit_name Bool = unit_name Bool :> (Unit -> Type)) -> Bool = Bool :> Type :=
+  fun eq => (ap10 eq) tt.
 
-(* TODO: Can we do it without Univalence? *)
+Definition path_unit_name_bool_right `{Funext}: Bool = Bool :> Type -> (unit_name Bool = unit_name Bool :> (Unit -> Type)).
+Proof.
+  move=> eqb.
+  by apply path_forall=> _.
+Defined.
+
+Lemma path_unit_name_bool `{Univalence}: (unit_name Bool = unit_name Bool :> (Unit -> Type)) <~> Bool.
+Proof.
+  case: (X in _ <~> X) / (equiv_path_universe _ _ (equiv_inverse equiv_bool_aut_bool)).
+  case: _ / (equiv_path_universe _ _ (Build_Equiv _ _ (equiv_path Bool Bool) (isequiv_equiv_path _ _))).
+
+  apply /(equiv_adjointify path_unit_name_bool_left path_unit_name_bool_right).
+  - move=> x ; rewrite /path_unit_name_bool_left /path_unit_name_bool_right.
+    by apply: ap10_path_forall.
+  - move=> x ; rewrite /path_unit_name_bool_left /path_unit_name_bool_right.
+    rewrite /path_forall /ap10.
+
+    have eq: unit_name (apD10 x tt) = apD10 x ; first (apply path_forall ; by elim).
+    case: _ / eq^.
+    apply eissect.
+Defined.
+
+Lemma bool_is_unitunit `{Univalence}: Bool = Unit + Unit.
+Proof.
+  apply path_universe_uncurried.
+  unshelve eapply equiv_adjointify.
+  - case ; [exact (inl tt) | exact (inr tt)].
+  - case ; [exact (unit_name true) | exact (unit_name false)].
+  - move=> [] [] //.
+  - move=> [] //.
+Defined.
+
 Theorem D4_arrow_left_is_gt3 `{Univalence} : not (
     forall (A A' : Type) (AR: Param03.Rel A A'),
     forall (B B' : Type) (BR: Param40.Rel B B'),
@@ -616,10 +649,31 @@ Theorem D4_arrow_left_is_gt3 `{Univalence} : not (
     IsUMap (R_arrow AR BR)
 ).
 Proof.
-move=> /(_ Unit Unit p33_not_44) /(_ Type Type (Param40_Type44 _))[]/= m g1 g2/=.
-move=> /(_ (fun _ => Bool) (fun _ => Bool))/=.
-move: (g1 _ _) (g2 _ _) ; rewrite /R_arrow/= => {g1 g2}.
-Admitted.
+  move=> /(_ Unit Unit p33_not_44) /(_ Type Type (Param40_Type44 _))[]/= m g1 g2/=.
+  move=> /(_ (fun _ => Bool) (fun _ => Bool))/=.
+  move: (g1 _ _) (g2 _ _) ; rewrite /R_arrow/= => {g1 g2}.
+
+  do ! case: (Unit -> _ -> _) / path_unit_fun.
+  case : _ / (equiv_path_universe _ _ (uparam_equiv^-1)%equiv).
+  case : _ / (equiv_path_universe _ _ equiv_bool_aut_bool).
+
+  move => + /[dup] /(_ id) g.
+  case : _ / g^ => {g m}.
+
+  case : _ / (equiv_path_universe _ _ (equiv_inverse path_unit_name_bool)).
+
+  move=> g1 g2 Hinj_g2.
+
+  assert (forall x y, g2 x = g2 y -> x = y) as g2_inj
+  by (move=> x y eq_g2 ; rewrite -(Hinj_g2 x) -(Hinj_g2 y) eq_g2 //) ;
+  move=> {g1 Hinj_g2}.
+
+  have := leq_inj_finite g2 (isembedding_isinj_hset g2 g2_inj).
+  rewrite bool_is_unitunit.
+  move=> card_ineq.
+  have := (ltac:(refine (card_ineq _ _ _))).
+  simpl ; decide.
+Qed.
 
 (*** D_forall ***)
 
