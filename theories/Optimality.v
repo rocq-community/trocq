@@ -19,8 +19,7 @@ Defined.
 Definition p00 (B B': Type) : Param00.Rel B B'.
 Proof. by exists (fun B B' => Unit); exists. Defined.
 
-
-Theorem D1_arrow_left_is_gt0: not (
+Theorem D1_arrow_right_is_gt0: not (
     forall (A A' : Type) (AR: Param01.Rel A A'),
     forall (B B' : Type) (BR: Param00.Rel B B'),
     exists (R: Param10.Rel (A -> B) (A' -> B')),
@@ -43,7 +42,7 @@ Proof.
   - exists.
 Defined.
 
-Theorem D1_arrow_right_is_gt0: not (
+Theorem D1_arrow_left_is_gt0: not (
     forall (A A' : Type) (AR: Param00.Rel A A'),
     forall (B B' : Type) (BR: Param10.Rel B B'),
     exists (R: Param10.Rel (A -> B) (A' -> B')),
