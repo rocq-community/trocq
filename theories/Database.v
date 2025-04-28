@@ -43,8 +43,6 @@ Elpi Accumulate trocq.db File class.
   pred trocq.db.rel o:param-class, o:gref, o:gref,
     o:gref, o:gref, o:gref.
 
-  pred trocq.db.test o:int, o:int, o:int, o:int, o:int, o:int.
-
   pred trocq.db.r o:param-class, o:constant.
   :name "default-r"
   trocq.db.r C R :- var C, !,
