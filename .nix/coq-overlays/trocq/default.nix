@@ -10,7 +10,6 @@
   which,
   coq,
   coq-elpi,
-  mathcomp,
   ## declare extra dependencies here, to be used in propagateBuildInputs e.g.
   # , mathcomp, coq-elpi
   version ? null,
@@ -51,8 +50,6 @@ mkCoqDerivation {
   ## - Coq packages (require them at the beginning of the file)
   ## - OCaml packages (use `coq.ocamlPackages.xxx`, no need to require them at the beginning of the file)
   propagatedBuildInputs = [
-    mathcomp.ssreflect
-    mathcomp.algebra
     coq-elpi
   ]; # # e.g. `= [ mathcomp coq-elpi ]`
 
