@@ -125,7 +125,7 @@ Definition sym_rel@{i} {A B : Type@{i}} (R : A -> B -> Type@{i}) := fun b a => R
 (* Defined. *)
 
 
-Reserved Notation "p ^" (at level 3, format "p '^'").
+Reserved Notation "p ^" (at level 1, format "p '^'").
 Reserved Notation "p @ q" (at level 20).
 Reserved Notation "p # x" (right associativity, at level 65).
 Reserved Notation "p # x" (right associativity, at level 65).
@@ -144,8 +144,8 @@ Open Scope fibration_scope.
 
 Notation "( x ; y )" := (existT _ x y) : fibration_scope.
 
-Reserved Notation "x .1" (at level 2, left associativity, format "x '.1'").
-Reserved Notation "x .2" (at level 2, left associativity, format "x '.2'").
+Reserved Notation "x .1" (at level 1, left associativity, format "x '.1'").
+Reserved Notation "x .2" (at level 1, left associativity, format "x '.2'").
 
 Notation pr1 := projT1.
 Notation pr2 := projT2.
@@ -192,7 +192,7 @@ Monomorphic Axiom Funext : Prop.
 Existing Class Funext.
 Axiom path_forall@{i j} : forall `{Funext} {A : Type@{i}} {P : A -> Type@{j}} 
   (f g : forall x : A, P x), f == g -> f = g.
-Global Arguments path_forall {_ A%type_scope P} (f g)%function_scope _.
+Global Arguments path_forall {_ A%_type_scope P} (f g)%_function_scope _.
 
 Lemma path_arrow `{Funext} {A B : Type} (f g : A -> B) :
   f == g -> f = g.

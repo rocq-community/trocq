@@ -15,10 +15,27 @@ From Coq Require Import ssreflect.
 From elpi Require Export elpi.
 Require Import HoTT_additions.
 
+From Trocq.Elpi Extra Dependency "util.elpi" as util.
+From Trocq.Elpi Extra Dependency "class.elpi" as class.
+
 Set Universe Polymorphism.
 Unset Universe Minimization ToSet.
 
-Elpi Db trocq.db lp:{{
+Elpi Db trocq.db lp:{{ }}.
+Elpi Accumulate trocq.db File util.
+Elpi Accumulate trocq.db File class.
+#[superglobal] Elpi Accumulate trocq.db lp:{{
+  pred trocq.db.map->class o:map-class, o:gref.
+
+  pred trocq.db.map-class->indc-class o:map-class, o:gref.
+
+  pred trocq.db.map-class->term i:map-class, o:term.
+  trocq.db.map-class->term Class (pglobal Map UI) :- std.do! [
+    trocq.db.map-class->indc-class Class Map, coq.univ-instance UI [] ].
+
+  pred trocq.db.term->map-class i:term, o:map-class.
+  trocq.db.term->map-class (pglobal Map _) Class :-
+    trocq.db.map-class->indc-class Class Map.
 
   % get various values of the ParamMN module from the (M,N) class
   % trocq.db.rel (pc M N) {{ParamMN.Rel}} {{ParamMN.BuildRel}}
@@ -38,6 +55,8 @@ Elpi Db trocq.db lp:{{
   pred trocq.db.ptype o:constant.
   pred trocq.db.pprop o:constant.
   pred trocq.db.weaken o:constant.
+  pred trocq.db.paths o:gref.
+  pred trocq.db.sym-rel o:gref.
 
   pred trocq.db.ptype-or-pprop i:term, o:constant.
   trocq.db.ptype-or-pprop (pglobal (const PCst) _) PCst :- !,

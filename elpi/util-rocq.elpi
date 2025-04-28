@@ -11,37 +11,20 @@
 %                            % (see LICENSE file for the text of the license) %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % -----------------------------------------------------------------------------
-% API accessible to the rest of the plugin to handle the constraint graph
+% utility predicates related to Rocq
 % -----------------------------------------------------------------------------
 
-typeabbrev class-id int.
+% Some of the Coq native predicates raise errors in Elpi, stopping all
+% ongoing computations. Adding a custom flag like do-not-fail gives us an
+% extra catch-all case in the native predicate, when this flag is active,
+% meaning the predicate will just not succeed, instead of raising an error.
+:before "term->gref:fail"
+coq.term->gref _ _ :- do-not-fail, !, false.
 
-namespace cstr {
-
-pred init.
-
-% link a variable parametricity class C to its Coq representation (arguments of PType)
-pred univ-link o:param-class, o:term, o:term.
-
-% D_π(C, C_A, C_B)
-pred dep-pi i:param-class, o:param-class, o:param-class.
-
-% D_->(C, C_A, C_B)
-pred dep-arrow i:param-class, o:param-class, o:param-class.
-
-% D_□(C, C_R)
-pred dep-type i:param-class, i:param-class.
-
-% D_K(C, C_1, ..., C_n)
-pred dep-gref i:gref, i:term, o:term, o:gref.
-
-% C >= C'
-pred geq i:param-class, i:param-class.
-
-% C = C'
-pred eq i:param-class, i:param-class.
-
-% trigger reduction of the graph and instantiation of variables
-pred reduce-graph.
-
-} % cstr
+% subst-gref T GR' T'
+% substitutes GR for GR' in T if T = (global GR) or (pglobal GR I)
+pred subst-gref i:term, i:gref, o:term.
+subst-gref (global _) GR' Tm' :- !, coq.env.global GR' Tm'.
+subst-gref (pglobal _ I) GR' Tm' :- !,
+  @uinstance! I => coq.env.global GR' Tm'.
+subst-gref T _ _ :- coq.error T "is not a gref".
