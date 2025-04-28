@@ -175,8 +175,6 @@ Elpi Accumulate lp:{{
     coq.elpi.accumulate _ "trocq.db"
       (clause _ (after "default-r") (trocq.db.r Class CR)),
     coq.elpi.accumulate execution-site "trocq.db"
-      (clause _ _ (trocq.db.gref->class (indt TrocqInd) Class)),
-    coq.elpi.accumulate execution-site "trocq.db"
       (clause _ _ (trocq.db.rel Class (indt TrocqInd) (indc TrocqBuild)
         (const CR) (const CovariantProj) (const ContravariantProj))),
     % generate projections on the covariant subrecord

@@ -31,13 +31,15 @@ term->map-class (pglobal Map _) Class :-
 pred rel o:param-class, o:gref, o:gref,
   o:gref, o:gref, o:gref.
 
+% Given {{ParamNM.Rel}, obtain its class (M, N):
+%   gref->class {{ParamNM.Rel}} (pc M N) 
+pred gref->class i:gref, o:param-class.
+gref->class Rel Class :- trocq.db.rel Class Rel _ _ _ _.
+
 pred r o:param-class, o:constant.
 :name "default-r"
 r C R :- var C, !,
   declare_constraint (r C R) [C].
-
-% subsummed by rel
-pred gref->class o:gref, o:param-class.
 
 % constants PType and Weaken registered so that we do not coq.locate every time
 pred ptype o:constant.
@@ -80,10 +82,16 @@ param-forall C _ :-
 param-forall C ParamForall :- var C, !,
   declare_constraint (param-forall C ParamForall) [C].
 
-% dedicated databases to store the univalence/funext axioms
-% these predicates will be called every time an axiom is required
-% if an axiom has not been declared, the associated database is empty,
-% and the predicate fails to tell the user that translation cannot happen
+} % trocq.db
+
+namespace trocq.db {
+
+% Dedicated databases to store the univalence/funext axioms.
+%
+% These predicates will be called every time an axiom is required.
+% If an axiom has not been declared, the associated database is empty,
+% and the predicate fails to tell the user that translation cannot happen.
+
 pred univalence o:constant.
 :name "default-univalence"
 univalence _ :- coq.error "univalence axiom required".
