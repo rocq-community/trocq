@@ -11,7 +11,7 @@
 (*                            * see LICENSE file for the text of the license *)
 (*****************************************************************************)
 
-From Coq Require Import ssreflect ssrfun ssrbool Arith.
+From Coq Require Import ssreflect ssrfun ssrbool.
 Require Import HoTT_additions Hierarchy.
 
 Set Universe Polymorphism.
@@ -21,9 +21,34 @@ Inductive natR : nat -> nat -> Type :=
   | OR : natR O O
   | SR : forall (n n' : nat), natR n n' -> natR (S n) (S n').
 
-Lemma uip_bool (b1 b2 : bool) (p q : b1 = b2) : p = q.
+(* From Rocq's stdlib *)
+Fixpoint eqb n m : bool :=
+  match n, m with
+    | 0, 0 => true
+    | 0, S _ => false
+    | S _, 0 => false
+    | S n', S m' => eqb n' m'
+  end.
+
+(* From Rocq's stdlib *)
+Lemma UIP_refl_bool (b:bool) (x : b = b) : x = eq_refl.
 Proof.
-  destruct q. apply Eqdep_dec.UIP_refl_bool.
+  destruct b.
+  - change (match true as b return true=b -> Prop with
+            | true => fun x => x = eq_refl
+            | _ => fun _ => True
+            end x).
+    destruct x; reflexivity.
+  - change (match false as b return false=b -> Prop with
+            | false => fun x => x = eq_refl
+            | _ => fun _ => True
+            end x).
+    destruct x; reflexivity.
+Defined.
+
+Lemma UIP_bool (b1 b2 : bool) (p q : b1 = b2) : p = q.
+Proof.
+  destruct q. apply UIP_refl_bool.
 Qed.
 
 Lemma natR_irrelevant m n (nR nR' : natR m n) : nR = nR'.
@@ -41,7 +66,7 @@ have @psi k l (e : Nat.eqb k l) : natR k l.
       by rewrite [X in SR _ _ X]e. 
     rewrite -[LHS]phiK -[RHS]phiK.
     suff -> : phi _ _ nR = phi _ _ nR' by [].
-    by apply uip_bool.
+    by apply UIP_bool.
 Defined.
 
 Definition map_nat : nat -> nat := id.
