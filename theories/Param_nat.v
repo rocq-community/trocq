@@ -11,7 +11,7 @@
 (*                            * see LICENSE file for the text of the license *)
 (*****************************************************************************)
 
-From mathcomp Require Import ssreflect ssrfun ssrbool eqtype ssrnat.
+From Coq Require Import ssreflect ssrfun ssrbool Arith.
 Require Import HoTT_additions Hierarchy.
 
 Set Universe Polymorphism.
@@ -21,22 +21,27 @@ Inductive natR : nat -> nat -> Type :=
   | OR : natR O O
   | SR : forall (n n' : nat), natR n n' -> natR (S n) (S n').
 
+Lemma uip_bool (b1 b2 : bool) (p q : b1 = b2) : p = q.
+Proof.
+  destruct q. apply Eqdep_dec.UIP_refl_bool.
+Qed.
+
 Lemma natR_irrelevant m n (nR nR' : natR m n) : nR = nR'.
 Proof.
-have @phi k l (r : natR k l) : eqn k l.
+have @phi k l (r : natR k l) : Nat.eqb k l.
   elim: r => {k l}; first by reflexivity.
   move=> k l r e; exact: e.
-have @psi k l (e : eqn k l) : natR k l.
+have @psi k l (e : Nat.eqb k l) : natR k l.
   elim: k l e  => [| k ihk] l e.
   - case: l e => [| l] // _; exact OR.
   - case: l e => [| l] // e. 
     exact: SR (ihk _ e). 
-have phiK k l r : psi k l (phi k l r) = r.
-  elim: r => {k l} // k l r e /=.
-  by rewrite [X in SR _ _ X]e. 
-rewrite -[LHS]phiK -[RHS]phiK.
-suff -> : phi _ _ nR = phi _ _ nR' by [].
-apply: eq_irrelevance. 
+  - have phiK k l r : psi k l (phi k l r) = r.
+      elim: r => {k l} // k l r e /=.
+      by rewrite [X in SR _ _ X]e. 
+    rewrite -[LHS]phiK -[RHS]phiK.
+    suff -> : phi _ _ nR = phi _ _ nR' by [].
+    by apply uip_bool.
 Defined.
 
 Definition map_nat : nat -> nat := id.
