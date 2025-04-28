@@ -1,0 +1,108 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%                            %                     Trocq                      %
+%  _______                   %        Copyright (C) 2023 Inria & MERCE        %
+% |__   __|                  %     (Mitsubishi Electric R&D Centre Europe)    %
+%    | |_ __ ___   ___ __ _  %        Cyril Cohen <cyril.cohen@inria.fr>      %
+%    | | '__/ _ \ / __/ _` | %        Enzo Crance <enzo.crance@inria.fr>      %
+%    | | | | (_) | (_| (_| | %    Assia Mahboubi <assia.mahboubi@inria.fr>    %
+%    |_|_|  \___/ \___\__, | %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%                        | | %   This file is distributed under the terms of  %
+%                        |_| %   GNU Lesser General Public License Version 3  %
+%                            % (see LICENSE file for the text of the license) %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+namespace trocq.db {
+
+pred map->class o:map-class, o:gref.
+
+pred map-class->indc-class o:map-class, o:gref.
+
+pred map-class->term i:map-class, o:term.
+map-class->term Class (pglobal Map UI) :- std.do! [
+  map-class->indc-class Class Map, coq.univ-instance UI [] ].
+
+pred term->map-class i:term, o:map-class.
+term->map-class (pglobal Map _) Class :-
+  map-class->indc-class Class Map.
+
+% get various values of the ParamMN module from the (M,N) class
+% rel (pc M N) {{ParamMN.Rel}} {{ParamMN.BuildRel}}
+%   {{ParamMN.R}} {{ParamMN.covariant}} {{ParamMN.contravariant}}
+pred rel o:param-class, o:gref, o:gref,
+  o:gref, o:gref, o:gref.
+
+pred r o:param-class, o:constant.
+:name "default-r"
+r C R :- var C, !,
+  declare_constraint (r C R) [C].
+
+% subsummed by rel
+pred gref->class o:gref, o:param-class.
+
+% constants PType and Weaken registered so that we do not coq.locate every time
+pred ptype o:constant.
+pred pprop o:constant.
+pred weaken o:constant.
+pred paths o:gref.
+pred sym-rel o:gref.
+
+pred ptype-or-pprop i:term, o:constant.
+ptype-or-pprop (pglobal (const PCst) _) PCst :- !,
+  (ptype PCst; pprop PCst).
+
+% param-type β α {{ Param(β)_Type(α) }}
+% with α the level of the R field, and β the structure given to it
+pred param-type o:param-class, o:param-class, o:constant.
+
+% pparam-type (M,N) {{ PParamTypeMN }}
+% cf Param.v
+pred pparam-type o:param-class, o:constant.
+% first case always fails, just here for debug
+pparam-type C _ :-
+  util.when-debug dbg.steps (coq.say "pparam" C), fail.
+:name "default-pparam-type"
+pparam-type C PParamType :- var C, !,
+  declare_constraint (pparam-type C PParamType) [C].
+
+% param-arrow (M,N) {{ ParamArrowMN }}
+pred param-arrow o:param-class, o:constant.
+param-arrow C _ :-
+  util.when-debug dbg.steps (coq.say "arrow" C), fail.
+:name "default-param-arrow"
+param-arrow C ParamArrow :- var C, !,
+  declare_constraint (param-arrow C ParamArrow) [C].
+
+% param-forall (M,N) {{ ParamForallMN }}
+pred param-forall o:param-class, o:constant.
+param-forall C _ :-
+  util.when-debug dbg.steps (coq.say "forall" C), fail.
+:name "default-param-forall"
+param-forall C ParamForall :- var C, !,
+  declare_constraint (param-forall C ParamForall) [C].
+
+% dedicated databases to store the univalence/funext axioms
+% these predicates will be called every time an axiom is required
+% if an axiom has not been declared, the associated database is empty,
+% and the predicate fails to tell the user that translation cannot happen
+pred univalence o:constant.
+:name "default-univalence"
+univalence _ :- coq.error "univalence axiom required".
+
+pred funext o:constant.
+:name "default-funext"
+funext _ :- coq.error "function extensionality axiom required".
+
+} % trocq.db
+
+% gref GR ω [α_1, ..., α_n] GR' GRR
+% GR related to GR' by witness GRR
+% ω is the output class of GRR
+% if GR is a type former then GRR : Param(ω) (GR ...) (GR' ...)
+% the α_i are the classes present in the type of GR, to give the dependency information
+% e.g. list44 : forall A A' (AR : Param44.Rel A A'), Param44.Rel (list A) (list A')
+%      gref {{ list }} (4, 4) [(4, 4)] {{ list }} {{ list44 }}
+pred trocq.db.gref o:gref, o:param-class, o:list param-class, o:gref, o:gref.
+:name "default-gref"
+trocq.db.gref _ _ _ _ _ :- do-not-fail, !, false.
+trocq.db.gref GR Out _ _ _ :- coq.error "cannot find" GR "at out class" Out.
+
