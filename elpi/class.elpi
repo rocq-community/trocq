@@ -11,8 +11,10 @@
 %                            % (see LICENSE file for the text of the license) %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % -----------------------------------------------------------------------------
-% definition of parametricity classes
+% definitions about map & parametricity classes
 % -----------------------------------------------------------------------------
+
+% Note: should only contain definitions available during synterp
 
 % a parametricity class is a pair of map classes (levels in our hierarchy)
 kind map-class type.
@@ -29,81 +31,37 @@ type low class-kind.
 type high class-kind.
 type all class-kind.
 
-pred map-classes o:class-kind, o:list map-class.
-map-classes all [map0, map1, map2a, map2b, map3, map4].
-map-classes low [map0, map1, map2a].
-map-classes high [map2b, map3, map4].
+namespace map-class {
 
-pred sym-rel o:gref.
-sym-rel {{:gref lib:trocq.sym_rel}}.
+pred all-of-kind o:class-kind, o:list map-class.
+all-of-kind all [map0, map1, map2a, map2b, map3, map4].
+all-of-kind low [map0, map1, map2a].
+all-of-kind high [map2b, map3, map4].
 
-pred paths o:gref.
-paths {{:gref lib:trocq.paths}}.
-
-kind param-class type.
-type pc map-class -> map-class -> param-class.
-
-pred map->class o:map-class, o:gref.
-map->class map0 {{:gref lib:trocq.map0}}.
-map->class map1 {{:gref lib:trocq.map1}}.
-map->class map2a {{:gref lib:trocq.map2a}}.
-map->class map2b {{:gref lib:trocq.map2b}}.
-map->class map3 {{:gref lib:trocq.map3}}.
-map->class map4 {{:gref lib:trocq.map4}}.
-
-pred map-class->indc-class o:map-class, o:gref.
-map-class->indc-class map0 {{:gref lib:trocq.indc_map0}}.
-map-class->indc-class map1 {{:gref lib:trocq.indc_map1}}.
-map-class->indc-class map2a {{:gref lib:trocq.indc_map2a}}.
-map-class->indc-class map2b {{:gref lib:trocq.indc_map2b}}.
-map-class->indc-class map3 {{:gref lib:trocq.indc_map3}}.
-map-class->indc-class map4 {{:gref lib:trocq.indc_map4}}.
-
-pred map-class->term i:map-class, o:term.
-map-class->term Class (pglobal Map UI) :- std.do! [
-  map-class->indc-class Class Map, coq.univ-instance UI [] ].
-
-pred term->map-class i:term, o:map-class.
-term->map-class (pglobal Map _) Class :- map-class->indc-class Class Map.
-
-pred map-class->string i:map-class, o:string.
-map-class->string map0  "0".
-map-class->string map1  "1".
-map-class->string map2a "2a".
-map-class->string map2b "2b".
-map-class->string map3  "3".
-map-class->string map4  "4".
-
-pred param-class->string i:param-class, o:string.
-param-class->string (pc M N) S :-
-  S is {map-class->string M} ^ {map-class->string N}.
-
-pred param-class->add-suffix i:param-class, i:string, o:string.
-param-class->add-suffix Class P S :- S is P ^ {param-class->string Class}.
-
-pred param-class->add-2-suffix i:string,
-  i:param-class, i:param-class, i:string, o:string.
-param-class->add-2-suffix Sep Class1 Class2 P S :-
-   S is P ^ {param-class->string Class1} ^ Sep ^ {param-class->string Class2}.
+pred to_string i:map-class, o:string.
+to_string map0  "0".
+to_string map1  "1".
+to_string map2a "2a".
+to_string map2b "2b".
+to_string map3  "3".
+to_string map4  "4".
 
 % names of the fields contained in a witness of a given level
-pred map-class->fields i:map-class, o:list string.
-map-class->fields map0  [].
-map-class->fields map1  ["map"].
-map-class->fields map2a ["map", "map_in_R"].
-map-class->fields map2b ["map", "R_in_map"].
-map-class->fields map3  ["map", "map_in_R", "R_in_map"].
-map-class->fields map4  ["map", "map_in_R", "R_in_map", "R_in_mapK"].
+pred fields i:map-class, o:list string.
+fields map0  [].
+fields map1  ["map"].
+fields map2a ["map", "map_in_R"].
+fields map2b ["map", "R_in_map"].
+fields map3  ["map", "map_in_R", "R_in_map"].
+fields map4  ["map", "map_in_R", "R_in_map", "R_in_mapK"].
 
-pred map-class->cofields i:map-class, o:list string.
-map-class->cofields map0  [].
-map-class->cofields map1  ["comap"].
-map-class->cofields map2a ["comap", "comap_in_R"].
-map-class->cofields map2b ["comap", "R_in_comap"].
-map-class->cofields map3  ["comap", "comap_in_R", "R_in_comap"].
-map-class->cofields map4  ["comap", "comap_in_R", "R_in_comap", "R_in_comapK"].
-
-namespace map-class {
+pred cofields i:map-class, o:list string.
+cofields map0  [].
+cofields map1  ["comap"].
+cofields map2a ["comap", "comap_in_R"].
+cofields map2b ["comap", "R_in_comap"].
+cofields map3  ["comap", "comap_in_R", "R_in_comap"].
+cofields map4  ["comap", "comap_in_R", "R_in_comap", "R_in_comapK"].
 
 % lower/higher levels at distance 1 from a given level
 pred weakenings-from i:map-class, o:list map-class.
@@ -205,7 +163,22 @@ dep-arrow map4  (pc map0 map4)  (pc map4 map0).
 
 } % map-class
 
+kind param-class type.
+type pc map-class -> map-class -> param-class.
+
 namespace param-class {
+
+pred to_string i:param-class, o:string.
+to_string (pc M N) S :-
+  S is {map-class.to_string M} ^ {map-class.to_string N}.
+
+pred add-suffix i:param-class, i:string, o:string.
+add-suffix Class P S :- S is P ^ {param-class.to_string Class}.
+
+pred add-2-suffix i:string,
+  i:param-class, i:param-class, i:string, o:string.
+add-2-suffix Sep Class1 Class2 P S :-
+   S is P ^ {param-class.to_string Class1} ^ Sep ^ {param-class.to_string Class2}.
 
 % extensions of functions over map classes to parametricity classes
 
@@ -265,89 +238,15 @@ dep-arrow (pc M N) ClassA ClassB :-
 
 pred to-string i:param-class, o:string.
 to-string (pc M N) String :- std.do! [
-  map-class->string M MStr,
-  map-class->string N NStr,
+  map-class.to_string M MStr,
+  map-class.to_string N NStr,
   String is MStr ^ NStr
 ].
-
-% generate a weakening function from a parametricity class to another, by forgetting fields 1 by 1
-pred forget i:param-class, i:param-class, o:univ-instance -> term -> term -> term -> term.
-forget (pc M N) (pc M N) (_\ _\ _\ r\ r) :- !.
-forget (pc M N) (pc M N') ForgetF :- !,
-  std.mem {map-class.weakenings-from N} N1,
-  forget (pc M N1) (pc M N') ForgetF', !,
-  map-class->string M MStr,
-  coq.locate
-    {calc ("forget_" ^ MStr ^ {map-class->string N} ^ "_" ^ MStr ^ {map-class->string N1})} Forget1,
-  ForgetF = (ui\ a\ b\ r\ ForgetF' ui a b (app [pglobal Forget1 ui, a, b, r])).
-forget (pc M N) (pc M' N') ForgetF :-
-  std.mem {map-class.weakenings-from M} M1,
-  forget (pc M1 N) (pc M' N') ForgetF', !,
-  map-class->string N NStr,
-  coq.locate
-    {calc ("forget_" ^ {map-class->string M} ^ NStr ^ "_" ^ {map-class->string M1} ^ NStr)} Forget1,
-  ForgetF = (ui\ a\ b\ r\ ForgetF' ui a b (app [pglobal Forget1 ui, a, b, r])).
-
-% weaking of the out class of a gref.
-% e.g. if GR has type `forall A B, R A B -> Param21 X Y`
-% then `weaken-out (pc map1 map0) GR T`
-% where `T` has type `forall A B, R A B -> Param10 X Y`
-pred weaken-out i:param-class, i:gref, o:term.
-weaken-out OutC GR WT :- std.do! [
-  coq.env.global GR T,
-  coq.env.typeof GR Ty,
-  replace-out-ty OutC Ty WTy,
-  std.assert-ok! (coq.elaborate-skeleton T WTy WT)
-    "weaken-out: failed to weaken"
-].
-
-pred replace-out-ty i:param-class, i:term, o:term.
-replace-out-ty OutC (prod N A B) (prod N A B') :- !,
-   pi x\ replace-out-ty OutC (B x) (B' x).
-replace-out-ty OutC InT OutT :- std.do! [
-  coq.safe-dest-app InT HD Ts,
-  trocq.db.gref->class OutGRClass OutC,
-  util.subst-gref HD OutGRClass HD',
-  coq.mk-app HD' Ts OutT
-  ].
 
 % succeed if the parametricity class contains a map class over 2b
 % this means that a translation of a sort at this class will require univalence,
 % and the translation of a dependent product will require funext
 pred requires-axiom i:param-class.
 requires-axiom (pc M N) :- (std.mem! [map2b, map3, map4] M ; std.mem! [map2b, map3, map4] N).
-
-% find classes present in a term
-pred type->class i:term, o:list param-class, o:list term.
-type->class X [Class] Ts :-
-  coq.safe-dest-app X HD Ts,
-  (do-not-fail => coq.term->gref HD GRClass),
-  trocq.db.gref->class GRClass Class.
-type->class X [] Ts :- coq.safe-dest-app X _ Ts.
-type->class _ [] [].
-
-pred type->classes.rec i:term, o:list param-class, o:list param-class.
-type->classes.rec (prod N A B) OutList BLast:- !,
-  @pi-decl N A x\
-    type->classes.rec A AList ALast, !,
-    type->classes.rec (B x) BList BLast, !,
-    std.append {std.append AList ALast} BList OutList.
-type->classes.rec X [] Class :- !, type->class X Class _.
-
-pred type->classes.main i:term, o:list param-class, o:list param-class, o:gref, o:gref.
-type->classes.main (prod N A B) OutList BLast GR GR' :- !,
-  @pi-decl N A x\
-    type->classes.rec A AList ALast, !,
-    type->classes.main (B x) BList BLast GR GR', !,
-    std.append {std.append AList ALast} BList OutList.
-type->classes.main X [] Class GR GR' :- !,
-    type->class X Class Ts, !,
-    std.rev Ts [T', T | _],
-    coq.term->gref T GR, coq.term->gref T' GR'.
-
-pred type->classes i:term, o:param-class, o:list param-class, o:gref, o:gref.
-type->classes T OutClass DepClasses GR GR' :-
-  type->classes.main T DepClasses LastClass GR GR',
-  if (LastClass = [OutClass]) true (OutClass = pc map0 map0).
 
 } % param-class

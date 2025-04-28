@@ -19,7 +19,7 @@
 coq.subst-fun Args F FArgs :- !, coq.mk-app F Args FArgs.
 
 % traversing a binder should give information for both typechecking and annotation
-macro @annot-pi-decl N T F :- pi x\ [annot.adecl x N T, decl x N T] => F x.
+macro @param-pi-decl N T F :- pi x\ [annot.adecl x N T, decl x N T] => F x.
 
 % param X T X' XR translates X at annotated type T, to X' with witness XR
 pred param i:term, i:term, o:term, o:term.
@@ -91,7 +91,7 @@ param
     util.when-debug dbg.full (coq.say "param/type: added dep-type from" C "to" CR),
     coq.univ-instance UI [L],
     coq.univ.variable U L,
-    coq.univ-instance UI1 [L, {coq.univ.variable {coq.univ.super U}}],
+    coq.univ-instance UI1 [L, {coq.univ.variable {coq.univ.alg-super U}}],
     trocq.db.pparam-type C PParamType,
     util.when-debug dbg.full (coq.say "param/type: suspending proof on" C),
     util.if-suspend C (param-class.requires-axiom C) (
@@ -116,14 +116,14 @@ param (fun N T F) FunTy (fun N' T' F') FunR :- !,
     ["type not convertible to Π:", {coq.term->string FunTy}]},
   coq.name-suffix N "'" N',
   coq.name-suffix N "R" NR,
-  map-class->term map0 Map0,
+  trocq.db.map-class->term map0 Map0,
   param T (app [pglobal (const {trocq.db.ptype}) _, Map0, Map0]) T' TR, !,
   util.when-debug dbg.full (coq.say "param/fun:" T "@ 0,0 ~" T' "by" TR),
-  @annot-pi-decl N T x\ pi x' xR\ param.store x T x' xR => (
+  (@param-pi-decl N T x\ pi x' xR\ param.store x T x' xR => (
     util.when-debug dbg.full (coq.say "param/fun: introducing" x "@" T "~" x' "by" xR),
     param (F x) (TF x) (F' x') (FR x x' xR),
     util.when-debug dbg.full (coq.say "param/fun:" (F x) "@" (TF x) "~" (F' x') "by" (FR x x' xR))
-  ),
+  )),
   trocq.db.r (pc map0 map0) R,
   prune UI [],
   FunR =
@@ -184,11 +184,11 @@ param
     param A PTypeA A' AR,
     cstr.univ-link CB M1B M2B, !,
     util.when-debug dbg.full (coq.say "param/forall:" M1B M2B "is linked to" CB),
-    @annot-pi-decl N A a\ pi a' aR\ param.store a A a' aR => std.do![
+    (@param-pi-decl N A a\ pi a' aR\ param.store a A a' aR => std.do![
       util.when-debug dbg.full (coq.say "param/forall: introducing" a "@" A "~" a' "by" aR),
       param (B a) (app [pglobal (const PType) _, M1B, M2B]) (B' a') (BR a a' aR), !,
       util.when-debug dbg.full (coq.say "param/forall:" (B a) "@" M1B M2B "~" (B' a') "by" (BR a a' aR))
-    ],
+    ]),
     trocq.db.r CA RA, !,
     util.when-debug dbg.full (coq.say "param/forall db CA RA"), !,
     prune UIA [],
@@ -276,8 +276,8 @@ param.subst-weaken T T' :-
 pred copy.subst-weaken i:term, o:term.
 copy.subst-weaken (app [_, M, N, M', N', _, XR]) XR'' :-
   param-class.forget
-    (pc {term->map-class M} {term->map-class N})
-    (pc {term->map-class M'} {term->map-class N'})
+    (pc {trocq.db.term->map-class M} {trocq.db.term->map-class N})
+    (pc {trocq.db.term->map-class M'} {trocq.db.term->map-class N'})
     WeakenF,
   copy XR XR',
   XR'' = WeakenF _ _ _ XR'.

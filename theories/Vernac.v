@@ -23,17 +23,18 @@ From Trocq.Elpi.constraints Extra Dependency "constraints.elpi" as constraints.
 
 From Trocq.Elpi Extra Dependency "annot.elpi" as annot.
 From Trocq.Elpi Extra Dependency "util.elpi" as util.
-From Trocq.Elpi Extra Dependency "param-class.elpi" as param_class.
+From Trocq.Elpi Extra Dependency "util-rocq.elpi" as util_rocq.
+From Trocq.Elpi Extra Dependency "param-class-util.elpi" as param_class_util.
 
 Elpi Command Trocq.
-Elpi Accumulate File util.
 Elpi Accumulate Db trocq.db.
+Elpi Accumulate File util.
+Elpi Accumulate File util_rocq.
 Elpi Accumulate File annot.
-Elpi Accumulate File param_class.
+Elpi Accumulate File param_class_util.
 Elpi Accumulate File simple_graph.
 Elpi Accumulate File constraint_graph.
 Elpi Accumulate File constraints.
-Elpi Typecheck.
 Elpi Accumulate lp:{{
   % command to register the univalence axiom
   main [str "Register", str "Univalence", str S] :- !, std.do! [
@@ -127,5 +128,4 @@ Elpi Accumulate lp:{{
       "", "",
     ] U.
 }}.
-Elpi Typecheck.
 Elpi Export Trocq.

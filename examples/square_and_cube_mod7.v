@@ -43,9 +43,9 @@ Definition binop_param {X X'} RX {Y Y'} RY {Z Z'} RZ
 Definition Zmod7 := 'Z_7.
 Notation "ℤ/7ℤ" := Zmod7.
 
-Definition zerop : ℤ/7ℤ := @Zp0 6.
-Definition addp : ℤ/7ℤ -> ℤ/7ℤ -> ℤ/7ℤ := @Zp_add 6.
-Definition mulp : ℤ/7ℤ -> ℤ/7ℤ -> ℤ/7ℤ := @Zp_mul 6.
+Definition zerop : ℤ/7ℤ := Zp0.
+Definition addp : ℤ/7ℤ -> ℤ/7ℤ -> ℤ/7ℤ := @Zp_add 7.
+Definition mulp : ℤ/7ℤ -> ℤ/7ℤ -> ℤ/7ℤ := @Zp_mul 7.
 Definition onep : ℤ/7ℤ := Zp1.
 
 (* Quotient *)

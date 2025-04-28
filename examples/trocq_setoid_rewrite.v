@@ -26,16 +26,19 @@ Notation "x + y" := (add x%int y%int) : int_scope.
 Notation "x == y" := (eqmodp x%int y%int)
   (format "x  ==  y", at level 70) : int_scope.
 
-Context (eqp_refl : Reflexive eqmodp).
-Context (eqp_sym : Symmetric eqmodp).
-Context (eqp_trans : Transitive eqmodp).
+#[local] Axiom (eqp_refl : Reflexive eqmodp).
+Existing Instance eqp_refl.
+#[local] Axiom (eqp_sym : Symmetric eqmodp).
+Existing Instance eqp_sym.
+#[local] Axiom (eqp_trans : Transitive eqmodp).
+Existing Instance eqp_trans.
 
-Variable add_morph : 
+#[local] Axiom add_morph : 
   forall m m' : int, (m == m')%int ->  
   forall n n' : int, (n == n')%int ->  
   (m + n == m' + n')%int. 
 
-Lemma eqmodp_morph : 
+Definition eqmodp_morph : 
   forall m m' : int, (m == m')%int ->  
   forall n n' : int, (n == n')%int ->  
   (m' == n')%int -> (m == n)%int.
@@ -57,9 +60,9 @@ Qed.
 
 Trocq Use eqmodp01 add_morph.
 
-Variables i : int.
-Let j := (i + p)%int.
-Variable ip : (j == i)%int.
+#[local] Parameter i : int.
+#[local] Definition j := (i + p)%int.
+#[local] Parameter ip : (j == i)%int.
 Definition iid : (i == i)%int := eqp_refl i.
 
 Trocq Use ip iid.

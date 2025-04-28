@@ -139,8 +139,8 @@ elim=> [{n n'}|{n'}n n' nR IHn]/=.
   - by elim/t0P; elim/t0P; constructor.
   - elim/tSP => a v; elim/tSP => a' v' e.
     constructor.
-    + by have /(ap hd)/(map_in_R AR) := e.
-    + by have /(ap tail)/IHn := e.
+    + by have@ /(ap hd)/(map_in_R AR) := e.
+    + by have@ /(ap tail)/IHn := e.
 Defined.
 
 Definition R_in_map :
