@@ -69,9 +69,7 @@ sequent-style presentation.
 
 ## Building and installation instructions
 
-Trocq is a still a prototype. In particular, it depends on a [custom
-version](https://github.com/ecranceMERCE/coq-elpi/tree/strat) of
-Coq-Elpi.  It is not yet packaged in Opam or Nix.
+Trocq is still a prototype. It is not yet packaged in Opam or Nix.
 
 There are however three ways to experiment with it, all documented
 in the [INSTALL.md file](INSTALL.md).

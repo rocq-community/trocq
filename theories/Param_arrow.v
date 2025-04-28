@@ -14,8 +14,8 @@
 From elpi Require Import elpi.
 From Coq Require Import ssreflect.
 Require Import HoTT_additions Hierarchy Database.
-From Trocq.Elpi Extra Dependency "util.elpi" as util.
-From Trocq.Elpi Extra Dependency "param-class.elpi" as param_class.
+From Trocq.Elpi Extra Dependency "util-rocq.elpi" as util_rocq.
+From Trocq.Elpi Extra Dependency "param-class-util.elpi" as param_class_util.
 
 Set Universe Polymorphism.
 Unset Universe Minimization ToSet.
@@ -23,9 +23,9 @@ Unset Universe Minimization ToSet.
 Local Open Scope param_scope.
 
 Elpi Command genparamarrow.
-Elpi Accumulate File util.
 Elpi Accumulate Db trocq.db.
-Elpi Accumulate File param_class.
+Elpi Accumulate File util_rocq.
+Elpi Accumulate File param_class_util.
 
 (* relation for arrow *)
 
@@ -143,12 +143,12 @@ Elpi Accumulate lp:{{
     ClassA = pc MA NA,
     param-class.union ClassBM ClassBN ClassB,
     ClassB = pc MB NB,
-    map-class->string M MStr,
-    map-class->string N NStr,
-    map-class->string MA MAStr,
-    map-class->string MB MBStr,
-    map-class->string NA NAStr,
-    map-class->string NB NBStr,
+    map-class.to_string M MStr,
+    map-class.to_string N NStr,
+    map-class.to_string MA MAStr,
+    map-class.to_string MB MBStr,
+    map-class.to_string NA NAStr,
+    map-class.to_string NB NBStr,
     coq.univ-instance UIi [Li],
     coq.univ-instance UIj [Lj],
     coq.univ-instance UIk [Lk],
@@ -266,22 +266,21 @@ Elpi Accumulate lp:{{
     ParamArrow is "Param" ^ MStr ^ NStr ^ "_arrow",
     % this typecheck is very important: it adds L < L1 to the constraint graph
     coq.typecheck Decl _ ok,
-    @udecl! [Li, Lj, Lk] ff [le Li Lk, le Lj Lk] tt =>
-      coq.env.add-const ParamArrow Decl _ @transparent! Const,
+    (@udecl! [Li, Lj, Lk] ff [le Li Lk, le Lj Lk] tt =>
+      coq.env.add-const ParamArrow Decl _ @transparent! Const),
     coq.elpi.accumulate _ "trocq.db" (clause _ (after "default-param-arrow")
       (trocq.db.param-arrow Class Const)).
 }}.
-Elpi Typecheck.
 
 Elpi Query lp:{{
   coq.univ.new Ui,
   coq.univ.variable Ui Li,
   coq.univ.new Uj,
   coq.univ.variable Uj Lj,
-  coq.univ.max Ui Uj Uk,
+  coq.univ.alg-max Ui Uj Uk,
   % cannot have only 2 binders in the declaration because this line creates a fresh level:
   coq.univ.variable Uk Lk,
-  map-classes all Classes,
+  map-class.all-of-kind all Classes,
   std.forall Classes (m\
     std.forall Classes (n\
       generate-param-arrow (pc m n) Ui Uj Li Lj Lk

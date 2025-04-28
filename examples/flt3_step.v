@@ -42,8 +42,8 @@ Definition binop_param {X X'} RX {Y Y'} RY {Z Z'} RZ
 (* Arithmetic on Z_9*)
 Definition Zmod9 := 'Z_9.
 Definition zerop : Zmod9 := Zp0.
-Definition addp : Zmod9 -> Zmod9 -> Zmod9 := @Zp_add 8.
-Definition mulp : Zmod9 -> Zmod9 -> Zmod9 := @Zp_mul 8.
+Definition addp : Zmod9 -> Zmod9 -> Zmod9 := @Zp_add 9.
+Definition mulp : Zmod9 -> Zmod9 -> Zmod9 := @Zp_mul 9.
 Definition onep : Zmod9 := Zp1.
 
 (* Quotient *)

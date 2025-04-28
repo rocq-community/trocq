@@ -14,7 +14,7 @@
 From elpi Require Import elpi.
 From Coq Require Import ssreflect.
 Require Import HoTT_additions Hierarchy Database.
-From Trocq.Elpi Extra Dependency "param-class.elpi" as param_class.
+From Trocq.Elpi Extra Dependency "class.elpi" as class.
 From Trocq.Elpi Extra Dependency "util.elpi" as util.
 
 Set Warnings "+elpi.typecheck".
@@ -30,7 +30,7 @@ Local Open Scope param_scope.
 
 Elpi Command genmapprop.
 Elpi Accumulate Db trocq.db.
-Elpi Accumulate File param_class.
+Elpi Accumulate File class.
 Elpi Accumulate File util.
 Elpi Accumulate lp:{{
   pred generate-fields
@@ -114,7 +114,7 @@ Elpi Query lp:{{
 (* Elpi Command genparamtype.
 Elpi Accumulate Db trocq.db.
 Elpi Accumulate File util.
-Elpi Accumulate File param_class.
+Elpi Accumulate File class.
 Elpi Accumulate lp:{{
   pred generate-param-type
     i:param-class, i:param-class, i:univ, i:univ.variable, i:univ.variable.

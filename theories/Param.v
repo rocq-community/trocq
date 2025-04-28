@@ -19,35 +19,37 @@ Require Export Param_Type Param_arrow Param_forall.
 
 From Trocq.Elpi Extra Dependency "annot.elpi" as annot.
 From Trocq.Elpi Extra Dependency "util.elpi" as util.
-From Trocq.Elpi Extra Dependency "param-class.elpi" as param_class.
+From Trocq.Elpi Extra Dependency "class.elpi" as class.
+From Trocq.Elpi Extra Dependency "param-class-util.elpi" as param_class_util.
 From Trocq.Elpi Extra Dependency "param.elpi" as param.
 From Trocq.Elpi.constraints Extra Dependency "simple-graph.elpi" as simple_graph.
 From Trocq.Elpi.constraints Extra Dependency "constraint-graph.elpi" as constraint_graph.
 From Trocq.Elpi.constraints Extra Dependency "constraints.elpi" as constraints.
+From Trocq.Elpi.constraints Extra Dependency "constraints-impl.elpi" as constraints_impl.
 
 Set Universe Polymorphism.
 Unset Universe Minimization ToSet.
 
 Elpi Command genpparam.
-Elpi Accumulate File util.
 Elpi Accumulate Db trocq.db.
-Elpi Accumulate File param_class.
+Elpi Accumulate File util.
+Elpi Accumulate File class.
 
 Elpi Command genpparamtype.
-Elpi Accumulate File util.
 Elpi Accumulate Db trocq.db.
-Elpi Accumulate File param_class.
+Elpi Accumulate File util.
+Elpi Accumulate File class.
 Elpi Accumulate lp:{{
   pred generate-branch i:univ-instance, i:param-class, i:param-class, o:term.
   generate-branch UI2 Class RClass (pglobal ParamType UI2) :-
     coq.locate
-      {calc ("Param" ^ {param-class->string Class} ^ "_Type" ^ {param-class->string RClass})}
+      {calc ("Param" ^ {param-class.to_string Class} ^ "_Type" ^ {param-class.to_string RClass})}
       ParamType.
 
   pred generate-match2
     i:term, i:univ-instance, i:param-class, i:term, i:map-class, o:term.
   generate-match2 RetType UI2 Class QVar P Match :-
-    map-classes all Classes, std.map Classes
+    map-class.all-of-kind all Classes, std.map Classes
       (q\ b\ generate-branch UI2 Class (pc P q) b) Branches,
     coq.locate "map_class" MapClass,
     coq.univ-instance UI0 [],
@@ -56,7 +58,7 @@ Elpi Accumulate lp:{{
   pred generate-match1
     i:term, i:univ-instance, i:param-class, i:term, i:term, o:term.
   generate-match1 RetType UI2 Class PVar QVar Match :-
-    map-classes all Classes, std.map Classes
+    map-class.all-of-kind all Classes, std.map Classes
       (p\ b\ generate-match2 RetType UI2 Class QVar p b) Branches,
     coq.locate "map_class" MapClass,
     coq.univ-instance UI0 [],
@@ -65,7 +67,7 @@ Elpi Accumulate lp:{{
   pred generate-pparam-type
     i:univ.variable, i:univ.variable, i:param-class.
   generate-pparam-type L L1 Class :-
-    coq.locate {calc ("Param" ^ {param-class->string Class} ^ ".Rel")} ParamRel,
+    coq.locate {calc ("Param" ^ {param-class.to_string Class} ^ ".Rel")} ParamRel,
     coq.univ-instance UI1 [L1],
     RetType = app [pglobal ParamRel UI1, sort (typ U), sort (typ U)],
     coq.univ-instance UI2 [L, L1],
@@ -73,20 +75,19 @@ Elpi Accumulate lp:{{
     Decl = (fun `p` {{ map_class }} p\ fun `q` {{ map_class }} q\ MatchF p q),
     % this typecheck is very important: it adds L < L1 to the constraint graph
     coq.typecheck Decl _ ok,
-    PParamType is "PParam" ^ {param-class->string Class} ^ "_Type",
-    @udecl! [L, L1] ff [lt L L1] tt =>
-      coq.env.add-const PParamType Decl _ @transparent! Const,
+    PParamType is "PParam" ^ {param-class.to_string Class} ^ "_Type",
+    (@udecl! [L, L1] ff [lt L L1] tt =>
+      coq.env.add-const PParamType Decl _ @transparent! Const),
     coq.elpi.accumulate _ "trocq.db" (clause _ _ (trocq.db.pparam-type Class Const)).
   }}.
-Elpi Typecheck.
 
 Elpi Query lp:{{
   coq.univ.new U,
   coq.univ.variable U L,
-  coq.univ.super U U1,
+  coq.univ.alg-super U U1,
   coq.univ.variable U1 L1,
-  map-classes low Classes1,
-  map-classes all Classes,
+  map-class.all-of-kind low Classes1,
+  map-class.all-of-kind all Classes,
   % first the ones where the arguments matter
   std.forall Classes1 (m\
     std.forall Classes1 (n\
@@ -96,18 +97,22 @@ Elpi Query lp:{{
 }}.
 
 Elpi Tactic trocq.
-Elpi Accumulate File util.
 Elpi Accumulate Db trocq.db.
-Elpi Accumulate File annot.
-Elpi Accumulate File param_class.
+Elpi Accumulate File util.
+Elpi Accumulate File class.
 Elpi Accumulate File simple_graph.
-Elpi Accumulate File constraint_graph.
 Elpi Accumulate File constraints.
+Elpi Accumulate File annot.
+Elpi Accumulate File constraint_graph.
+Elpi Accumulate File constraints_impl.
+Elpi Accumulate File param_class_util.
 Elpi Accumulate File param.
-Elpi Typecheck.
 
 Elpi Accumulate lp:{{
-  :before "coq-assign-evar"
+  :before "coq-assign-evar-raw"
+  evar _ _ _ :- !.
+
+  :before "coq-assign-evar-refined"
   evar _ _ _ :- !.
 }}.
 
@@ -131,8 +136,8 @@ Elpi Accumulate lp:{{
   translate-goal Ty G (pc M N) G' GR' :- std.do! [
     cstr.init,
     if (Ty = sort (typ _))
-      (T = (app [pglobal (const {trocq.db.ptype}) _, {map-class->term M}, {map-class->term N}]))
-      (T = (app [pglobal (const {trocq.db.pprop}) _, {map-class->term M}, {map-class->term N}])),
+      (T = (app [pglobal (const {trocq.db.ptype}) _, {trocq.db.map-class->term M}, {trocq.db.map-class->term N}]))
+      (T = (app [pglobal (const {trocq.db.pprop}) _, {trocq.db.map-class->term M}, {trocq.db.map-class->term N}])),
     % first annotate the initial goal with fresh parametricity class variables
     term->annot-term G AG,
     util.when-debug dbg.steps (
@@ -163,6 +168,5 @@ Elpi Accumulate lp:{{
     % no need to remove the remaining annotations because they are invisible modulo conversion
   ].
 }}.
-Elpi Typecheck.
 
 Tactic Notation "trocq" := elpi trocq.

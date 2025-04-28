@@ -66,23 +66,18 @@ license:
   file: LICENSE
 
 supported_coq_versions:
-  text: 8.17
-  opam: '{>= "8.17" & < "8.18"}'
+  text: 8.20
+  opam: '{>= "8.20" & < "9.0"}'
 
 tested_coq_opam_versions:
-- version: '8.17'
+- version: '8.20'
 
 dependencies:
 - opam:
     name: coq-elpi
-    version: '{= "dev"}'
+    version: '{= "master"}'
   description: |-
-    [Coq-Elpi custom version](https://github.com/ecranceMERCE/coq-elpi/tree/strat)
-- opam:
-    name: coq-hott
-    version: '{>= "8.17" & < "8.18~"}'
-  description: |-
-    [Coq-HoTT 8.17](https://github.com/HoTT/Coq-HoTT)
+    [Coq-Elpi](https://github.com/LPCIC/coq-elpi)
 
 namespace: Trocq
 
@@ -101,9 +96,7 @@ categories:
 build: |-
   ## Building and installation instructions
 
-  Trocq is a still a prototype. In particular, it depends on a [custom
-  version](https://github.com/ecranceMERCE/coq-elpi/tree/strat) of
-  Coq-Elpi.  It is not yet packaged in Opam or Nix.
+  Trocq is still a prototype. It is not yet packaged in Opam or Nix.
 
   There are however three ways to experiment with it, all documented
   in the [INSTALL.md file](INSTALL.md).

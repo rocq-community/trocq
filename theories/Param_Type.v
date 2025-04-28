@@ -15,7 +15,7 @@ From elpi Require Import elpi.
 From Coq Require Import ssreflect.
 Require Import HoTT_additions Hierarchy Database.
 From Trocq.Elpi Extra Dependency "util.elpi" as util.
-From Trocq.Elpi Extra Dependency "param-class.elpi" as param_class.
+From Trocq.Elpi Extra Dependency "class.elpi" as class.
 
 Set Universe Polymorphism.
 Unset Universe Minimization ToSet.
@@ -28,9 +28,9 @@ Local Open Scope param_scope.
   + symmetry MapM_Type_symNP *)
 
 Elpi Command genmaptype.
-Elpi Accumulate File util.
 Elpi Accumulate Db trocq.db.
-Elpi Accumulate File param_class.
+Elpi Accumulate File util.
+Elpi Accumulate File class.
 Elpi Accumulate lp:{{
   pred generate-fields
     i:map-class, i:term, i:param-class, i:univ,
@@ -47,7 +47,7 @@ Elpi Accumulate lp:{{
     (pi a\ coq.mk-app R [a] (RF a)),
     coq.locate "paths" Paths,
     coq.locate "transport" Transport,
-    coq.locate {calc ("id_Param" ^ {param-class->string RClass})} IdParam,
+    coq.locate {calc ("id_Param" ^ {param-class.to_string RClass})} IdParam,
     MapInR =
       (fun `A` Type a\ fun `B` Type b\
         fun `e` (app [global Paths, Type, a, b]) e\
@@ -57,7 +57,7 @@ Elpi Accumulate lp:{{
   pred generate-map-type
     i:map-class, i:param-class, i:univ, i:univ.variable, i:univ.variable.
   generate-map-type M RClass U L L1 :-
-    coq.locate {calc ("Param" ^ {param-class->string RClass} ^ ".Rel")} R,
+    coq.locate {calc ("Param" ^ {param-class.to_string RClass} ^ ".Rel")} R,
     Type = sort (typ U),
     coq.univ-instance UI [L],
     coq.univ-instance UI1 [L1],
@@ -66,32 +66,30 @@ Elpi Accumulate lp:{{
     generate-fields
       M (app [pglobal SymRel UI1, Type, Type, pglobal R UI])
       RClass U L L1 FieldsSym,
-    coq.locate {calc ("Map" ^ {map-class->string M} ^ ".BuildHas")} BuildHas,
+    coq.locate {calc ("Map" ^ {map-class.to_string M} ^ ".BuildHas")} BuildHas,
     Decl = app [pglobal BuildHas UI1, Type, Type | Fields],
     DeclSym = app [pglobal BuildHas UI1, Type, Type | FieldsSym],
     MapType is
-      "Map" ^ {map-class->string M} ^ "_Type" ^ {param-class->string RClass},
+      "Map" ^ {map-class.to_string M} ^ "_Type" ^ {param-class.to_string RClass},
     MapTypeSym is
-      "Map" ^ {map-class->string M} ^ "_Type_sym" ^
-      {param-class->string RClass},
+      "Map" ^ {map-class.to_string M} ^ "_Type_sym" ^
+      {param-class.to_string RClass},
     % these typechecks are very important: they add L < L1 to the constraint graph
     coq.typecheck Decl _ ok,
     coq.typecheck DeclSym _ ok,
-    @udecl! [L, L1] ff [lt L L1] tt =>
+    @udecl! [L, L1] ff [lt L L1] tt ==>
       coq.env.add-const MapType Decl _ @transparent! _,
-    @udecl! [L, L1] ff [lt L L1] tt =>
       coq.env.add-const MapTypeSym DeclSym _ @transparent! _.
 }}.
-Elpi Typecheck.
 
 Elpi Query lp:{{
   coq.univ.new U,
   coq.univ.variable U L,
-  coq.univ.super U U1,
+  coq.univ.alg-super U U1,
   % cannot have only one binder in the declaration because this line creates a fresh level:
   coq.univ.variable U1 L1,
-  map-classes all Classes,
-  map-classes low LowClasses,
+  map-class.all-of-kind all Classes,
+  map-class.all-of-kind low LowClasses,
   std.forall LowClasses (m\
     std.forall Classes (n\
       std.forall Classes (p\
@@ -102,25 +100,25 @@ Elpi Query lp:{{
 }}.
 
 Elpi Command genparamtype.
-Elpi Accumulate File util.
 Elpi Accumulate Db trocq.db.
-Elpi Accumulate File param_class.
+Elpi Accumulate File util.
+Elpi Accumulate File class.
 Elpi Accumulate lp:{{
   pred generate-param-type
     i:param-class, i:param-class, i:univ, i:univ.variable, i:univ.variable.
   generate-param-type (pc M N as Class) RClass U L L1 :-
-    map-class->string M MStr,
-    map-class->string N NStr,
+    map-class.to_string M MStr,
+    map-class.to_string N NStr,
     coq.univ-instance UI [L],
     coq.univ-instance UI1 [L1],
     coq.univ-instance UI2 [L, L1],
     coq.locate {calc ("Param" ^ MStr ^ NStr ^ ".BuildRel")} BuildRel,
     coq.locate
-      {calc ("Map" ^ MStr ^ "_Type" ^ {param-class->string RClass})} MapType,
+      {calc ("Map" ^ MStr ^ "_Type" ^ {param-class.to_string RClass})} MapType,
     coq.locate
-      {calc ("Map" ^ NStr ^ "_Type_sym" ^ {param-class->string RClass})}
+      {calc ("Map" ^ NStr ^ "_Type_sym" ^ {param-class.to_string RClass})}
       MapTypeSym,
-    coq.locate {calc ("Param" ^ {param-class->string RClass} ^ ".Rel")} R,
+    coq.locate {calc ("Param" ^ {param-class.to_string RClass} ^ ".Rel")} R,
     if (std.mem! [map2b, map3, map4] M) (
       UnivalentDecl = true,
       MapTypeF = (u\ app [pglobal MapType UI2, u]),
@@ -150,23 +148,22 @@ Elpi Accumulate lp:{{
         app [pglobal BuildRel UI1, sort (typ U), sort (typ U), pglobal R UI,
           MapTypeF Dummy, MapTypeSymF Dummy]
     ),
-    ParamType is "Param" ^ MStr ^ NStr ^ "_Type" ^ {param-class->string RClass},
+    ParamType is "Param" ^ MStr ^ NStr ^ "_Type" ^ {param-class.to_string RClass},
     % this typecheck is very important: it adds L < L1 to the constraint graph
     coq.typecheck Decl _ ok,
-    @udecl! [L, L1] ff [lt L L1] tt =>
-      coq.env.add-const ParamType Decl _ @transparent! Const,
+    (@udecl! [L, L1] ff [lt L L1] tt =>
+      coq.env.add-const ParamType Decl _ @transparent! Const),
     coq.elpi.accumulate _ "trocq.db" (clause _ _ (trocq.db.param-type Class RClass Const)).
 }}.
-Elpi Typecheck.
 
 Elpi Query lp:{{
   coq.univ.new U,
   coq.univ.variable U L,
-  coq.univ.super U U1,
+  coq.univ.alg-super U U1,
   % cannot have only one binder in the declaration because this line creates a fresh level:
   coq.univ.variable U1 L1,
-  map-classes all AllClasses,
-  map-classes low Classes__,
+  map-class.all-of-kind all AllClasses,
+  map-class.all-of-kind low Classes__,
   std.forall Classes__ (m\
     std.forall Classes__ (n\
       std.forall AllClasses (p\
