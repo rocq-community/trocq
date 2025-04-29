@@ -17,7 +17,7 @@ From elpi Require Import elpi.
 
 From Trocq.Elpi Extra Dependency "util.elpi" as util.
 From Trocq.Elpi Extra Dependency "class.elpi" as class.
-From Trocq.Elpi Extra Dependency "hierarchy-generation.elpi" as hierarchy_generation.
+From Trocq.Elpi.generation Extra Dependency "hierarchy.elpi" as hierarchy_generation.
 
 Set Universe Polymorphism.
 Unset Universe Minimization ToSet.
