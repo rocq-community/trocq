@@ -16,15 +16,13 @@ From elpi Require Import elpi.
 From Trocq Require Import HoTT_additions Hierarchy Param_Type Param_forall
   Param_arrow Database Param Param_paths.
 
- (* included to remove Elpi typechecker warnings *)
+From Trocq.Elpi Extra Dependency "util.elpi" as util.
+From Trocq.Elpi Extra Dependency "util-rocq.elpi" as util_rocq.
+From Trocq.Elpi Extra Dependency "annot.elpi" as annot.
+From Trocq.Elpi Extra Dependency "param-class-util.elpi" as param_class_util.
 From Trocq.Elpi.constraints Extra Dependency "simple-graph.elpi" as simple_graph.
 From Trocq.Elpi.constraints Extra Dependency "constraint-graph.elpi" as constraint_graph.
 From Trocq.Elpi.constraints Extra Dependency "constraints.elpi" as constraints.
-
-From Trocq.Elpi Extra Dependency "annot.elpi" as annot.
-From Trocq.Elpi Extra Dependency "util.elpi" as util.
-From Trocq.Elpi Extra Dependency "util-rocq.elpi" as util_rocq.
-From Trocq.Elpi Extra Dependency "param-class-util.elpi" as param_class_util.
 From Trocq.Elpi Extra Dependency "vernac.elpi" as vernac.
 
 Elpi Command Trocq.

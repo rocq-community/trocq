@@ -19,7 +19,6 @@ From Trocq.Elpi Extra Dependency "class.elpi" as class.
 From Trocq.Elpi Extra Dependency "util.elpi" as util.
 From Trocq.Elpi.generation Extra Dependency "param-prop.elpi" as param_prop_generation.
 
-Set Warnings "+elpi.typecheck".
 Set Universe Polymorphism.
 Unset Universe Minimization ToSet.
 
