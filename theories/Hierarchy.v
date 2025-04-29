@@ -222,10 +222,6 @@ Elpi Query lp:{{
   ).
 }}.
 
-(* Set Printing Universes. Print Module Param2a3. *)
-(* Set Printing Universes. Print forget_42b_41. *)
-(* Check forall (p : Param44.Rel nat nat), @paths (Param12a.Rel nat nat) p p. *)
-
 (* General projections *)
 
 Definition rel {A B} (R : Param00.Rel A B) := Param00.R A B R.
@@ -533,9 +529,6 @@ Elpi Query lp:{{
   ).
 }}.
 
-(* Check id_Param00. *)
-(* Check id_Param32b. *)
-
 (* symmetry property for Param *)
 
 Elpi Query lp:{{
@@ -636,9 +629,6 @@ Elpi Query lp:{{
   ).
 }}.
 
-(* Check id_Param00. *)
-(* Check id_Param32b. *)
-
 (* symmetry property for Param *)
 
 Elpi Query lp:{{
@@ -649,9 +639,6 @@ Elpi Query lp:{{
     )
   ).
 }}.
-
-(* Check Param33_sym.
-Check Param2a4_sym. *)
 
 Arguments map : simpl never.
 Arguments map_in_R : simpl never.
