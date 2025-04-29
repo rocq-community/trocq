@@ -11,10 +11,8 @@
 (*                            * see LICENSE file for the text of the license *)
 (*****************************************************************************)
 
-
 From Coq Require Import ssreflect.
 Require Import HoTT_additions Hierarchy.
-Require Import Hierarchy.
 
 Set Universe Polymorphism.
 Unset Universe Minimization ToSet.

@@ -12,10 +12,7 @@
 (*****************************************************************************)
 
 Require Import ssreflect.
-From elpi Require Export elpi.
-From Trocq Require Export
-  HoTT_additions Hierarchy Param_Type Param_forall Param_arrow Database Param
-  Param_paths Vernac.
+From Trocq Require Export HoTT_additions Hierarchy.
 
 Set Universe Polymorphism.
 

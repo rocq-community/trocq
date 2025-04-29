@@ -11,7 +11,7 @@
 (*                            * see LICENSE file for the text of the license *)
 (*****************************************************************************)
 
-From Coq Require Import ssreflect ssrfun ssrbool.
+From Coq Require Import ssreflect ssrbool.
 Require Import HoTT_additions Hierarchy.
 
 Set Universe Polymorphism.

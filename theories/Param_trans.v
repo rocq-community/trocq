@@ -12,7 +12,7 @@
 (*****************************************************************************)
 
 From Coq Require Import ssreflect.
-Require Import HoTT_additions Hierarchy Common.
+Require Import Common.
 
 Set Universe Polymorphism.
 Unset Universe Minimization ToSet.

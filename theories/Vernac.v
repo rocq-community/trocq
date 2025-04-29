@@ -11,10 +11,8 @@
 (*                            * see LICENSE file for the text of the license *)
 (*****************************************************************************)
 
-From Coq Require Import ssreflect.
 From elpi Require Import elpi.
-From Trocq Require Import HoTT_additions Hierarchy Param_Type Param_forall
-  Param_arrow Database Param Param_paths.
+From Trocq Require Import Param.
 
 From Trocq.Elpi Extra Dependency "util.elpi" as util.
 From Trocq.Elpi Extra Dependency "util-rocq.elpi" as util_rocq.
