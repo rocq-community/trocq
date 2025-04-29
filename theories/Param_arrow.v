@@ -67,7 +67,6 @@ Proof.
      (R_in_comap@{i} PA _ _ aR)^).
 Defined.
 
-
 (* (02a, 2b0) + funext -> 2b0 *)
 Definition Map2b_arrow@{i j k} `{Funext}
   {A A' : Type@{i}} (PA : Param02a.Rel@{i} A A')
@@ -126,7 +125,7 @@ Proof.
     (comap_in_R PA a' (comap PA a') 1)).
     exact: Prop_irrelevance.
   by elim/(ind_map PB): _ (fR _ _ _) / _.*)
-  Defined.
+Defined.
 
 (* Param_arrowMN : forall A A' AR B B' BR, ParamMN.Rel (A -> B) (A' -> B') *)
 
@@ -146,7 +145,3 @@ Elpi Query lp:{{
     )
   ).
 }}.
-
-(* Set Printing Universes. About Param2a1_arrow.
-Set Printing Universes. About Param2b1_arrow.
-Set Printing Universes. About Param33_arrow. *)

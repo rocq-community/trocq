@@ -76,8 +76,3 @@ Elpi Query lp:{{
     )
   ).
 }}.
-
-(* Set Printing Universes. About Param00_Type40.
-Set Printing Universes. About Param12a_Type31.
-Set Printing Universes. About Param30_Type44.
-Set Printing Universes. About Param44_Type44. *)

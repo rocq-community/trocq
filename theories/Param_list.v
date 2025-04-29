@@ -47,7 +47,6 @@ Definition map_in_R_list (A A' : Type) (AR : Param2a0.Rel A A') :
           end) l
       end.
 
-
 Definition R_in_map_list (A A' : Type) (AR : Param2b0.Rel A A') :
   forall (l : list A) (l' : list A'), listR A A' AR l l' -> map_list A A' AR l = l' :=
     fix F l l' lR :=
@@ -146,7 +145,6 @@ Proof.
     + exact (Map2a_list A' A (Param2a2a_sym _ _ AR)).
 Defined.
 
-
 Definition Param42b_list (A A' : Type) (AR : Param42b.Rel A A') : Param42b.Rel (list A) (list A').
 Proof.
   unshelve econstructor.
@@ -173,7 +171,6 @@ Proof.
     + exact (Map3_list A' A (Param33_sym _ _ AR)).
 Defined.
 
-
 Definition Param44_list (A A' : Type) (AR : Param44.Rel A A') : Param44.Rel (list A) (list A').
 Proof.
   unshelve econstructor.
@@ -183,7 +180,6 @@ Proof.
     + apply listR_sym.
     + exact (Map4_list A' A (Param44_sym _ _ AR)).
 Defined.
-
 
 Definition Param_nil : forall (A A' : Type) (AR : Param00.Rel A A'),
  listR A A' AR (@nil A) (@nil A') := @nilR.

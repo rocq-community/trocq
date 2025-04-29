@@ -77,7 +77,6 @@ unshelve econstructor; first exact: EmptyR.
 - constructor; exact map_Empty.
 Defined.
 
-
 Definition Param10_Empty : Param10.Rel Empty Empty.
 Proof.
 unshelve econstructor; first exact: EmptyR.

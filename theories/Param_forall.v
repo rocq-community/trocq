@@ -168,7 +168,3 @@ Elpi Query lp:{{
     )
   ).
 }}.
-
-(* Set Printing Universes. About Param2a1_forall.
-Set Printing Universes. About Param2b1_forall.
-Set Printing Universes. About Param33_forall. *)

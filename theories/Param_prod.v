@@ -22,6 +22,7 @@ Inductive prodR
     | pairR a a' (aR : AR a a') b b' (bR : BR b b') : prodR AR BR (a, b) (a', b').
 
 Arguments pairR {A A' AR B B' BR} a a' aR b b' bR.
+
 (*  *)
 
 Definition prod_map
@@ -77,16 +78,6 @@ Definition prod_R_in_map
 
 (*  *)
 
-Definition ap2 : forall {A B C : Type} {a a' : A} {b b' : B} (f : A -> B -> C),
-  a = a' -> b = b' -> f a b = f a' b' :=
-    fun A B C a a' b b' f e1 e2 =>
-      match e1 with
-      | idpath =>
-        match e2 with
-        | idpath => idpath
-        end
-      end.
-
 Definition prod_R_in_mapK
   (A A' : Type) (AR : Param40.Rel A A') (B B' : Type) (BR : Param40.Rel B B') :
     forall p p' (r : prodR AR BR p p'),
@@ -95,6 +86,8 @@ Proof.
 intros p p' []; rewrite /prod_R_in_map/=.
 by elim/(ind_map AR): _; elim/(ind_map BR): _.
 Qed.
+
+(*  *)
 
 Definition Map0_prod A A' (AR : Param00.Rel A A') B B' (BR : Param00.Rel B B') :
   Map0.Has (prodR AR BR).

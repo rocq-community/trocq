@@ -99,7 +99,6 @@ Definition option_map_in_R :
         end
       end.
 
-
 Definition option_R_in_map :
   forall (A A' : Type) (AR : Param2b0.Rel A A')
          (oa : option A) (oa' : option A'),

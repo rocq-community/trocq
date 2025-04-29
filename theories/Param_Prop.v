@@ -35,11 +35,6 @@ Elpi Accumulate File class.
 Elpi Accumulate File util.
 Elpi Accumulate File param_prop_generation.
 
-Set Printing Universes.
-Set Printing All.
-Print Param00.Rel.
-Eval compute in (@Map0.BuildHas Prop Prop (@Param00.Rel)).
-
 Elpi Query lp:{{
   % cannot have only one binder in the declaration because this line creates a fresh level:
   map-class.all-of-kind all Classes,

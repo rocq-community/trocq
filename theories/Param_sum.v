@@ -17,8 +17,6 @@ Require Import HoTT_additions Hierarchy.
 Set Universe Polymorphism.
 Unset Universe Minimization ToSet.
 
-Print sum.
-
 Inductive sumR
   A A' (AR : A -> A' -> Type) B B' (BR : B -> B' -> Type) : A + B -> A' + B' -> Type :=
     | inlR a a' (aR : AR a a') : sumR A A' AR B B' BR (inl a) (inl a')
