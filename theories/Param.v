@@ -26,6 +26,8 @@ From Trocq.Elpi.constraints Extra Dependency "simple-graph.elpi" as simple_graph
 From Trocq.Elpi.constraints Extra Dependency "constraint-graph.elpi" as constraint_graph.
 From Trocq.Elpi.constraints Extra Dependency "constraints.elpi" as constraints.
 From Trocq.Elpi.constraints Extra Dependency "constraints-impl.elpi" as constraints_impl.
+From Trocq.Elpi.generation Extra Dependency "pparam-type.elpi" as pparam_type_generation.
+From Trocq.Elpi Extra Dependency "tactic.elpi" as tactic.
 
 Set Universe Polymorphism.
 Unset Universe Minimization ToSet.
@@ -39,47 +41,7 @@ Elpi Command genpparamtype.
 Elpi Accumulate Db trocq.db.
 Elpi Accumulate File util.
 Elpi Accumulate File class.
-Elpi Accumulate lp:{{
-  pred generate-branch i:univ-instance, i:param-class, i:param-class, o:term.
-  generate-branch UI2 Class RClass (pglobal ParamType UI2) :-
-    coq.locate
-      {calc ("Param" ^ {param-class.to_string Class} ^ "_Type" ^ {param-class.to_string RClass})}
-      ParamType.
-
-  pred generate-match2
-    i:term, i:univ-instance, i:param-class, i:term, i:map-class, o:term.
-  generate-match2 RetType UI2 Class QVar P Match :-
-    map-class.all-of-kind all Classes, std.map Classes
-      (q\ b\ generate-branch UI2 Class (pc P q) b) Branches,
-    coq.locate "map_class" MapClass,
-    coq.univ-instance UI0 [],
-    Match = (match QVar (fun `_` (pglobal MapClass UI0) _\ RetType) Branches).
-
-  pred generate-match1
-    i:term, i:univ-instance, i:param-class, i:term, i:term, o:term.
-  generate-match1 RetType UI2 Class PVar QVar Match :-
-    map-class.all-of-kind all Classes, std.map Classes
-      (p\ b\ generate-match2 RetType UI2 Class QVar p b) Branches,
-    coq.locate "map_class" MapClass,
-    coq.univ-instance UI0 [],
-    Match = (match PVar (fun `_` (pglobal MapClass UI0) _\ RetType) Branches).
-
-  pred generate-pparam-type
-    i:univ.variable, i:univ.variable, i:param-class.
-  generate-pparam-type L L1 Class :-
-    coq.locate {calc ("Param" ^ {param-class.to_string Class} ^ ".Rel")} ParamRel,
-    coq.univ-instance UI1 [L1],
-    RetType = app [pglobal ParamRel UI1, sort (typ U), sort (typ U)],
-    coq.univ-instance UI2 [L, L1],
-    (pi p q\ generate-match1 RetType UI2 Class p q (MatchF p q)),
-    Decl = (fun `p` {{ map_class }} p\ fun `q` {{ map_class }} q\ MatchF p q),
-    % this typecheck is very important: it adds L < L1 to the constraint graph
-    coq.typecheck Decl _ ok,
-    PParamType is "PParam" ^ {param-class.to_string Class} ^ "_Type",
-    (@udecl! [L, L1] ff [lt L L1] tt =>
-      coq.env.add-const PParamType Decl _ @transparent! Const),
-    coq.elpi.accumulate _ "trocq.db" (clause _ _ (trocq.db.pparam-type Class Const)).
-  }}.
+Elpi Accumulate File pparam_type_generation.
 
 Elpi Query lp:{{
   coq.univ.new U,
@@ -107,66 +69,6 @@ Elpi Accumulate File constraint_graph.
 Elpi Accumulate File constraints_impl.
 Elpi Accumulate File param_class_util.
 Elpi Accumulate File param.
-
-Elpi Accumulate lp:{{
-  :before "coq-assign-evar-raw"
-  evar _ _ _ :- !.
-
-  :before "coq-assign-evar-refined"
-  evar _ _ _ :- !.
-}}.
-
-Elpi Accumulate lp:{{
-  solve InitialGoal NewGoals :- debug dbg.full => std.do! [
-    InitialGoal = goal _Context _ G _ [],
-    std.assert-ok! (coq.typecheck G Ty) "goal ill-typed",
-    util.when-debug dbg.full (coq.say "goal" G),
-    translate-goal Ty G (pc map0 map1) G' GR,
-    util.when-debug dbg.full (coq.say "trocq:" G "~" G' "by" GR),
-    FinalProof = {{ @comap lp:G lp:G' lp:GR (_ : lp:G') }},
-    util.when-debug dbg.full (coq.say FinalProof),
-
-    std.assert-ok! (coq.elaborate-skeleton FinalProof G EFinalProof) "proof elaboration error",
-    std.assert-ok! (coq.typecheck EFinalProof G2) "proof typechecking error",
-    std.assert-ok! (coq.unify-leq G2 G) "goal unification error",
-    refine.no_check EFinalProof InitialGoal NewGoals
-  ].
-
-  pred translate-goal i:term, i:term, i:param-class, o:term, o:term.
-  translate-goal Ty G (pc M N) G' GR' :- std.do! [
-    cstr.init,
-    if (Ty = sort (typ _))
-      (T = (app [pglobal (const {trocq.db.ptype}) _, {trocq.db.map-class->term M}, {trocq.db.map-class->term N}]))
-      (T = (app [pglobal (const {trocq.db.pprop}) _, {trocq.db.map-class->term M}, {trocq.db.map-class->term N}])),
-    % first annotate the initial goal with fresh parametricity class variables
-    term->annot-term G AG,
-    util.when-debug dbg.steps (
-      coq.say "will translate" AG "at level" T,
-      coq.say "***********************************************************************************"
-    ),
-    % generate the associated goal G' and witness GR
-    param AG T G' GR,
-    util.when-debug dbg.steps (
-      coq.say "***********************************************************************************",
-      coq.say "after translation:",
-      coq.say "goal:" G',
-      coq.say "proof:" GR,
-      coq.say "***********************************************************************************"
-    ),
-    % reduce the graph, so the variables all become ground in the terms
-    cstr.reduce-graph,
-    % now we can remove the weaken placeholders and replace them with real weakening functions
-    % or nothing if it is weaken α α
-    param.subst-weaken GR GR',
-    util.when-debug dbg.steps (
-      coq.say "***********************************************************************************",
-      coq.say "after reduction:",
-      coq.say "goal:" {coq.term->string G'},
-      coq.say "proof:" {coq.term->string GR'},
-      coq.say "***********************************************************************************"
-    )
-    % no need to remove the remaining annotations because they are invisible modulo conversion
-  ].
-}}.
+Elpi Accumulate File tactic.
 
 Tactic Notation "trocq" := elpi trocq.
