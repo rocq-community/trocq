@@ -85,3 +85,8 @@ delete A [X|Xs] [X|Xs'] :- delete A Xs Xs'.
 delete _ [] [].
 
 } % util
+
+pred std.string.list->set i:list string, o:std.string.set.
+std.string.list->set [] Empty :- std.string.set.empty Empty.
+std.string.list->set [S|Rest] Set :-
+  std.string.set.add S {std.string.list->set Rest} Set.

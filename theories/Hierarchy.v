@@ -16,6 +16,7 @@ Require Import HoTT_additions Database.
 From elpi Require Import elpi.
 
 From Trocq.Elpi Extra Dependency "util.elpi" as util.
+From Trocq.Elpi Extra Dependency "util-rocq.elpi" as util_rocq.
 From Trocq.Elpi Extra Dependency "class.elpi" as class.
 From Trocq.Elpi.generation Extra Dependency "hierarchy.elpi" as hierarchy_generation.
 
@@ -112,6 +113,7 @@ Register paths as trocq.paths.
 Elpi Command genhierarchy.
 Elpi Accumulate Db trocq.db.
 Elpi Accumulate File util.
+Elpi Accumulate File util_rocq.
 Elpi Accumulate File class.
 
 Elpi Query lp:{{
@@ -172,29 +174,14 @@ Elpi genhierarchy.
 (* Record Weakening *)
 (********************)
 
-Coercion forgetMap43@{i}
-  {A B : Type@{i}} {R : A -> B -> Type@{i}} (m : Map4.Has@{i} R) : Map3.Has@{i} R :=
-    @Map3.BuildHas A B R (@Map4.map A B R m) (@Map4.map_in_R A B R m) (@Map4.R_in_map A B R m).
-
-Coercion forgetMap32a@{i}
-  {A B : Type@{i}} {R : A -> B -> Type@{i}} (m : Map3.Has@{i} R) : Map2a.Has@{i} R :=
-    @Map2a.BuildHas A B R (@Map3.map A B R m) (@Map3.map_in_R A B R m).
-
-Coercion forgetMap32b@{i}
-  {A B : Type@{i}} {R : A -> B -> Type@{i}} (m : Map3.Has@{i} R) : Map2b.Has@{i} R :=
-    @Map2b.BuildHas A B R (@Map3.map A B R m) (@Map3.R_in_map A B R m).
-
-Coercion forgetMap2a1@{i}
-  {A B : Type@{i}} {R : A -> B -> Type@{i}} (m : Map2a.Has@{i} R) : Map1.Has@{i} R :=
-    @Map1.BuildHas A B R (@Map2a.map A B R m).
-
-Coercion forgetMap2b1@{i}
-  {A B : Type@{i}} {R : A -> B -> Type@{i}} (m : Map2b.Has@{i} R) : Map1.Has@{i} R :=
-    @Map1.BuildHas A B R (@Map2b.map A B R m).
-
-Coercion forgetMap10@{i}
-  {A B : Type@{i}} {R : A -> B -> Type@{i}} (m : Map1.Has@{i} R) : Map0.Has@{i} R :=
-    @Map0.BuildHas A B R.
+Elpi Query lp:{{
+  std.forall {map-class.all-of-kind all} m\ sigma SubClasses\
+    map-class.weakenings-from m SubClasses,
+    std.forall SubClasses m'\ sigma Name GR GR'\
+     trocq.db.map->class m GR, trocq.db.map->class m' GR',
+     map-class.add-2-suffix "" m m' "forgetMap" Name,
+     util.add-named-coe Name GR GR' _.
+}}.
 
 Elpi Query lp:{{
   std.forall {param-class.all-of-kind all} generate-forget.

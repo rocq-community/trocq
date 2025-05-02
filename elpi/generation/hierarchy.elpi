@@ -37,101 +37,28 @@ generate-module (pc M N as Class) :-
         end-record)))),
   (@keep-alg-univs! => coq.typecheck-indt-decl RelDecl _),
   (@primitive! => @udecl! [L] ff [] tt ==> coq.env.add-indt RelDecl TrocqInd,coq.env.indt TrocqInd _ _ _ _ [TrocqBuild] _),
-  Rel = indt TrocqInd,
   coq.env.projections TrocqInd
     [some CR, some CovariantProj, some ContravariantProj],
-  % add R to database for later use
-  R = const CR,
+  % add record to the database for later use
   coq.elpi.accumulate _ "trocq.db"
     (clause _ (after "default-r") (trocq.db.r Class CR)),
   coq.elpi.accumulate execution-site "trocq.db"
     (clause _ _ (trocq.db.rel Class (indt TrocqInd) (indc TrocqBuild)
-      (const CR) (const CovariantProj) (const ContravariantProj))),
-  % generate projections on the covariant subrecord
-  map-class.fields M MFields,
-  CovariantSubRecord = indt CovariantSubRecordIndt,
-  coq.env.projections CovariantSubRecordIndt MSomeProjs,
-  Covariant = const CovariantProj,
-  std.forall2 MFields MSomeProjs (field-name\ some-pr\ sigma Decl Pr\
-    some-pr = some Pr,
-    Decl =
-      (fun `A` (sort (typ U)) a\ fun `B` (sort (typ U)) b\ fun `P` (app [pglobal Rel UI, a, b]) p\
-        app [pglobal (const Pr) UI, a, b,
-          app [pglobal R UI, a, b, p], app [pglobal Covariant UI, a, b, p]]),
-    coq.typecheck Decl _ _,
-    @udecl! [L] ff [] tt => coq.env.add-const field-name Decl _ @transparent! _
-  ),
-  % generate projections on the contravariant subrecord
-  map-class.cofields N NCoFields,
-  Contravariant = const ContravariantProj,
-  ContravariantSubRecord = indt ContravariantSubRecordIndt,
-  coq.env.projections ContravariantSubRecordIndt NSomeProjs,
-  std.forall2 NCoFields NSomeProjs (field-name\ some-pr\ sigma Decl Pr\
-    some-pr = some Pr,
-    Decl =
-      (fun `A` (sort (typ U)) a\ fun `B` (sort (typ U)) b\
-        fun `P` (app [pglobal Rel UI, a, b]) p\
-          app [pglobal (const Pr) UI, b, a,
-            app [pglobal SymRel UI, a, b, app [pglobal R UI, a, b, p]],
-            app [pglobal Contravariant UI, a, b, p]]),
-    coq.typecheck Decl _ _,
-    @udecl! [L] ff [] tt => coq.env.add-const field-name Decl _ @transparent! _
-  ).
+      (const CR) (const CovariantProj) (const ContravariantProj))).
 
 % Generate 2 functions of weakening per possible weakening:
 %  one on the left and one on the right, if possible
 pred generate-forget i:param-class.
-generate-forget (pc M N as Class) :-
-  coq.univ.new U,
-  coq.univ.variable U L,
-  coq.univ-instance UI [L],
-  trocq.db.map->class M MGR,
-  trocq.db.map->class N NGR,
-  trocq.db.rel Class RelMN _ RMN CovariantMN ContravariantMN,
-  % covariant weakening
-  std.forall {map-class.weakenings-from M} (m1\
-    sigma BuildRelM1N ForgetMapM Decl ForgetName ForgetCst M1GR RelM1N\
+generate-forget Class :-
+  trocq.db.rel Class RelMN _ _ _ _,
+  std.forall {param-class.weakenings-from Class} (c\
+    sigma ForgetName RelMN'\
     std.do! [
-      trocq.db.map->class m1 M1GR,
-      trocq.db.rel (pc m1 N) RelM1N BuildRelM1N _ _ _,
-      coq.coercion.db-for (grefclass MGR) (grefclass M1GR) [pr ForgetMapM _],
-      Decl =
-        (fun `A` (sort (typ U)) a\ fun `B` (sort (typ U)) b\
-          fun `P` (app [pglobal RelMN UI, a, b]) p\
-            app [pglobal BuildRelM1N UI, a, b, app [pglobal RMN UI, a, b, p],
-              app [pglobal ForgetMapM UI, a, b, app [pglobal RMN UI, a, b, p],
-                app [pglobal CovariantMN UI, a, b, p]],
-              app [pglobal ContravariantMN UI, a, b, p]]),
-      param-class.add-2-suffix "_" Class (pc m1 N) "forget_" ForgetName,
-      coq.typecheck Decl _ _,
-      @udecl! [L] ff [] tt =>
-        coq.env.add-const ForgetName Decl _ @transparent! ForgetCst,
-      @global! => coq.coercion.declare
-        (coercion (const ForgetCst) 2 RelMN (grefclass RelM1N))
-  ]),
-  % contravariant weakening
-  SymRel = {trocq.db.sym-rel},
-  std.forall {map-class.weakenings-from N} (n1\
-    sigma BuildRelMN1 ForgetMapN Decl ForgetName ForgetCst N1GR RelMN1\
-    std.do! [
-      trocq.db.map->class n1 N1GR,
-      trocq.db.rel (pc M n1) RelMN1 BuildRelMN1 _ _ _,
-      coq.coercion.db-for (grefclass NGR) (grefclass N1GR) [pr ForgetMapN _],
-      Decl =
-        (fun `A` (sort (typ U)) a\ fun `B` (sort (typ U)) b\
-          fun `P` (app [pglobal RelMN UI, a, b]) p\
-            app [pglobal BuildRelMN1 UI, a, b, app [pglobal RMN UI, a, b, p],
-              app [pglobal CovariantMN UI, a, b, p],
-              app [pglobal ForgetMapN UI, b, a,
-                app [pglobal SymRel UI, a, b, app [pglobal RMN UI, a, b, p]],
-                app [pglobal ContravariantMN UI, a, b, p]]]),
-      param-class.add-2-suffix "_" Class (pc M n1) "forget_" ForgetName,
-      coq.typecheck Decl _ _,
-      @udecl! [L] ff [] tt =>
-        coq.env.add-const ForgetName Decl _ @transparent! ForgetCst,
-      @global! => coq.coercion.declare
-        (coercion (const ForgetCst) 2 RelMN (grefclass RelMN1))
-  ]).
+      param-class.add-2-suffix "_" Class c "forget_" ForgetName,
+      trocq.db.rel c RelMN' _ _ _ _,
+      util.add-named-coe ForgetName RelMN RelMN' _
+    ]
+  ).
 
 pred generate-id-param i:param-class, i:univ, i:univ.variable.
 generate-id-param (pc M N as Class) U L :-

@@ -46,6 +46,14 @@ to_string map2b "2b".
 to_string map3  "3".
 to_string map4  "4".
 
+pred add-suffix i:map-class, i:string, o:string.
+add-suffix Class P S :- S is P ^ {map-class.to_string Class}.
+
+pred add-2-suffix i:string,
+  i:map-class, i:map-class, i:string, o:string.
+add-2-suffix Sep Class1 Class2 P S :-
+   S is P ^ {map-class.to_string Class1} ^ Sep ^ {map-class.to_string Class2}.
+
 % names of the fields contained in a witness of a given level
 pred fields i:map-class, o:list string.
 fields map0  [].
@@ -197,13 +205,18 @@ pred weakenings-from i:param-class, o:list param-class.
 weakenings-from (pc M N) Classes :-
   map-class.weakenings-from M Ms,
   map-class.weakenings-from N Ns,
-  map-class.product Ms Ns Classes.
+  map-class.product [M] Ns MClasses,
+  map-class.product Ms [N] NClasses,
+  std.flatten [MClasses, NClasses] Classes.
 
 pred weakenings-to i:param-class, o:list param-class.
 weakenings-to (pc M N) Classes :-
   map-class.weakenings-to M Ms,
   map-class.weakenings-to N Ns,
-  map-class.product Ms Ns Classes.
+  map-class.product Ms Ns Classes,
+  map-class.product [M] Ns MClasses,
+  map-class.product Ms [N] NClasses,
+  std.flatten [MClasses, NClasses] Classes.
 
 pred all-weakenings-from i:param-class, o:list param-class.
 all-weakenings-from (pc M N) Classes :-
