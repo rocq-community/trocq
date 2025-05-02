@@ -146,20 +146,11 @@ Elpi Query lp:{{
 Elpi Accumulate File hierarchy_generation.
 Elpi Accumulate lp:{{
   main-interp [] _ :-
-    coq.univ.new U,
-    coq.univ.variable U L,
-
-    map-class.all-of-kind all Classes,
-
-    std.forall Classes (m\
-      std.forall Classes (n\
-        sigma Class ModuleName\
-          Class = pc m n,
-          param-class.add-suffix Class "Param" ModuleName,
-          coq.env.begin-module ModuleName none,
-          generate-module Class U L,
-          coq.env.end-module _
-      )
+    std.forall {param-class.all-of-kind all} (Class\ sigma ModuleName\
+      param-class.add-suffix Class "Param" ModuleName,
+      coq.env.begin-module ModuleName none,
+      generate-module Class,
+      coq.env.end-module _
     ).
 }}.
 
@@ -167,17 +158,11 @@ Elpi Accumulate lp:{{
 #[synterp] Elpi Accumulate File class.
 #[synterp] Elpi Accumulate lp:{{
   main-synterp [] _ :-
-    map-class.all-of-kind all Classes,
+    std.forall {param-class.all-of-kind all} (Class\ sigma ModuleName\
+      param-class.add-suffix Class "Param" ModuleName,
+      coq.env.begin-module ModuleName none,
 
-    std.forall Classes (m\
-      std.forall Classes (n\
-        sigma Class ModuleName\
-          Class = pc m n,
-          param-class.add-suffix Class "Param" ModuleName,
-          coq.env.begin-module ModuleName none,
-
-          coq.env.end-module _
-      )
+      coq.env.end-module _
     ).
 }}.
 
@@ -212,14 +197,7 @@ Coercion forgetMap10@{i}
     @Map0.BuildHas A B R.
 
 Elpi Query lp:{{
-  coq.univ.new U,
-  coq.univ.variable U L,
-  map-class.all-of-kind all Classes,
-  std.forall Classes (m\
-    std.forall Classes (n\
-      generate-forget (pc m n) U L
-    )
-  ).
+  std.forall {param-class.all-of-kind all} generate-forget.
 }}.
 
 (* General projections *)

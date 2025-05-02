@@ -16,8 +16,10 @@
 % - a covariant (A to B) instance of one of the classes of Map listed above;
 % - a contravariant (B to A) instance.
 % Projections are also generated so that all fields are accessible from the top record.
-pred generate-module i:param-class, i:univ, i:univ.variable.
-generate-module (pc M N as Class) U L :-
+pred generate-module i:param-class.
+generate-module (pc M N as Class) :-
+  coq.univ.new U,
+  coq.univ.variable U L,
   % generate record
   coq.univ-instance UI [L],
   trocq.db.map->class M CovariantSubRecord,
@@ -78,8 +80,10 @@ generate-module (pc M N as Class) U L :-
 
 % Generate 2 functions of weakening per possible weakening:
 %  one on the left and one on the right, if possible
-pred generate-forget i:param-class, i:univ, i:univ.variable.
-generate-forget (pc M N as Class) U L :-
+pred generate-forget i:param-class.
+generate-forget (pc M N as Class) :-
+  coq.univ.new U,
+  coq.univ.variable U L,
   coq.univ-instance UI [L],
   trocq.db.map->class M MGR,
   trocq.db.map->class N NGR,

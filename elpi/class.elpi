@@ -168,6 +168,17 @@ type pc map-class -> map-class -> param-class.
 
 namespace param-class {
 
+pred all-of-kind o:class-kind, o:list param-class.
+all-of-kind high ParamClasses :-
+  map-class.all-of-kind all AllMapClasses,
+  map-class.all-of-kind high HighMapClasses,
+  map-class.product HighMapClasses AllMapClasses ParamClasses1,
+  map-class.product AllMapClasses HighMapClasses ParamClasses2,
+  std.append ParamClasses1 ParamClasses2 ParamClasses.
+all-of-kind Kind ParamClasses :-
+  map-class.all-of-kind Kind MapClasses,
+  map-class.product MapClasses MapClasses ParamClasses.
+
 pred to_string i:param-class, o:string.
 to_string (pc M N) S :-
   S is {map-class.to_string M} ^ {map-class.to_string N}.
