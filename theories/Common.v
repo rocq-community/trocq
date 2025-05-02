@@ -12,7 +12,7 @@
 (*****************************************************************************)
 
 Require Import ssreflect.
-From Trocq Require Export HoTT_additions Hierarchy.
+From Trocq Require Export HoTT_compatibility Hierarchy.
 
 Set Universe Polymorphism.
 

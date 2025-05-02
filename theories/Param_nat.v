@@ -12,7 +12,7 @@
 (*****************************************************************************)
 
 From Coq Require Import ssreflect ssrbool.
-Require Import HoTT_additions Hierarchy.
+Require Import HoTT_compatibility Hierarchy.
 
 Set Universe Polymorphism.
 Unset Universe Minimization ToSet.

@@ -14,7 +14,7 @@
 From elpi Require Import elpi.
 From Coq Require Import ssreflect.
 Require Export Database.
-Require Import HoTT_additions Hierarchy.
+Require Import HoTT_compatibility Hierarchy.
 Require Export Param_Type Param_arrow Param_forall.
 
 From Trocq.Elpi Extra Dependency "annot.elpi" as annot.

@@ -4,7 +4,7 @@
 -R theories/ Trocq
 -R elpi/ Trocq.Elpi
 
-theories/HoTT_additions.v
+theories/HoTT_compatibility.v
 theories/Hierarchy.v
 theories/Param_Type.v
 theories/Param_forall.v

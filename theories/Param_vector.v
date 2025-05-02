@@ -12,7 +12,7 @@
 (*****************************************************************************)
 
 From Coq Require Import ssreflect.
-Require Import HoTT_additions Hierarchy Param_nat.
+Require Import HoTT_compatibility Hierarchy Param_nat.
 Set Asymmetric Patterns.
 
 Set Universe Polymorphism.

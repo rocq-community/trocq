@@ -12,7 +12,7 @@
 (*****************************************************************************)
 
 From Coq Require Import ssreflect.
-Require Import HoTT_additions Database.
+Require Import HoTT_compatibility Database.
 From elpi Require Import elpi.
 
 From Trocq.Elpi Extra Dependency "util.elpi" as util.
@@ -107,6 +107,9 @@ Definition weaken@{i} (m n m' n' : map_class) {A : Type@{i}} (a : A) : A := a.
 Register PType as trocq.ptype.
 Register PProp as trocq.pprop.
 Register weaken as trocq.weaken.
+
+Definition sym_rel@{i} {A B : Type@{i}} (R : A -> B -> Type@{i}) := fun b a => R a b.
+
 Register sym_rel as trocq.sym_rel.
 Register paths as trocq.paths.
 
