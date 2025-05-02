@@ -1,28 +1,28 @@
 -arg -indices-matter
 -arg -w -arg +elpi.typechecker
 
--R theories/ Trocq
+-R std/ Trocq
 -R elpi/ Trocq.Elpi
 
-theories/HoTT_compatibility.v
-theories/Hierarchy.v
-theories/Param_Type.v
-theories/Param_forall.v
-theories/Param_arrow.v
-theories/Common.v
-theories/Param_trans.v
-theories/Database.v
-theories/Param.v
-theories/Trocq.v
-theories/Vernac.v
-theories/Param_bool.v
-theories/Param_nat.v
-theories/Param_paths.v
-theories/Param_sigma.v
-theories/Param_prod.v
-theories/Param_sum.v
-theories/Param_option.v
-theories/Param_vector.v
-theories/Param_Empty.v
-theories/Param_list.v
-theories/Param_Prop.v
+std/HoTT_compatibility.v
+std/Hierarchy.v
+std/Param_Type.v
+std/Param_forall.v
+std/Param_arrow.v
+std/Common.v
+std/Param_trans.v
+std/Database.v
+std/Param.v
+std/Trocq.v
+std/Vernac.v
+std/Param_bool.v
+std/Param_nat.v
+std/Param_paths.v
+std/Param_sigma.v
+std/Param_prod.v
+std/Param_sum.v
+std/Param_option.v
+std/Param_vector.v
+std/Param_Empty.v
+std/Param_list.v
+std/Param_Prop.v
