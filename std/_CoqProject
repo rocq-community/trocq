@@ -1,0 +1,28 @@
+-arg -indices-matter
+-arg -w -arg +elpi.typechecker
+
+-R . Trocq
+-R ../elpi/ Trocq.Elpi
+
+./HoTT_compatibility.v
+./Hierarchy.v
+./Param_Type.v
+./Param_forall.v
+./Param_arrow.v
+./Common.v
+./Param_trans.v
+./Database.v
+./Param.v
+./Trocq.v
+./Vernac.v
+./Param_bool.v
+./Param_nat.v
+./Param_paths.v
+./Param_sigma.v
+./Param_prod.v
+./Param_sum.v
+./Param_option.v
+./Param_vector.v
+./Param_Empty.v
+./Param_list.v
+./Param_Prop.v
