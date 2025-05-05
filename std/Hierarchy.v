@@ -573,7 +573,7 @@ Proof.
   - exact (fun A B e => inv_V e).
 Defined.
 
-(* generate id_ParamMN : forall A, ParamMN.Rel A A for all M N *)
+(* generate Prop_id_ParamMN : forall A, ParamMN.Rel A A for all M N *)
 
 Elpi Query lp:{{
   map-class.all-of-kind all Classes,
@@ -584,7 +584,7 @@ Elpi Query lp:{{
   ).
 }}.
 
-(* symmetry property for Param *)
+(* symmetry property for Prop Param *)
 
 Elpi Query lp:{{
   map-class.all-of-kind all Classes,
