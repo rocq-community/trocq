@@ -66,12 +66,12 @@ generate-id-param (pc M N as Class) U L :-
   map-class.to_string N NStr,
   coq.univ-instance UI [L],
   trocq.db.rel Class _ BuildRel _ _ _,
-  Paths = {trocq.db.paths},
+  Paths = {trocq.db.paths UI},
   coq.locate {calc ("id_Map" ^ MStr)} IdMap,
   coq.locate {calc ("id_Map" ^ NStr ^ "_sym")} IdMapSym,
   Decl =
     (fun `A` (sort (typ U)) a\
-      app [pglobal BuildRel UI, a, a, app [global Paths, a],
+      app [pglobal BuildRel UI, a, a, app [Paths, a],
         app [pglobal IdMap UI, a],
         app [pglobal IdMapSym UI, a]]),
   IdParam is "id_Param" ^ MStr ^ NStr,
@@ -103,7 +103,7 @@ generate-prop-id-param (pc M N as Class) :-
   map-class.to_string M MStr,
   map-class.to_string N NStr,
   trocq.db.rel Class _ BuildRelGR _ _ _,
-  Paths = {trocq.db.paths},
+  Paths = {trocq.db.paths _},
   coq.locate {calc ("Prop_id_Map" ^ MStr)} IdMapGR,
   coq.locate {calc ("Prop_id_Map" ^ NStr ^ "_sym")} IdMapSymGR,
   coq.env.global BuildRelGR BuildRel,
@@ -111,7 +111,7 @@ generate-prop-id-param (pc M N as Class) :-
   coq.env.global IdMapSymGR IdMapSym,
   Decl =
     (fun `A` (sort prop) a\
-      app [BuildRel, a, a, app [global Paths, a],
+      app [BuildRel, a, a, app [Paths, a],
         app [IdMap, a],
         app [IdMapSym, a]]),
   IdParam is "Prop_id_Param" ^ MStr ^ NStr,

@@ -127,7 +127,9 @@ Elpi Query lp:{{
   {{:gref lib:trocq.weaken}} = const Weaken,
   coq.elpi.accumulate _ "trocq.db" (clause _ _ (trocq.db.weaken Weaken)),
   coq.elpi.accumulate _ "trocq.db" (clause _ _ (trocq.db.sym-rel {{:gref lib:trocq.sym_rel}})),
-  coq.elpi.accumulate _ "trocq.db" (clause _ _ (trocq.db.paths {{:gref lib:trocq.paths}})),
+  coq.elpi.accumulate _ "trocq.db" (clause _ _ (pi UI\
+    trocq.db.paths UI (global {{:gref lib:trocq.paths}})
+  )),
 
   coq.elpi.accumulate _ "trocq.db" (clause _ _ (trocq.db.map->class map0 {{:gref lib:trocq.map0}})),
   coq.elpi.accumulate _ "trocq.db" (clause _ _ (trocq.db.map->class map1 {{:gref lib:trocq.map1}})),

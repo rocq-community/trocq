@@ -43,7 +43,17 @@ r C R :- var C, !,
 pred ptype o:constant.
 pred pprop o:constant.
 pred weaken o:constant.
-pred paths o:gref.
+
+% remark: to allow for conditional polymorphicity, `paths` is a predicate
+% outputing a term given a universe instance.
+%
+% For instance:
+% - when a non-polymorphic `path` is used (such `eq` as in Rocq's stdlib),
+%   the universe instance can be ignored and `global {{:gref lib.eq}}`
+%   returned.
+% - when a polymorphic `path` is used, the output can instead be:
+%     `pglobal {{:gref lib.path}} UI`
+pred paths i:univ-instance o:term.
 pred sym-rel o:gref.
 
 pred ptype-or-pprop i:term, o:constant.

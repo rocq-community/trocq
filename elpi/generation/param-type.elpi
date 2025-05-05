@@ -24,12 +24,12 @@ generate-fields map2a R RClass U L L1 [R, Map, MapInR] :-
   coq.univ-instance UI11 [L1, L1],
   Map = (fun `T` Type t\ t),
   (pi a\ coq.mk-app R [a] (RF a)),
-  coq.locate "paths" Paths,
+  Paths = {trocq.db.paths UI1},
   coq.locate "transport" Transport,
   coq.locate {calc ("id_Param" ^ {param-class.to_string RClass})} IdParam,
   MapInR =
     (fun `A` Type a\ fun `B` Type b\
-      fun `e` (app [global Paths, Type, a, b]) e\
+      fun `e` (app [Paths, Type, a, b]) e\
         app [pglobal Transport UI11, Type, RF a, a, b,
           e, app [pglobal IdParam UI, a]]).
 

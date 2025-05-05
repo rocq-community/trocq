@@ -7,14 +7,14 @@ generate-fields map2a R RClass [R, Map, MapInR] :- std.do! [
   Prop = sort prop,
   Map = (fun `T` Prop t\ t),
   (pi a\ coq.mk-app R [a] (RF a)),
-  coq.locate "paths" Paths,
+  Paths = {trocq.db.paths _},
   coq.locate "transport" Transport,
   coq.locate {calc ("id_Param" ^ {param-class.to_string RClass})} IdParam,
   coq.env.global Transport TransportTm,
   coq.env.global IdParam IdParamTm,
   MapInR =
     (fun `A` Prop a\ fun `B` Prop b\
-      fun `e` (app [global Paths, Prop, a, b]) e\
+      fun `e` (app [Paths, Prop, a, b]) e\
         app [TransportTm, Prop, RF a, a, b,
           e, app [IdParamTm, a]])
 ].
