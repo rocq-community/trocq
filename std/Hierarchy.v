@@ -299,19 +299,6 @@ Definition comap_ind@{i} {A A' : Type@{i}} {PA : Param04.Rel@{i} A A'}
     (P : forall (a : A), PA a a' -> Type@{i})  :
    P a aR -> P (comap PA a') (comap_in_R PA a' (comap PA a') idpath).
 Proof. by elim/(ind_comap PA): _ aR / _. Defined.
-(* Proof.
-apply (transport
-  (fun aR0 : PA a a' =>
-    P a aR0 -> P (comap PA a')
-                 (comap_in_R PA a' (comap PA a') idpath))
-  (R_in_comapK PA a' a aR)
-  (paths_rect A (comap PA a')
-  (fun (a0 : A) (e : comap PA a' = a0) =>
-   P a0 (comap_in_R PA a' a0 e) ->
-   P (comap PA a')
-    (comap_in_R PA a' (comap PA a') idpath)) idmap a
-  (R_in_comap PA a' a aR))).
-Defined. *)
 
 
 (* symmetry lemmas for Map *)

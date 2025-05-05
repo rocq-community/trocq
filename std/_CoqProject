@@ -4,6 +4,7 @@
 -R . Trocq
 -R ../elpi/ Trocq.Elpi
 
+generic/Database.v
 HoTT_compatibility.v
 Hierarchy.v
 Param_Type.v
@@ -11,7 +12,6 @@ Param_forall.v
 Param_arrow.v
 Common.v
 Param_trans.v
-Database.v
 Param.v
 Trocq.v
 Vernac.v
