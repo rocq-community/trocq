@@ -1,18 +1,25 @@
 {
+  stdenv,
   lib,
-  mkCoqDerivation,
-  coq,
-  coq-elpi,
   version ? null,
+  trocq-std,
+  trocq-examples,
 }:
 
-mkCoqDerivation {
-  pname = "trocq";
+stdenv.mkDerivation rec {
+  name = "trocq";
   inherit version;
 
-  makeFlags = [ "-C" "std" ];
+  dontUnpack = true;
 
-  propagatedBuildInputs = [
-    coq-elpi
-  ];
+  passthru = rec {
+    std = trocq-std;
+
+    variants = [
+      std
+    ];
+    examples = trocq-examples.passthru;
+  };
+
+  propagatedBuildInputs = passthru.variants;
 }

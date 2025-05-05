@@ -1,20 +1,19 @@
 {
+  stdenv,
   lib,
-  mathcomp,
-  mkCoqDerivation,
   trocq,
+  trocq-std-examples,
 }:
 
-with lib;
-mkCoqDerivation {
-  pname = "trocq-example";
+stdenv.mkDerivation rec {
+  name = "trocq-examples";
   inherit (trocq) version;
 
-  src = ../../../examples;
+  dontUnpack = true;
 
-  propagatedBuildInputs = [
-    trocq
-    mathcomp.ssreflect
-    mathcomp.algebra
-  ];
+  passthru = {
+    std = trocq-std-examples;
+  };
+
+  propagatedBuildInputs = lib.attrValues passthru;
 }
