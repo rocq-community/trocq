@@ -63,7 +63,6 @@ Proof. by move=> pa b; case: _ /. Defined.
 Reserved Notation "A <=> B" (at level 70, no associativity). 
 Notation "A <--> B" := ((A -> B) * (B -> A))%type (at level 70) : fibration_scope.
 Notation "A <->> B" := {f : A -> B & { g : B -> A & forall x, g (f x) = x}} (at level 70) : fibration_scope.
-Notation id := (fun x => x).
 Notation idmap := (fun x => x).
 
 Declare Scope path_scope.

@@ -123,7 +123,7 @@ Defined.
 Definition t0P A P (v : t A O) : P nil -> P v := match v in t _ m return
      (match m return t A m -> Type with
        O => fun v => P nil -> P v | S k => fun _ => Unit end) v
-   with nil => id | cons _ _ _ => tt end.
+   with nil => idmap | cons _ _ _ => tt end.
 
 Definition tSP A n P : (forall a (v : t A n), P (cons a v)) -> forall v, P v.
 Proof. by move=> Pn v; apply (transport P (tE _)^); apply Pn. Defined.

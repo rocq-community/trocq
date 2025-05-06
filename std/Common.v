@@ -27,13 +27,13 @@ Context {A B : Type@{i}} (f : A -> B) (g : B -> A).
 Definition toParam : Param40.Rel@{i} A B :=
   @Param40.BuildRel A B (graph f)
      (@Map4.BuildHas@{i} _ _ _ _
-       (fun _ _ => id) (fun _ _ => id) (fun _ _ _ => 1%path))
+       (fun _ _ => idmap) (fun _ _ => idmap) (fun _ _ _ => 1%path))
      (@Map0.BuildHas@{i} _ _ _).
 
 Definition toParamSym : Param04.Rel@{i} A B :=
   @Param04.BuildRel A B (sym_rel (graph g))
      (@Map0.BuildHas@{i} _ _ _)
-     (@Map4.BuildHas@{i} _ _ _ g (fun _ _ => id) (fun _ _ => id)
+     (@Map4.BuildHas@{i} _ _ _ g (fun _ _ => idmap) (fun _ _ => idmap)
         (fun _ _ _ => 1%path)).
 End Fun.
 End Fun.
@@ -62,14 +62,14 @@ Let section_in_retract b a (e : f a = b) : retract f b = a :=
 
 Definition toParam@{} : Param42b.Rel@{i} A B :=
   @Param42b.BuildRel A B (graph f)
-     (@Map4.BuildHas@{i} _ _ _ _ (fun _ _ => id) (fun _ _ => id)
+     (@Map4.BuildHas@{i} _ _ _ _ (fun _ _ => idmap) (fun _ _ => idmap)
         (fun _ _ _ => 1%path))
      (@Map2b.BuildHas@{i} _ _ _ _ section_in_retract).
 
 Definition toParamSym@{} : Param2b4.Rel@{i} B A :=
   @Param2b4.BuildRel B A (sym_rel (graph f))
      (@Map2b.BuildHas@{i} _ _ _ _ section_in_retract)
-     (@Map4.BuildHas@{i} _ _ _ _ (fun _ _ => id) (fun _ _ => id)
+     (@Map4.BuildHas@{i} _ _ _ _ (fun _ _ => idmap) (fun _ _ => idmap)
         (fun _ _ _ => 1%path)).
 
 End to.

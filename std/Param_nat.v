@@ -69,7 +69,7 @@ have @psi k l (e : Nat.eqb k l) : natR k l.
     by apply UIP_bool.
 Defined.
 
-Definition map_nat : nat -> nat := id.
+Definition map_nat : nat -> nat := idmap.
 
 Definition map_in_R_nat : forall {n n' : nat}, map_nat n = n' -> natR n n' :=
   fun n n' e =>

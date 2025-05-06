@@ -23,7 +23,7 @@ Inductive BoolR : Bool -> Bool -> Type :=
   | falseR : BoolR false false
   | trueR : BoolR true true.
 
-Definition map_Bool : Bool -> Bool := id.
+Definition map_Bool : Bool -> Bool := idmap.
 
 Definition map_in_R_Bool {b b' : Bool} (e : map_Bool b = b') : BoolR b b' :=
   match e with
