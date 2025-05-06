@@ -167,7 +167,7 @@ generate-param-forall (pc M N as Class) Ui Uj Li Lj Lk :-
   ),
   ParamForall is "Param" ^ MStr ^ NStr ^ "_forall",
   % this typecheck is very important: it adds L < L1 to the constraint graph
-  coq.typecheck Decl _ ok,
+  std.assert-ok! (coq.typecheck Decl _) "generate-param-forall: Decl is ill-typed",
   (@udecl! [Li, Lj, Lk] ff [le Li Lk, le Lj Lk] tt =>
     coq.env.add-const ParamForall Decl _ @transparent! Const),
   coq.elpi.accumulate _ "trocq.db" (clause _ (after "default-param-forall")

@@ -45,7 +45,7 @@ generate-pparam-type L L1 Class :-
   (pi p q\ generate-match1 RetType UI2 Class p q (MatchF p q)),
   Decl = (fun `p` {{ map_class }} p\ fun `q` {{ map_class }} q\ MatchF p q),
   % this typecheck is very important: it adds L < L1 to the constraint graph
-  coq.typecheck Decl _ ok,
+  std.assert-ok! (coq.typecheck Decl _) "generate-pparam-type: Decl is ill-typed",
   PParamType is "PParam" ^ {param-class.to_string Class} ^ "_Type",
   (@udecl! [L, L1] ff [lt L L1] tt =>
     coq.env.add-const PParamType Decl _ @transparent! Const),

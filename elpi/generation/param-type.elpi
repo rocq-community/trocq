@@ -54,8 +54,8 @@ generate-map-type M RClass U L L1 :-
     "Map" ^ {map-class.to_string M} ^ "_Type_sym" ^
     {param-class.to_string RClass},
   % these typechecks are very important: they add L < L1 to the constraint graph
-  coq.typecheck Decl _ ok,
-  coq.typecheck DeclSym _ ok,
+  std.assert-ok! (coq.typecheck Decl _) "generate-map-type: Decl ill-typed",
+  std.assert-ok! (coq.typecheck DeclSym _) "generate-map-type: DeclSym ill-typed",
   @udecl! [L, L1] ff [lt L L1] tt ==>
     coq.env.add-const MapType Decl _ @transparent! _,
     coq.env.add-const MapTypeSym DeclSym _ @transparent! _.
@@ -106,7 +106,7 @@ generate-param-type (pc M N as Class) RClass U L L1 :-
   ),
   ParamType is "Param" ^ MStr ^ NStr ^ "_Type" ^ {param-class.to_string RClass},
   % this typecheck is very important: it adds L < L1 to the constraint graph
-  coq.typecheck Decl _ ok,
+  std.assert-ok! (coq.typecheck Decl _) "generate-param-type: Decl is ill-typed",
   (@udecl! [L, L1] ff [lt L L1] tt =>
     coq.env.add-const ParamType Decl _ @transparent! Const),
   coq.elpi.accumulate _ "trocq.db" (clause _ _ (trocq.db.param-type Class RClass Const)).
