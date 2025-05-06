@@ -13,5 +13,5 @@
 
 From elpi Require Export elpi.
 From Trocq Require Export
-  HoTT_compatibility Hierarchy Param_Type Param_forall Param_arrow Database Param
+  Hierarchy Param_Type Param_forall Param_arrow Database Param
   Param_paths Vernac Common Param_nat Param_trans Param_bool Param_sum Param_Empty.
