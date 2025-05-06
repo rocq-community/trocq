@@ -12,7 +12,6 @@
 (*****************************************************************************)
 
 From elpi Require Import elpi.
-From Coq Require Import ssreflect.
 Require Import HoTT_compatibility Hierarchy Database.
 
 From Trocq.Elpi Extra Dependency "util.elpi" as util.
