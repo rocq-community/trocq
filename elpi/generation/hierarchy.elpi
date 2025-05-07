@@ -75,7 +75,7 @@ generate-id-param (pc M N as Class) U L :-
         app [pglobal IdMap UI, a],
         app [pglobal IdMapSym UI, a]]),
   IdParam is "id_Param" ^ MStr ^ NStr,
-  coq.typecheck Decl _ _,
+  std.assert-ok! (coq.typecheck Decl _) "generate-id-param: Decl is ill-typed",
   @udecl! [L] ff [] tt => coq.env.add-const IdParam Decl _ @transparent! _.
 
 pred generate-param-sym i:param-class, i:univ, i:univ.variable.
@@ -95,7 +95,7 @@ generate-param-sym (pc M N as Class) U L :-
           app [pglobal CovariantMN UI, a, b, p]
         ]),
   ParamSym is "Param" ^ MStr ^ NStr ^ "_sym",
-  coq.typecheck Decl _ _,
+  std.assert-ok! (coq.typecheck Decl _) "generate-param-sym: Decl is ill-typed",
   @udecl! [L] ff [] tt => coq.env.add-const ParamSym Decl _ @transparent! _.
 
 pred generate-prop-id-param i:param-class.
@@ -115,7 +115,7 @@ generate-prop-id-param (pc M N as Class) :-
         app [IdMap, a],
         app [IdMapSym, a]]),
   IdParam is "Prop_id_Param" ^ MStr ^ NStr,
-  coq.typecheck Decl _ _,
+  std.assert-ok! (coq.typecheck Decl _) "generate-prop-id-param: Decl is ill-typed",
   @udecl! [] tt [] tt => coq.env.add-const IdParam Decl _ @transparent! _.
 
 pred generate-prop-param-sym i:param-class.
