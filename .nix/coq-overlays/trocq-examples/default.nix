@@ -3,6 +3,7 @@
   lib,
   trocq,
   trocq-std-examples,
+  trocq-hott-examples,
 }:
 
 stdenv.mkDerivation rec {
@@ -13,6 +14,7 @@ stdenv.mkDerivation rec {
 
   passthru = {
     std = trocq-std-examples;
+    hott = trocq-hott-examples;
   };
 
   propagatedBuildInputs = lib.attrValues passthru;
