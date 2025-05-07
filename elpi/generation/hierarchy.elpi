@@ -37,6 +37,8 @@ generate-module (pc M N as Class) :-
         end-record)))),
   (@keep-alg-univs! => coq.typecheck-indt-decl RelDecl _),
   (@primitive! => @udecl! [L] ff [] tt ==> coq.env.add-indt RelDecl TrocqInd,coq.env.indt TrocqInd _ _ _ _ [TrocqBuild] _),
+  R = const CR,
+  Rel = indt TrocqInd,
   coq.env.projections TrocqInd
     [some CR, some CovariantProj, some ContravariantProj],
   % add record to the database for later use
@@ -44,7 +46,41 @@ generate-module (pc M N as Class) :-
     (clause _ (after "default-r") (trocq.db.r Class CR)),
   coq.elpi.accumulate execution-site "trocq.db"
     (clause _ _ (trocq.db.rel Class (indt TrocqInd) (indc TrocqBuild)
-      (const CR) (const CovariantProj) (const ContravariantProj))).
+      (const CR) (const CovariantProj) (const ContravariantProj))),
+
+  % generate projections on the covariant subrecord
+  map-class.fields M MFields,
+  CovariantSubRecord = indt CovariantSubRecordIndt,
+  coq.env.projections CovariantSubRecordIndt MSomeProjs,
+  Covariant = const CovariantProj,
+  std.forall2 MFields MSomeProjs (field-name\ some-pr\ sigma Decl Pr\
+    some-pr = some Pr,
+    Decl =
+      (fun `A` (sort (typ U)) a\ fun `B` (sort (typ U)) b\
+        fun `P` (app [pglobal Rel UI, a, b]) p\
+          app [pglobal (const Pr) UI, a, b,
+            app [pglobal R UI, a, b, p],
+            app [pglobal Covariant UI, a, b, p]]),
+    std.assert-ok! (coq.typecheck Decl _) "generate-module: Decl is ill-typed",
+    @udecl! [L] ff [] tt => coq.env.add-const field-name Decl _ @transparent! _
+  ),
+
+  % generate projections on the contravariant subrecord
+  map-class.cofields N NCoFields,
+  Contravariant = const ContravariantProj,
+  ContravariantSubRecord = indt ContravariantSubRecordIndt,
+  coq.env.projections ContravariantSubRecordIndt NSomeProjs,
+  std.forall2 NCoFields NSomeProjs (field-name\ some-pr\ sigma Decl Pr\
+    some-pr = some Pr,
+    Decl =
+      (fun `A` (sort (typ U)) a\ fun `B` (sort (typ U)) b\
+        fun `P` (app [pglobal Rel UI, a, b]) p\
+          app [pglobal (const Pr) UI, b, a,
+            app [pglobal SymRel UI, a, b, app [pglobal R UI, a, b, p]],
+            app [pglobal Contravariant UI, a, b, p]]),
+    std.assert-ok! (coq.typecheck Decl _) "generate-module: Decl is ill-typed",
+    @udecl! [L] ff [] tt => coq.env.add-const field-name Decl _ @transparent! _
+  ).
 
 % Generate 2 functions of weakening per possible weakening:
 %  one on the left and one on the right, if possible
