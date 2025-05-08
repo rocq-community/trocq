@@ -51,3 +51,15 @@ generate-pparam-type L L1 Class :-
     coq.env.add-const PParamType Decl _ @transparent! Const),
   coq.elpi.accumulate _ "trocq.db" (clause _ _ (trocq.db.pparam-type Class Const)).
 
+pred generate-pparam-type44
+  i:univ.variable, i:univ.variable, i:param-class.
+generate-pparam-type44 L L1 Class :-
+  coq.univ-instance UI2 [L, L1],
+  coq.locate {calc ("Param" ^ {param-class.to_string Class} ^ "_Type44")} ParamType,
+  Decl = (fun `_` {{ map_class }} _\ fun `_` {{ map_class }} _\ pglobal ParamType UI2),
+  % this typecheck is very important: it adds L < L1 to the constraint graph
+  std.assert-ok! (coq.typecheck Decl _) "generate-pparam-type44: Decl is ill-typed",
+  PParamType is "PParam" ^ {param-class.to_string Class} ^ "_Type",
+  (@udecl! [L, L1] ff [lt L L1] ff =>
+    coq.env.add-const PParamType Decl _ @transparent! Const),
+  coq.elpi.accumulate _ "trocq.db" (clause _ _ (trocq.db.pparam-type Class Const)).

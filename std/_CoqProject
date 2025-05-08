@@ -12,7 +12,7 @@ Param_forall.v
 Param_arrow.v
 Common.v
 Param_trans.v
-generic/Param.v
+Param.v
 generic/Trocq.v
 generic/Vernac.v
 Param_bool.v
