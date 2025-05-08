@@ -1,6 +1,6 @@
 From Coq Require Import ssreflect.
 From HoTT Require Import HoTT.
-From Trocq Require Import Trocq.
+From Trocq Require Import Trocq Param_lemmas.
 
 Set Universe Polymorphism.
 Unset Universe Minimization ToSet.

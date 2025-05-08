@@ -14,7 +14,7 @@
 From Coq Require Import ssreflect.
 From elpi Require Import elpi.
 From HoTT Require Import HoTT.
-Require Import Hierarchy Database.
+Require Import Hierarchy Database Param_lemmas.
 
 From Trocq.Elpi Extra Dependency "util.elpi" as util.
 From Trocq.Elpi Extra Dependency "class.elpi" as class.

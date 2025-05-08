@@ -12,7 +12,7 @@
 (*****************************************************************************)
 
 From Coq Require Import ssreflect.
-Require Import Common.
+Require Import Common Param_lemmas.
 
 Set Universe Polymorphism.
 Unset Universe Minimization ToSet.
