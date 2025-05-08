@@ -129,22 +129,11 @@ Elpi Query lp:{{
   coq.elpi.accumulate _ "trocq.db" (clause _ _ (trocq.db.sym-rel {{:gref lib:trocq.sym_rel}})),
   coq.elpi.accumulate _ "trocq.db" (clause _ _ (pi UI\
     trocq.db.paths UI (global {{:gref lib:trocq.paths}})
-  )),
-
-  coq.elpi.accumulate _ "trocq.db" (clause _ _ (trocq.db.map->class map0 {{:gref lib:trocq.map0}})),
-  coq.elpi.accumulate _ "trocq.db" (clause _ _ (trocq.db.map->class map1 {{:gref lib:trocq.map1}})),
-  coq.elpi.accumulate _ "trocq.db" (clause _ _ (trocq.db.map->class map2a {{:gref lib:trocq.map2a}})),
-  coq.elpi.accumulate _ "trocq.db" (clause _ _ (trocq.db.map->class map2b {{:gref lib:trocq.map2b}})),
-  coq.elpi.accumulate _ "trocq.db" (clause _ _ (trocq.db.map->class map3 {{:gref lib:trocq.map3}})),
-  coq.elpi.accumulate _ "trocq.db" (clause _ _ (trocq.db.map->class map4 {{:gref lib:trocq.map4}})),
-
-  coq.elpi.accumulate _ "trocq.db" (clause _ _ (trocq.db.map-class->indc-class map0 {{:gref lib:trocq.indc_map0}})),
-  coq.elpi.accumulate _ "trocq.db" (clause _ _ (trocq.db.map-class->indc-class map1 {{:gref lib:trocq.indc_map1}})),
-  coq.elpi.accumulate _ "trocq.db" (clause _ _ (trocq.db.map-class->indc-class map2a {{:gref lib:trocq.indc_map2a}})),
-  coq.elpi.accumulate _ "trocq.db" (clause _ _ (trocq.db.map-class->indc-class map2b {{:gref lib:trocq.indc_map2b}})),
-  coq.elpi.accumulate _ "trocq.db" (clause _ _ (trocq.db.map-class->indc-class map3 {{:gref lib:trocq.indc_map3}})),
-  coq.elpi.accumulate _ "trocq.db" (clause _ _ (trocq.db.map-class->indc-class map4 {{:gref lib:trocq.indc_map4}})).
+  )).
 }}.
+
+Elpi Query lp:{{register-map-classes}}.
+Elpi Query lp:{{register-map-inductives}}.
 
 (********************)
 (* Record Hierarchy *)

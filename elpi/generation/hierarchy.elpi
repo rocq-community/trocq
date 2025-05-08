@@ -11,6 +11,29 @@
 %                            % (see LICENSE file for the text of the license) %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+% Populate trocq.db.map->class from registered `trocq.mapM` global references.
+pred register-map-classes.
+register-map-classes :-
+  std.forall {map-class.all-of-kind all} (M\ sigma MStr Name GR\
+    map-class.to_string M MStr,
+    Name is "lib:trocq.map" ^ MStr,
+
+    coq.locate Name GR,
+    coq.elpi.accumulate _ "trocq.db" (clause _ _ (trocq.db.map->class M GR))
+  ).
+
+% Populate trocq.db.map-class->indc-class from registered `trocq.indc_mapN`
+% global references.
+pred register-map-inductives.
+register-map-inductives :-
+  std.forall {map-class.all-of-kind all} (M\ sigma MStr Name GR\
+    map-class.to_string M MStr,
+    Name is "lib:trocq.indc_map" ^ MStr,
+
+    coq.locate Name GR,
+    coq.elpi.accumulate _ "trocq.db" (clause _ _ (trocq.db.map-class->indc-class M GR))
+  ).
+
 % Generate a module with a record type containing:
 % - a relation R : A -> B -> Type;
 % - a covariant (A to B) instance of one of the classes of Map listed above;
