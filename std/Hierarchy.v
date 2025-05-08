@@ -25,6 +25,13 @@ Unset Universe Minimization ToSet.
 
 Set Polymorphic Inductive Cumulativity.
 
+Elpi Command genhierarchy.
+Elpi Accumulate Db trocq.db.
+Elpi Accumulate File util.
+Elpi Accumulate File util_rocq.
+Elpi Accumulate File class.
+Elpi Accumulate File hierarchy_generation.
+
 (* Coq representation of the hierarchy *)
 Inductive map_class : Set := map0 | map1 | map2a | map2b | map3 | map4.
 
@@ -34,6 +41,7 @@ Register map2a as trocq.indc_map2a.
 Register map2b as trocq.indc_map2b.
 Register map3 as trocq.indc_map3.
 Register map4 as trocq.indc_map4.
+Elpi Query lp:{{register-map-inductives}}.
 
 Local Open Scope fibration_scope.
 Local Open Scope path_scope.
@@ -93,6 +101,7 @@ Register Map2a.Has as trocq.map2a.
 Register Map2b.Has as trocq.map2b.
 Register Map3.Has as trocq.map3.
 Register Map4.Has as trocq.map4.
+Elpi Query lp:{{register-map-classes}}.
 
 (* syntactic representation of annotated universes
  * useful to annotate the initial goal with fresh variables of type map_class
@@ -113,12 +122,6 @@ Definition sym_rel@{i} {A B : Type@{i}} (R : A -> B -> Type@{i}) := fun b a => R
 Register sym_rel as trocq.sym_rel.
 Register paths as trocq.paths.
 
-Elpi Command genhierarchy.
-Elpi Accumulate Db trocq.db.
-Elpi Accumulate File util.
-Elpi Accumulate File util_rocq.
-Elpi Accumulate File class.
-
 Elpi Query lp:{{
   {{:gref lib:trocq.ptype}} = const PType,
   coq.elpi.accumulate _ "trocq.db" (clause _ _ (trocq.db.ptype PType)),
@@ -132,14 +135,10 @@ Elpi Query lp:{{
   )).
 }}.
 
-Elpi Query lp:{{register-map-classes}}.
-Elpi Query lp:{{register-map-inductives}}.
-
 (********************)
 (* Record Hierarchy *)
 (********************)
 
-Elpi Accumulate File hierarchy_generation.
 Elpi Accumulate lp:{{
   main-interp [] _ :-
     std.forall {param-class.all-of-kind all} (Class\ sigma ModuleName\
@@ -198,6 +197,11 @@ Definition R_in_mapK {A B} (R : Param40.Rel A B) :
   forall (a : A) (b : B), map_in_R R a b o R_in_map R a b == idmap :=
   Map4.R_in_mapK _ (Param40.covariant A B R).
 
+Arguments map : simpl never.
+Arguments map_in_R : simpl never.
+Arguments R_in_map : simpl never.
+Arguments R_in_mapK : simpl never.
+
 Definition comap {A B} (R : Param01.Rel A B) : B -> A :=
   Map1.map _ (Param01.contravariant A B R).
 Definition comap_in_R {A B} (R : Param02a.Rel A B) :
@@ -209,6 +213,11 @@ Definition R_in_comap {A B} (R : Param02b.Rel A B) :
 Definition R_in_comapK {A B} (R : Param04.Rel A B) :
   forall (b : B) (a : A), comap_in_R R b a o R_in_comap R b a == idmap :=
   Map4.R_in_mapK _ (Param04.contravariant A B R).
+
+Arguments comap : simpl never.
+Arguments comap_in_R : simpl never.
+Arguments R_in_comap : simpl never.
+Arguments R_in_comapK : simpl never.
 
 (* Aliasing *)
 
@@ -576,12 +585,3 @@ Elpi Query lp:{{
 Elpi Query lp:{{
   std.forall {param-class.all-of-kind all} generate-prop-param-sym.
 }}.
-
-Arguments map : simpl never.
-Arguments map_in_R : simpl never.
-Arguments R_in_map : simpl never.
-Arguments R_in_mapK : simpl never.
-Arguments comap : simpl never.
-Arguments comap_in_R : simpl never.
-Arguments R_in_comap : simpl never.
-Arguments R_in_comapK : simpl never.
