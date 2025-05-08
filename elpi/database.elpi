@@ -49,6 +49,9 @@ r C R :- var C, !,
 % Given the class (M, N), obtain {{Id_ParamMN}}
 pred id-param o:param-class, o:constant.
 
+% Given the class (M, N), obtain {{ParamMN_sym}}
+pred param-sym o:param-class, o:constant.
+
 pred ptype o:constant.
 pred pprop o:constant.
 pred weaken o:constant.

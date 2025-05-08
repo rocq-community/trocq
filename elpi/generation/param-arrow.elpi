@@ -45,8 +45,8 @@ generate-param-arrow (pc M N as Class) Ui Uj Li Lj Lk :-
   coq.locate {calc ("Map" ^ NStr ^ "_arrow")} MapN,
   coq.locate {calc ("eq_Map" ^ NStr)} EqMapN,
   coq.locate "equiv_flip" EquivFlip,
-  coq.locate {calc ("Param" ^ MAStr ^ NAStr ^ "_sym")} ParamSymA,
-  coq.locate {calc ("Param" ^ MBStr ^ NBStr ^ "_sym")} ParamSymB,
+  ParamSymA = const {trocq.db.param-sym (pc MA NA)},
+  ParamSymB = const {trocq.db.param-sym (pc MB NB)},
   % build functions doing several weakenings at once
   param-class.forget ClassA (pc map0 map0) ForgetA0F,
   param-class.forget ClassB (pc map0 map0) ForgetB0F,

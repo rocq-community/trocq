@@ -169,7 +169,10 @@ generate-param-sym (pc M N as Class) :-
   map-class.to_string M MStr,
   map-class.to_string N NStr,
   ParamSym is "Param" ^ MStr ^ NStr ^ "_sym",
-  @udecl! [L] ff [] tt => coq.env.add-const ParamSym Decl _ @transparent! _.
+  @udecl! [L] ff [] tt => coq.env.add-const ParamSym Decl _ @transparent! CParamSym,
+
+  coq.elpi.accumulate _ "trocq.db"
+    (clause _ _ (trocq.db.param-sym Class CParamSym)).
 
 pred generate-prop-id-param i:param-class.
 generate-prop-id-param (pc M N as Class) :-
