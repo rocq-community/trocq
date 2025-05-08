@@ -38,7 +38,7 @@ generate-match1 RetType UI2 Class PVar QVar Match :-
 pred generate-pparam-type
   i:univ.variable, i:univ.variable, i:param-class.
 generate-pparam-type L L1 Class :-
-  coq.locate {calc ("Param" ^ {param-class.to_string Class} ^ ".Rel")} ParamRel,
+  trocq.db.rel Class ParamRel _ _ _ _,
   coq.univ-instance UI1 [L1],
   RetType = app [pglobal ParamRel UI1, sort (typ U), sort (typ U)],
   coq.univ-instance UI2 [L, L1],

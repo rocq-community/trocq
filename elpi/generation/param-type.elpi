@@ -36,7 +36,7 @@ generate-fields map2a R RClass U L L1 [R, Map, MapInR] :-
 pred generate-map-type
   i:map-class, i:param-class, i:univ, i:univ.variable, i:univ.variable.
 generate-map-type M RClass U L L1 :-
-  coq.locate {calc ("Param" ^ {param-class.to_string RClass} ^ ".Rel")} R,
+  trocq.db.rel RClass R _ _ _ _,
   Type = sort (typ U),
   coq.univ-instance UI [L],
   coq.univ-instance UI1 [L1],
@@ -68,13 +68,13 @@ generate-param-type (pc M N as Class) RClass U L L1 :-
   coq.univ-instance UI [L],
   coq.univ-instance UI1 [L1],
   coq.univ-instance UI2 [L, L1],
-  coq.locate {calc ("Param" ^ MStr ^ NStr ^ ".BuildRel")} BuildRel,
+  trocq.db.rel Class _ BuildRel _ _ _,
   coq.locate
     {calc ("Map" ^ MStr ^ "_Type" ^ {param-class.to_string RClass})} MapType,
   coq.locate
     {calc ("Map" ^ NStr ^ "_Type_sym" ^ {param-class.to_string RClass})}
     MapTypeSym,
-  coq.locate {calc ("Param" ^ {param-class.to_string RClass} ^ ".Rel")} R,
+  trocq.db.rel RClass R _ _ _ _,
   if (std.mem! [map2b, map3, map4] M) (
     UnivalentDecl = true,
     MapTypeF = (u\ app [pglobal MapType UI2, u]),

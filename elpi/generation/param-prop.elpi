@@ -21,7 +21,7 @@ generate-fields map2a R RClass [R, Map, MapInR] :- std.do! [
 
 pred generate-map-prop i:map-class, i:param-class.
 generate-map-prop M RClass :- std.do! [
-  coq.locate {calc ("Param" ^ {param-class.to_string RClass} ^ ".Rel")} R,
+  trocq.db.rel RClass R _ _ _ _,
   Prop = sort prop,
   coq.env.global R RTm,
   % RTm = {{fun A B : Prop => lp:RTmNoEta A B}},
