@@ -108,12 +108,14 @@ generate-forget Class :-
     ]
   ).
 
-pred generate-id-param i:param-class, i:univ, i:univ.variable.
-generate-id-param (pc M N as Class) U L :-
-  TypeU = sort (typ U),
+pred generate-id-param i:param-class.
+generate-id-param (pc M N as Class) :-
+  coq.univ.new U,
+  coq.univ.variable U L,
   coq.univ-instance UI [L],
   @uinstance! UI ==>
 
+  TypeU = sort (typ U),
   Paths = {trocq.db.paths UI},
 
   trocq.db.rel Class _ BuildRelGR _ _ _,
@@ -136,12 +138,14 @@ generate-id-param (pc M N as Class) U L :-
   coq.elpi.accumulate _ "trocq.db"
     (clause _ _ (trocq.db.id-param Class CIdParam)).
 
-pred generate-param-sym i:param-class, i:univ, i:univ.variable.
-generate-param-sym (pc M N as Class) U L :-
-  TypeU = sort (typ U),
+pred generate-param-sym i:param-class.
+generate-param-sym (pc M N as Class) :-
+  coq.univ.new U,
+  coq.univ.variable U L,
   coq.univ-instance UI [L],
   @uinstance! UI ==>
 
+  TypeU = sort (typ U),
   coq.env.global {trocq.db.sym-rel} SymRel,
 
   trocq.db.rel Class RelMNGR _ RMNGR CovariantMNGR ContravariantMNGR,

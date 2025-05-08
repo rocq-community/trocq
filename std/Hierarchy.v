@@ -521,27 +521,13 @@ Elpi Query lp:{{
 (* generate id_ParamMN : forall A, ParamMN.Rel A A for all M N *)
 
 Elpi Query lp:{{
-  coq.univ.new U,
-  coq.univ.variable U L,
-  map-class.all-of-kind all Classes,
-  std.forall Classes (m\
-    std.forall Classes (n\
-      generate-id-param (pc m n) U L
-    )
-  ).
+  std.forall {param-class.all-of-kind all} generate-id-param.
 }}.
 
 (* symmetry property for Param *)
 
 Elpi Query lp:{{
-  coq.univ.new U,
-  coq.univ.variable U L,
-  map-class.all-of-kind all Classes,
-  std.forall Classes (m\
-    std.forall Classes (n\
-      generate-param-sym (pc m n) U L
-    )
-  ).
+  std.forall {param-class.all-of-kind all} generate-param-sym.
 }}.
 
 
@@ -623,23 +609,13 @@ Defined.
 (* generate Prop_id_ParamMN : forall A, ParamMN.Rel A A for all M N *)
 
 Elpi Query lp:{{
-  map-class.all-of-kind all Classes,
-  std.forall Classes (m\
-    std.forall Classes (n\
-      generate-prop-id-param (pc m n)
-    )
-  ).
+  std.forall {param-class.all-of-kind all} generate-prop-id-param.
 }}.
 
 (* symmetry property for Prop Param *)
 
 Elpi Query lp:{{
-  map-class.all-of-kind all Classes,
-  std.forall Classes (m\
-    std.forall Classes (n\
-      generate-prop-param-sym (pc m n)
-    )
-  ).
+  std.forall {param-class.all-of-kind all} generate-prop-param-sym.
 }}.
 
 Arguments map : simpl never.
