@@ -26,7 +26,7 @@ generate-fields map2a R RClass U L L1 [R, Map, MapInR] :-
   (pi a\ coq.mk-app R [a] (RF a)),
   Paths = {trocq.db.paths UI1},
   coq.locate "transport" Transport,
-  coq.locate {calc ("id_Param" ^ {param-class.to_string RClass})} IdParam,
+  IdParam = const {trocq.db.id-param RClass},
   MapInR =
     (fun `A` Type a\ fun `B` Type b\
       fun `e` (app [Paths, Type, a, b]) e\

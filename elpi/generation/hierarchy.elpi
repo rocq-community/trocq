@@ -119,12 +119,8 @@ generate-id-param (pc M N as Class) U L :-
   trocq.db.rel Class _ BuildRelGR _ _ _,
   coq.env.global BuildRelGR BuildRel,
 
-  map-class.to_string M MStr,
-  map-class.to_string N NStr,
-  coq.locate {calc ("id_Map" ^ MStr)} IdMapGR,
-  coq.env.global IdMapGR IdMap,
-  coq.locate {calc ("id_Map" ^ NStr ^ "_sym")} IdMapSymGR,
-  coq.env.global IdMapSymGR IdMapSym,
+  coq.env.global (const {trocq.db.id-map M}) IdMap,
+  coq.env.global (const {trocq.db.id-map-sym N}) IdMapSym,
 
   Decl = {{
     fun (A: lp:TypeU) =>
@@ -132,8 +128,13 @@ generate-id-param (pc M N as Class) U L :-
   }},
   std.assert-ok! (coq.typecheck Decl _) "generate-id-param: Decl is ill-typed",
 
+  map-class.to_string M MStr,
+  map-class.to_string N NStr,
   IdParam is "id_Param" ^ MStr ^ NStr,
-  @udecl! [L] ff [] tt => coq.env.add-const IdParam Decl _ @transparent! _.
+  @udecl! [L] ff [] tt => coq.env.add-const IdParam Decl _ @transparent! CIdParam,
+
+  coq.elpi.accumulate _ "trocq.db"
+    (clause _ _ (trocq.db.id-param Class CIdParam)).
 
 pred generate-param-sym i:param-class, i:univ, i:univ.variable.
 generate-param-sym (pc M N as Class) U L :-

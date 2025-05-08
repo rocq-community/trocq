@@ -25,6 +25,12 @@ pred term->map-class i:term, o:map-class.
 term->map-class (pglobal Map _) Class :-
   map-class->indc-class Class Map.
 
+% Given the class M, obtain {{Id_MapM}}
+pred id-map o:map-class, o:constant.
+
+% Given the class M, obtain {{Id_MapM_sym}}
+pred id-map-sym o:map-class, o:constant.
+
 % Get various values of the ParamMN module from the (M,N) class:
 %   rel (pc M N) {{ParamMN.Rel}} {{ParamMN.BuildRel}}
 %     {{ParamMN.R}} {{ParamMN.covariant}} {{ParamMN.contravariant}}
@@ -39,6 +45,9 @@ pred r o:param-class, o:constant.
 :name "default-r"
 r C R :- var C, !,
   declare_constraint (r C R) [C].
+
+% Given the class (M, N), obtain {{Id_ParamMN}}
+pred id-param o:param-class, o:constant.
 
 pred ptype o:constant.
 pred pprop o:constant.
