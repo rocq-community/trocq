@@ -37,37 +37,6 @@ Definition R_forall@{i j}
   (PB : forall (a : A) (a' : A'), PA a a' -> Param00.Rel@{j} (B a) (B' a')) :=
     fun f f' => forall a a' aR, (PB a a' aR) (f a) (f' a').
 
-(* we can also declare everything from Coq-Elpi if we do not trust inference *)
-(* Elpi Query lp:{{
-  coq.univ.new U,
-  coq.univ.variable U L,
-  coq.univ-instance UI [L],
-  coq.univ.new U',
-  coq.univ.variable U' L',
-  coq.univ-instance UI' [L'],
-  coq.locate "Param00.Rel" Rel00,
-  coq.locate "Param00.R" R00,
-  Decl = (
-    fun `A` (sort (typ U)) a\
-    fun `A'` (sort (typ U)) a'\
-    fun `PA` (app [pglobal Rel00 UI, a, a']) pa\
-    fun `B` (prod `_` a _\ sort (typ U')) b\
-    fun `B'` (prod `_` a' _\ sort (typ U')) b'\
-    fun `PB` (prod `a` a x\ prod `a'` a' x'\
-              prod `_` (app [pglobal R00 UI, a, a', pa, x, x']) _\
-                app [pglobal Rel00 UI', app [b, x], app [b', x']]) pb\
-      fun `f` (prod `a` a x\ app [b, x]) f\
-      fun `f'` (prod `a'` a' x'\ app [b', x']) f'\
-        prod `a` a t\
-        prod `a'` a' t'\
-        prod `aR` (app [pglobal R00 UI, a, a', pa, t, t']) tR\
-          app [pglobal R00 UI', app [b, t], app [b', t'], app [pb, t, t', tR],
-            app [f, t], app [f', t']]
-  ),
-  @udecl! [L, L'] ff [] ff =>
-    coq.env.add-const "R_forall" Decl _ @transparent! _.
-}}. *)
-
 (* MapN for forall *)
 
 (* (00, 00) -> 00 *)
