@@ -486,37 +486,7 @@ Register id_Map3_sym as trocq.id_map3_sym.
 Register id_Map4 as trocq.id_map4.
 Register id_Map4_sym as trocq.id_map4_sym.
 
-Elpi Query lp:{{
-  {{:gref lib:trocq.id_map0}} = const Id_Map0,
-  coq.elpi.accumulate _ "trocq.db" (clause _ _ (trocq.db.id-map map0 Id_Map0)),
-  {{:gref lib:trocq.id_map0_sym}} = const Id_Map0_Sym,
-  coq.elpi.accumulate _ "trocq.db" (clause _ _ (trocq.db.id-map-sym map0 Id_Map0_Sym)),
-
-  {{:gref lib:trocq.id_map1}} = const Id_Map1,
-  coq.elpi.accumulate _ "trocq.db" (clause _ _ (trocq.db.id-map map1 Id_Map1)),
-  {{:gref lib:trocq.id_map1_sym}} = const Id_Map1_Sym,
-  coq.elpi.accumulate _ "trocq.db" (clause _ _ (trocq.db.id-map-sym map1 Id_Map1_Sym)),
-
-  {{:gref lib:trocq.id_map2a}} = const Id_Map2a,
-  coq.elpi.accumulate _ "trocq.db" (clause _ _ (trocq.db.id-map map2a Id_Map2a)),
-  {{:gref lib:trocq.id_map2a_sym}} = const Id_Map2a_Sym,
-  coq.elpi.accumulate _ "trocq.db" (clause _ _ (trocq.db.id-map-sym map2a Id_Map2a_Sym)),
-
-  {{:gref lib:trocq.id_map2b}} = const Id_Map2b,
-  coq.elpi.accumulate _ "trocq.db" (clause _ _ (trocq.db.id-map map2b Id_Map2b)),
-  {{:gref lib:trocq.id_map2b_sym}} = const Id_Map2b_Sym,
-  coq.elpi.accumulate _ "trocq.db" (clause _ _ (trocq.db.id-map-sym map2b Id_Map2b_Sym)),
-
-  {{:gref lib:trocq.id_map3}} = const Id_Map3,
-  coq.elpi.accumulate _ "trocq.db" (clause _ _ (trocq.db.id-map map3 Id_Map3)),
-  {{:gref lib:trocq.id_map3_sym}} = const Id_Map3_Sym,
-  coq.elpi.accumulate _ "trocq.db" (clause _ _ (trocq.db.id-map-sym map3 Id_Map3_Sym)),
-
-  {{:gref lib:trocq.id_map4}} = const Id_Map4,
-  coq.elpi.accumulate _ "trocq.db" (clause _ _ (trocq.db.id-map map4 Id_Map4)),
-  {{:gref lib:trocq.id_map4_sym}} = const Id_Map4_Sym,
-  coq.elpi.accumulate _ "trocq.db" (clause _ _ (trocq.db.id-map-sym map4 Id_Map4_Sym)).
-}}.
+Elpi Query lp:{{register-id-maps}}.
 
 (* generate id_ParamMN : forall A, ParamMN.Rel A A for all M N *)
 

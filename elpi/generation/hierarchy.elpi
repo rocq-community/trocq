@@ -108,6 +108,22 @@ generate-forget Class :-
     ]
   ).
 
+% Populate the trocq.db.id-map and trocq.db.id-map-sym predicates with
+% registered trocq.id_mapM and trocq.id_mapN_sym global references.
+pred register-id-maps.
+register-id-maps :-
+  std.forall {map-class.all-of-kind all} (M\ sigma MStr IdMapStr IdMapSymStr Id_Map Id_Map_Sym\
+    map-class.to_string M MStr,
+    IdMapStr is "lib:trocq.id_map" ^ MStr,
+    IdMapSymStr is IdMapStr ^ "_sym",
+
+    coq.locate IdMapStr (const Id_Map),
+    coq.locate IdMapSymStr (const Id_Map_Sym),
+
+    coq.elpi.accumulate _ "trocq.db" (clause _ _ (trocq.db.id-map M Id_Map)),
+    coq.elpi.accumulate _ "trocq.db" (clause _ _ (trocq.db.id-map-sym M Id_Map_Sym))
+  ).
+
 pred generate-id-param i:param-class.
 generate-id-param (pc M N as Class) :-
   coq.univ.new U,
