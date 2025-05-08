@@ -20,27 +20,39 @@ pred generate-module i:param-class.
 generate-module (pc M N as Class) :-
   coq.univ.new U,
   coq.univ.variable U L,
-  % generate record
   coq.univ-instance UI [L],
-  trocq.db.map->class M CovariantSubRecord,
-  trocq.db.map->class N ContravariantSubRecord,
-  SymRel = {trocq.db.sym-rel},
+  @uinstance! UI ==>
+
   TypeU = sort (typ U),
+  coq.env.global {trocq.db.sym-rel} SymRel,
+
+  % generate record
+  trocq.db.map->class M CovariantSubRecordGR,
+  trocq.db.map->class N ContravariantSubRecordGR,
+  coq.env.global CovariantSubRecordGR CovariantSubRecord,
+  coq.env.global ContravariantSubRecordGR ContravariantSubRecord,
+
   RelDecl =
     parameter "A" _ TypeU (a\
       parameter "B" _ TypeU (b\
         record "Rel" (sort (typ {coq.univ.alg-super U})) "BuildRel" (
-          field [] "R" {{ lp:a -> lp:b -> lp:{{ sort (typ U) }} }} r\
-          field [] "covariant" (app [pglobal CovariantSubRecord UI, a, b, r]) _\
-          field [] "contravariant"
-            (app [pglobal ContravariantSubRecord UI, b, a, app [pglobal SymRel UI, a, b, r]]) (_\
-        end-record)))),
-  (@keep-alg-univs! => coq.typecheck-indt-decl RelDecl _),
+          field [] "R" {{
+            lp:a -> lp:b -> lp:TypeU
+          }} r\
+          field [] "covariant" {{
+            lp:CovariantSubRecord lp:a lp:b lp:r
+          }} _\
+          field [] "contravariant" {{
+            lp:ContravariantSubRecord lp:b lp:a (lp:SymRel lp:a lp:b lp:r)
+          }} _\
+        end-record))),
+  (@keep-alg-univs! =>
+    std.assert-ok! (coq.typecheck-indt-decl RelDecl) "generate-module: RelDecl is ill-typed"),
   (@primitive! => @udecl! [L] ff [] tt ==> coq.env.add-indt RelDecl TrocqInd,coq.env.indt TrocqInd _ _ _ _ [TrocqBuild] _),
-  R = const CR,
-  Rel = indt TrocqInd,
+  coq.env.global (indt TrocqInd) Rel,
   coq.env.projections TrocqInd
     [some CR, some CovariantProj, some ContravariantProj],
+  coq.env.global (const CR) R,
   % add record to the database for later use
   coq.elpi.accumulate _ "trocq.db"
     (clause _ (after "default-r") (trocq.db.r Class CR)),
@@ -50,34 +62,34 @@ generate-module (pc M N as Class) :-
 
   % generate projections on the covariant subrecord
   map-class.fields M MFields,
-  CovariantSubRecord = indt CovariantSubRecordIndt,
+  CovariantSubRecordGR = indt CovariantSubRecordIndt,
   coq.env.projections CovariantSubRecordIndt MSomeProjs,
-  Covariant = const CovariantProj,
-  std.forall2 MFields MSomeProjs (field-name\ some-pr\ sigma Decl Pr\
+  coq.env.global (const CovariantProj) Covariant,
+  std.forall2 MFields MSomeProjs (field-name\ some-pr\ sigma Pr Proj Decl\
     some-pr = some Pr,
-    Decl =
-      (fun `A` (sort (typ U)) a\ fun `B` (sort (typ U)) b\
-        fun `P` (app [pglobal Rel UI, a, b]) p\
-          app [pglobal (const Pr) UI, a, b,
-            app [pglobal R UI, a, b, p],
-            app [pglobal Covariant UI, a, b, p]]),
+    coq.env.global (const Pr) Proj,
+
+    Decl = {{
+      fun (A: lp:TypeU) (B: lp:TypeU) (P: lp:Rel A B) =>
+        lp:Proj A B (lp:R A B P) (lp:Covariant A B P)
+    }},
     std.assert-ok! (coq.typecheck Decl _) "generate-module: Decl is ill-typed",
     @udecl! [L] ff [] tt => coq.env.add-const field-name Decl _ @transparent! _
   ),
 
   % generate projections on the contravariant subrecord
   map-class.cofields N NCoFields,
-  Contravariant = const ContravariantProj,
-  ContravariantSubRecord = indt ContravariantSubRecordIndt,
+  coq.env.global (const ContravariantProj) Contravariant,
+  ContravariantSubRecordGR = indt ContravariantSubRecordIndt,
   coq.env.projections ContravariantSubRecordIndt NSomeProjs,
-  std.forall2 NCoFields NSomeProjs (field-name\ some-pr\ sigma Decl Pr\
+  std.forall2 NCoFields NSomeProjs (field-name\ some-pr\ sigma Pr Proj Decl\
     some-pr = some Pr,
-    Decl =
-      (fun `A` (sort (typ U)) a\ fun `B` (sort (typ U)) b\
-        fun `P` (app [pglobal Rel UI, a, b]) p\
-          app [pglobal (const Pr) UI, b, a,
-            app [pglobal SymRel UI, a, b, app [pglobal R UI, a, b, p]],
-            app [pglobal Contravariant UI, a, b, p]]),
+    coq.env.global (const Pr) Proj,
+
+    Decl = {{
+      fun (A: lp:TypeU) (B: lp:TypeU) (P: lp:Rel A B) =>
+        lp:Proj B A (lp:SymRel A B (lp:R A B P)) (lp:Contravariant A B P)
+    }},
     std.assert-ok! (coq.typecheck Decl _) "generate-module: Decl is ill-typed",
     @udecl! [L] ff [] tt => coq.env.add-const field-name Decl _ @transparent! _
   ).
@@ -98,66 +110,87 @@ generate-forget Class :-
 
 pred generate-id-param i:param-class, i:univ, i:univ.variable.
 generate-id-param (pc M N as Class) U L :-
+  TypeU = sort (typ U),
+  coq.univ-instance UI [L],
+  @uinstance! UI ==>
+
+  Paths = {trocq.db.paths UI},
+
+  trocq.db.rel Class _ BuildRelGR _ _ _,
+  coq.env.global BuildRelGR BuildRel,
+
   map-class.to_string M MStr,
   map-class.to_string N NStr,
-  coq.univ-instance UI [L],
-  trocq.db.rel Class _ BuildRel _ _ _,
-  Paths = {trocq.db.paths UI},
-  coq.locate {calc ("id_Map" ^ MStr)} IdMap,
-  coq.locate {calc ("id_Map" ^ NStr ^ "_sym")} IdMapSym,
-  Decl =
-    (fun `A` (sort (typ U)) a\
-      app [pglobal BuildRel UI, a, a, app [Paths, a],
-        app [pglobal IdMap UI, a],
-        app [pglobal IdMapSym UI, a]]),
-  IdParam is "id_Param" ^ MStr ^ NStr,
+  coq.locate {calc ("id_Map" ^ MStr)} IdMapGR,
+  coq.env.global IdMapGR IdMap,
+  coq.locate {calc ("id_Map" ^ NStr ^ "_sym")} IdMapSymGR,
+  coq.env.global IdMapSymGR IdMapSym,
+
+  Decl = {{
+    fun (A: lp:TypeU) =>
+      lp:BuildRel A A (lp:Paths A) (lp:IdMap A) (lp:IdMapSym A)
+  }},
   std.assert-ok! (coq.typecheck Decl _) "generate-id-param: Decl is ill-typed",
+
+  IdParam is "id_Param" ^ MStr ^ NStr,
   @udecl! [L] ff [] tt => coq.env.add-const IdParam Decl _ @transparent! _.
 
 pred generate-param-sym i:param-class, i:univ, i:univ.variable.
 generate-param-sym (pc M N as Class) U L :-
+  TypeU = sort (typ U),
+  coq.univ-instance UI [L],
+  @uinstance! UI ==>
+
+  coq.env.global {trocq.db.sym-rel} SymRel,
+
+  trocq.db.rel Class RelMNGR _ RMNGR CovariantMNGR ContravariantMNGR,
+  coq.env.global RelMNGR RelMN,
+  coq.env.global RMNGR RMN,
+  coq.env.global CovariantMNGR CovariantMN,
+  coq.env.global ContravariantMNGR ContravariantMN,
+
+  trocq.db.rel (pc N M) _ BuildRelNMGR _ _ _,
+  coq.env.global BuildRelNMGR BuildRelNM,
+
+  Decl = {{
+    fun (A: lp:TypeU) (B: lp:TypeU) (P: lp:RelMN A B) =>
+      lp:BuildRelNM B A
+        (lp:SymRel A B (lp:RMN A B P))
+        (lp:ContravariantMN A B P)
+        (lp:CovariantMN A B P)
+  }},
+  std.assert-ok! (coq.typecheck Decl _) "generate-param-sym: Decl is ill-typed",
+
   map-class.to_string M MStr,
   map-class.to_string N NStr,
-  coq.univ-instance UI [L],
-  trocq.db.rel Class RelMN _ RMN CovariantMN ContravariantMN,
-  trocq.db.rel (pc N M) _ BuildRelNM _ _ _,
-  SymRel = {trocq.db.sym-rel},
-  Decl =
-    (fun `A` (sort (typ U)) a\ fun `B` (sort (typ U)) b\
-      fun `P` (app [pglobal RelMN UI, a, b]) p\
-        app [pglobal BuildRelNM UI, b, a,
-          app [pglobal SymRel UI, a, b, app [pglobal RMN UI, a, b, p]],
-          app [pglobal ContravariantMN UI, a, b, p],
-          app [pglobal CovariantMN UI, a, b, p]
-        ]),
   ParamSym is "Param" ^ MStr ^ NStr ^ "_sym",
-  std.assert-ok! (coq.typecheck Decl _) "generate-param-sym: Decl is ill-typed",
   @udecl! [L] ff [] tt => coq.env.add-const ParamSym Decl _ @transparent! _.
 
 pred generate-prop-id-param i:param-class.
 generate-prop-id-param (pc M N as Class) :-
+  Paths = {trocq.db.paths _},
+
   map-class.to_string M MStr,
   map-class.to_string N NStr,
+
   trocq.db.rel Class _ BuildRelGR _ _ _,
-  Paths = {trocq.db.paths _},
   coq.locate {calc ("Prop_id_Map" ^ MStr)} IdMapGR,
   coq.locate {calc ("Prop_id_Map" ^ NStr ^ "_sym")} IdMapSymGR,
   coq.env.global BuildRelGR BuildRel,
   coq.env.global IdMapGR IdMap,
   coq.env.global IdMapSymGR IdMapSym,
-  Decl =
-    (fun `A` (sort prop) a\
-      app [BuildRel, a, a, app [Paths, a],
-        app [IdMap, a],
-        app [IdMapSym, a]]),
-  IdParam is "Prop_id_Param" ^ MStr ^ NStr,
+
+  Decl = {{
+    fun (A: Prop) =>
+      lp:BuildRel A A (lp:Paths A) (lp:IdMap A) (lp:IdMapSym A)
+  }},
   std.assert-ok! (coq.typecheck Decl _) "generate-prop-id-param: Decl is ill-typed",
+
+  IdParam is "Prop_id_Param" ^ MStr ^ NStr,
   @udecl! [] tt [] tt => coq.env.add-const IdParam Decl _ @transparent! _.
 
 pred generate-prop-param-sym i:param-class.
 generate-prop-param-sym (pc M N as Class) :-
-  map-class.to_string M MStr,
-  map-class.to_string N NStr,
   trocq.db.rel Class RelMNGR _ RMNGR CovariantMNGR ContravariantMNGR,
   trocq.db.rel (pc N M) _ BuildRelNMGR _ _ _,
   coq.env.global BuildRelNMGR BuildRelNM,
@@ -166,14 +199,17 @@ generate-prop-param-sym (pc M N as Class) :-
   coq.env.global RMNGR RMN,
   coq.env.global ContravariantMNGR ContravariantMN,
   coq.env.global CovariantMNGR CovariantMN,
-  Decl =
-    (fun `A` (sort prop) a\ fun `B` (sort prop) b\
-      fun `R` (app [RelMN, a, b]) r\
-        app [BuildRelNM, b, a,
-          app [SymRel, a, b, app [RMN, a, b, r]],
-          app [ContravariantMN, a, b, r],
-          app [CovariantMN, a, b, r]
-        ]),
-  ParamSym is "Prop_Param" ^ MStr ^ NStr ^ "_sym",
+
+  Decl = {{
+    fun (A: Prop) (B: Prop) (R: lp:RelMN A B) =>
+      lp:BuildRelNM B A
+        (lp:SymRel A B (lp:RMN A B R))
+        (lp:ContravariantMN A B R)
+        (lp:CovariantMN A B R)
+  }},
   std.assert-ok! (coq.typecheck Decl _) "generate-prop-param-sym: Decl ill-typed",
+
+  map-class.to_string M MStr,
+  map-class.to_string N NStr,
+  ParamSym is "Prop_Param" ^ MStr ^ NStr ^ "_sym",
   @udecl! [] tt [] tt => coq.env.add-const ParamSym Decl _ @transparent! _.
