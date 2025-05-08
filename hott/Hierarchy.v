@@ -158,8 +158,6 @@ Elpi Accumulate lp:{{
 
 Elpi genhierarchy.
 
-Print Param01.
-
 (********************)
 (* Record Weakening *)
 (********************)
