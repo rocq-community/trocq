@@ -53,6 +53,11 @@ pred weaken o:constant.
 %   returned.
 % - when a polymorphic `path` is used, the output can instead be:
 %     `pglobal {{:gref lib.path}} UI`
+%
+% TODO: this is sort of an ad-hoc `coq.env.global` reimplementation.
+% However, actually using this API errors with: "<paths> takes a
+% univ-instance of size 0, 0 but was given an instance of size 0, 1".
+% Understand what's going on and use `coq.env.global` instead.
 pred paths i:univ-instance o:term.
 pred sym-rel o:gref.
 
