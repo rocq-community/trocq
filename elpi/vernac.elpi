@@ -83,7 +83,7 @@ main [str "Use", trm X] :- !, std.do! [
   ])
 ].
 
-% serveral use in one go!
+% several use in one go!
 main [str "Use", X, Y | Rest] :- !, std.do![
     main [str "Use", X], main [str "Use", Y | Rest]].
 
