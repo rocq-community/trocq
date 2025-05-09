@@ -37,8 +37,8 @@ and readable code with respect to a sequent-style theoretical presentation."""
 build: [make "-j%{jobs}%"]
 install: [make "install"]
 depends: [
-  "coq" {>= "8.17" & < "8.18"}
-  "coq-elpi" {= "dev"}
+  "coq" {>= "8.20" & < "9.0" }
+  "coq-elpi" 
   "coq-mathcomp-ssreflect" {>= "1.19.0" }
   "coq-mathcomp-algebra"
 ]
