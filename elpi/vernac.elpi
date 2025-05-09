@@ -29,7 +29,7 @@ main [str "Register", str "Univalence", str S] :- !, std.do! [
   GR = const Const,
   coq.elpi.accumulate _ "trocq.db"
     (clause _ (before "default-univalence") (trocq.db.univalence Const)),
-  coq.say "Univalence axiom successfully registered."
+  coq.info "Univalence axiom successfully registered."
 ].
 
 % command to register the funext axiom
@@ -50,7 +50,7 @@ main [str "Register", str "Funext", str S] :- !, std.do! [
   GR = const Const,
   coq.elpi.accumulate _ "trocq.db"
     (clause _ (before "default-funext") (trocq.db.funext Const)),
-  coq.say "Function extensionality axiom successfully registered."
+  coq.info "Function extensionality axiom successfully registered."
 ].
 
 % command to add custom witnesses to the database
@@ -62,7 +62,7 @@ main [str "Use", trm X] :- !, std.do! [
   coq.term->gref X GRR,
   coq.env.typeof GRR XTy,
   param-class.type->classes XTy Class CList GR GR',
-  coq.say "accumultating" GR "@" Class "(" CList ") ~" GR' ":." GRR,
+  coq.info "accumultating" GR "@" Class "(" CList ") ~" GR' ":." GRR,
   coq.elpi.accumulate _ "trocq.db"
     (clause _ (before "default-gref")
       (trocq.db.gref GR Class CList GR' GRR)),
@@ -78,7 +78,7 @@ main [str "Use", trm X] :- !, std.do! [
       coq.elpi.accumulate _ "trocq.db"
         (clause _ (before "default-gref")
           (trocq.db.gref GR subclass CList GR' (const WCRR))),
-      coq.say "accumultating" GR "@" subclass "(" CList ") ~" GR'
+      coq.info "accumultating" GR "@" subclass "(" CList ") ~" GR'
         ":." (const WCRR),
   ])
 ].
@@ -90,7 +90,7 @@ main [str "Use", trm X] :- !, std.do! [
 main [str "Use", X, Y | Rest] :- !, std.do![
     main [str "Use", X], main [str "Use", Y | Rest]].
 
-main [str "Usage"] :- !, coq.say {usage-msg}.
+main [str "Usage"] :- !, coq.info {usage-msg}.
 main _ :- coq.error {std.string.concat "\n" ["command syntax error", {usage-msg}]}.
 
 pred usage-msg o:string.
