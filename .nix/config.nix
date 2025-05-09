@@ -11,12 +11,6 @@
     coqPackages.coq.override.version = "8.20";
     coqPackages.coq-elpi.override.version = "master";
     coqPackages.coq-elpi.override.elpi-version = "2.0.7";
-
-    coqPackages.mathcomp.override.version = "master";
-    coqPackages.mathcomp-algebra.override.version = "master";
-    coqPackages.mathcomp-ssreflect.override.version = "master";
-    coqPackages.mathcomp-fingroup.override.version = "master";
-    coqPackages.hierarchy-builder.override.version = "master";
   };
 
   cachix.coq = { };
