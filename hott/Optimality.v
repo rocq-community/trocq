@@ -1,6 +1,5 @@
 From Coq Require Import ssreflect.
-From HoTT Require Import HoTT.
-From Trocq Require Import Trocq Param_lemmas.
+From Trocq Require Import Stdlib Trocq.
 
 Set Universe Polymorphism.
 Unset Universe Minimization ToSet.
@@ -650,7 +649,8 @@ Theorem D4_arrow_left_is_gt3 `{Univalence} : not (
 Proof.
   move=> /(_ Unit Unit p33_not_44) /(_ Type Type (Param40_Type44 _))[]/= m g1 g2/=.
   move=> /(_ (fun _ => Bool) (fun _ => Bool))/=.
-  move: (g1 _ _) (g2 _ _) ; rewrite /R_arrow/= => {g1 g2}.
+  move: (g1 _ _) (g2 _ _) ; rewrite /R_arrow => {g1 g2}.
+  compute.
 
   do ! case: (Unit -> _ -> _) / path_unit_fun.
   case : _ / (equiv_path_universe _ _ (uparam_equiv^-1)%equiv).

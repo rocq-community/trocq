@@ -1,6 +1,18 @@
+(*****************************************************************************)
+(*                            *                    Trocq                     *)
+(*  _______                   *       Copyright (C) 2023 Inria & MERCE       *)
+(* |__   __|                  *    (Mitsubishi Electric R&D Centre Europe)   *)
+(*    | |_ __ ___   ___ __ _  *       Cyril Cohen <cyril.cohen@inria.fr>     *)
+(*    | | '__/ _ \ / __/ _` | *       Enzo Crance <enzo.crance@inria.fr>     *)
+(*    | | | | (_) | (_| (_| | *   Assia Mahboubi <assia.mahboubi@inria.fr>   *)
+(*    |_|_|  \___/ \___\__, | ************************************************)
+(*                        | | * This file is distributed under the terms of  *)
+(*                        |_| * GNU Lesser General Public License Version 3  *)
+(*                            * see LICENSE file for the text of the license *)
+(*****************************************************************************)
+
 From Coq Require Import ssreflect.
-From HoTT Require Import HoTT.
-Require Import HoTT_additions Hierarchy.
+Require Import Stdlib Hierarchy.
 
 Set Universe Polymorphism.
 Unset Universe Minimization ToSet.
@@ -56,5 +68,17 @@ Proof.
   - exact R_in_mapK_Empty.
 Defined.
 
-Axiom Param01_Empty : Param01.Rel Empty Empty.
-Axiom Param10_Empty : Param10.Rel Empty Empty.
+Definition Param01_Empty : Param01.Rel Empty Empty.
+Proof.
+unshelve econstructor; first exact: EmptyR.
+- done.
+- constructor; exact map_Empty.
+Defined.
+
+Definition Param10_Empty : Param10.Rel Empty Empty.
+Proof.
+unshelve econstructor; first exact: EmptyR.
+- constructor; exact map_Empty.
+- done.
+Defined.
+

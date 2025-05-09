@@ -12,13 +12,10 @@
 (*****************************************************************************)
 
 From Coq Require Import ssreflect.
-Require Import HoTT_compatibility Hierarchy Param_lemmas.
+Require Import Stdlib Hierarchy Param_lemmas.
 
 Set Universe Polymorphism.
 Unset Universe Minimization ToSet.
-
-Notation Unit := unit.
-Notation none := None.
 
 Inductive optionR (A A' : Type) (AR : A -> A' -> Type) :
   option A -> option A' -> Type :=
@@ -118,5 +115,5 @@ Definition option_R_in_mapK (A A' : Type) (AR : Param40.Rel A A')
          (oa : option A) (oa' : option A') (oaR : optionR A A' AR oa oa') :
     option_map_in_R A A' AR oa oa' (option_R_in_map A A' AR oa oa' oaR) = oaR.
 Proof.
-by case: oaR => [a a' aR|]//=; elim/(ind_map AR): _; rewrite transport1.
+by case: oaR => [a a' aR|]//=; elim/(ind_map AR): _; rewrite transport_1.
 Qed.

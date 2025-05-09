@@ -46,9 +46,6 @@ Notation "x .2" := (pr2 x) : fibration_scope.
 
 Notation paths := eq.
 Notation idpath := eq_refl.
-
-Notation eq := paths.
-Notation eq_refl := idpath.
 Notation inverse := eq_sym.
 Notation concat := eq_trans.
 Notation "x = y" := (Logic.eq x y) : type_scope.
@@ -111,7 +108,7 @@ Lemma moveR_pM {A : Type} {x y z : A} (p : x = z) (q : y = z) (r : y = x) :
   r = q @ p^ -> r @ p = q.
 Proof. by case: _ / p q r. Defined.
 
-Lemma transport1@{i j} {A : Type@{i}} (P : A -> Type@{j})
+Lemma transport_1@{i j} {A : Type@{i}} (P : A -> Type@{j})
     {x : A} (u : P x) : transport P 1 u = u.
 Proof. done. Defined.
 
@@ -208,6 +205,18 @@ Reserved Notation "p ~ 1" (at level 7, left associativity, format "p '~' '1'").
 Reserved Notation "p ~ 0" (at level 7, left associativity, format "p '~' '0'").
 
 Definition Prop_irrelevance_type := forall (P : Prop) (p q : P), p = q.
-
 Axiom Prop_irrelevance : Prop_irrelevance_type.
+
+Notation Unit := unit.
+Notation none := None.
+Notation Bool := bool.
+Notation Empty := False.
+
+(* While `is_true` exists in Rocq's Stdlib, it defined differently: fun b => b = true
+   To simplify the proofs, we'll redefine it. *)
+Definition is_true: Bool -> Type :=
+  fun b => match b with
+    | true => Unit
+    | false => Empty
+    end.
 

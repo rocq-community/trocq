@@ -12,8 +12,7 @@
 (*****************************************************************************)
 
 From Coq Require Import ssreflect.
-From HoTT Require Import HoTT.
-Require Import HoTT_additions Hierarchy.
+Require Import Stdlib Hierarchy.
 
 Set Universe Polymorphism.
 Unset Universe Minimization ToSet.
@@ -86,6 +85,89 @@ Definition comap_ind@{i} {A A' : Type@{i}} {PA : Param04.Rel@{i} A A'}
     (P : forall (a : A), PA a a' -> Type@{i})  :
    P a aR -> P (comap PA a') (comap_in_R PA a' (comap PA a') idpath).
 Proof. by elim/(ind_comap PA): _ aR / _. Defined.
+
+(* symmetry lemmas for Map *)
+
+Definition eq_Map0w@{i} {A A' : Type@{i}} {R R' : A -> A' -> Type@{i}} :
+  (forall a a', R a a' <--> R' a a') ->
+  Map0.Has@{i} R' -> Map0.Has@{i} R.
+Proof.
+  move=> RR' []; exists.
+Defined.
+
+Definition eq_Map1w@{i} {A A' : Type@{i}} {R R' : A -> A' -> Type@{i}} :
+  (forall a a', R a a' <--> R' a a') ->
+  Map1.Has@{i} R' -> Map1.Has@{i} R.
+Proof.
+  move=> RR' [m]; exists. exact.
+Defined.
+
+Definition eq_Map2aw@{i} {A A' : Type@{i}} {R R' : A -> A' -> Type@{i}} :
+  (forall a a', R a a' <--> R' a a') ->
+  Map2a.Has@{i} R' -> Map2a.Has@{i} R.
+Proof.
+  move=> RR' [m mR]; exists m.
+  move=> a' b /mR/(snd (RR' _ _)); exact.
+Defined.
+
+Definition eq_Map2bw@{i} {A A' : Type@{i}} {R R' : A -> A' -> Type@{i}} :
+  (forall a a', R a a' <--> R' a a') ->
+  Map2b.Has@{i} R' -> Map2b.Has@{i} R.
+Proof.
+  move=> RR' [m Rm]; unshelve eexists m.
+  - move=> a' b /(fst (RR' _ _)) /Rm; exact.
+Defined.
+
+Definition eq_Map3w@{i} {A A' : Type@{i}} {R R' : A -> A' -> Type@{i}} :
+  (forall a a', R a a' <--> R' a a') ->
+  Map3.Has@{i} R' -> Map3.Has@{i} R.
+Proof.
+  move=> RR' [m mR Rm]; unshelve eexists m.
+  - move=> a' b /mR /(snd (RR' _ _)); exact.
+  - move=> a' b /(fst (RR' _ _))/Rm; exact.
+Defined.
+
+Definition flipw@{i} {A A' : Type@{i}} {R R' : A -> A' -> Type@{i}} :
+    (forall a a', R a a' <->> R' a a') ->
+    (forall a a', R a a' <--> R' a a') :=
+fun Rab a a' => ((Rab a a').1, (Rab a a').2.1).
+
+Definition eq_Map0@{i} {A A' : Type@{i}} {R R' : A -> A' -> Type@{i}} :
+  (forall a a', R a a' <->> R' a a') ->
+  Map0.Has@{i} R' -> Map0.Has@{i} R.
+Proof. by move=> /flipw/eq_Map0w. Defined.
+
+Definition eq_Map1@{i} {A A' : Type@{i}} {R R' : A -> A' -> Type@{i}} :
+  (forall a a', R a a' <->> R' a a') ->
+  Map1.Has@{i} R' -> Map1.Has@{i} R.
+Proof. by move=> /flipw/eq_Map1w. Defined.
+  
+Definition eq_Map2a@{i} {A A' : Type@{i}} {R R' : A -> A' -> Type@{i}} :
+  (forall a a', R a a' <->> R' a a') ->
+  Map2a.Has@{i} R' -> Map2a.Has@{i} R.
+Proof. by move=> /flipw/eq_Map2aw. Defined.
+
+Definition eq_Map2b@{i} {A A' : Type@{i}} {R R' : A -> A' -> Type@{i}} :
+  (forall a a', R a a' <->> R' a a') ->
+  Map2b.Has@{i} R' -> Map2b.Has@{i} R.
+Proof. by move=> /flipw/eq_Map2bw. Defined.
+
+Definition eq_Map3@{i} {A A' : Type@{i}} {R R' : A -> A' -> Type@{i}} :
+  (forall a a', R a a' <->> R' a a') ->
+  Map3.Has@{i} R' -> Map3.Has@{i} R.
+Proof. by move=> /flipw/eq_Map3w. Defined.
+  
+Definition eq_Map4@{i} {A A' : Type@{i}} {R R' : A -> A' -> Type@{i}} :
+  (forall a a', R a a' <->> R' a a') ->
+  Map4.Has@{i} R' -> Map4.Has@{i} R.
+Proof.
+move=> RR' [m mR Rm RmK]; unshelve eexists m _ _.
+- move=> a' b /mR /(RR' _ _).2.1; exact.
+- move=> a' b /(RR' _ _).1/Rm; exact.
+- move=> a' b r /=; rewrite RmK.
+  by case: RR' => /= f [/= g ].
+Defined.
+
 
 (************************)
 (* Proofs about Param44 *)

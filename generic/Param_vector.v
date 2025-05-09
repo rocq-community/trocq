@@ -12,13 +12,11 @@
 (*****************************************************************************)
 
 From Coq Require Import ssreflect.
-Require Import HoTT_compatibility Hierarchy Param_nat Param_lemmas.
+Require Import Stdlib Hierarchy Param_nat Param_lemmas.
 Set Asymmetric Patterns.
 
 Set Universe Polymorphism.
 Unset Universe Minimization ToSet.
-
-Notation Unit := unit.
 
 Module Vector.
 
@@ -149,10 +147,11 @@ Definition R_in_map :
     (v : t A n) (v' : t A' n'),
       tR A A' AR n n' nR v v' -> map A A' AR n n' nR v = v'.
 Proof.
-  intros A A' AR n n' nR v v' vR.
-  elim: vR => [|{}n {}n' {}nR a a' aR {}v {}v' _].
+  intros A A' AR n n' nR v v'.
+  elim => [|{}n {}n' {}nR a a' aR {}v {}v' _].
   - reflexivity.
-  - by case: _ / (R_in_map AR a a' aR) => <-.
+  - case: _ / (R_in_map AR a a' aR).
+    by elim.
 Defined.
 
 Definition R_in_mapK : forall
@@ -161,9 +160,10 @@ Definition R_in_mapK : forall
       map_in_R A A' AR n n' nR v v' (R_in_map A A' AR n n' nR v v' vR) = vR.
 Proof.
   move=> A A' AR n n' nR v v'.
-  elim=> [//|{}n {}n' {}nR a a' aR {}v {}v' vR IHvR].
-  rewrite -{}[in RHS]IHvR/=.
-  elim/(ind_map AR): _.
+  elim=> [//|{}n {}n' {}nR a a' aR {}v {}v' vR IHvR /=].
+  case: (vR in X in _ = X) / IHvR.
+  elim /(ind_map AR): _.
+  simpl.
   by case: _ / R_in_map.
 Qed.
 

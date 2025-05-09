@@ -12,9 +12,7 @@
 (*****************************************************************************)
 
 From Coq Require Import ssreflect.
-From HoTT Require Import HoTT.
-
-Require Import HoTT_additions.
+From Trocq Require Import Stdlib.
 
 Set Universe Polymorphism.
 Unset Universe Minimization ToSet.

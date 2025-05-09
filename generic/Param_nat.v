@@ -11,9 +11,8 @@
 (*                            * see LICENSE file for the text of the license *)
 (*****************************************************************************)
 
-From Coq Require Import ssreflect.
-From HoTT Require Import HoTT.
-Require Import HoTT_additions Hierarchy.
+From Coq Require Import ssreflect ssrbool.
+Require Import Stdlib Hierarchy Param_lemmas.
 
 Set Universe Polymorphism.
 Unset Universe Minimization ToSet.
@@ -21,6 +20,43 @@ Unset Universe Minimization ToSet.
 Inductive natR : nat -> nat -> Type :=
   | OR : natR O O
   | SR : forall (n n' : nat), natR n n' -> natR (S n) (S n').
+
+(* From Rocq's stdlib *)
+Fixpoint eqb n m : Bool :=
+  match n, m with
+    | O, O => true
+    | O, S _ => false
+    | S _, O => false
+    | S n', S m' => eqb n' m'
+  end.
+
+Lemma uip_lifted_bool (b: Bool) (x1 x2 : is_true b):
+  x1 = x2.
+Proof.
+  revert x1 x2.
+  case b=> /= ; case.
+  by case.
+Qed.
+
+Lemma natR_irrelevant m n (nR nR' : natR m n) : nR = nR'.
+Proof.
+have @phi k l (r : natR k l) : is_true (eqb k l).
+1: {
+  elim: r => {k l}; first by reflexivity.
+  move=> k l r e; exact: e.
+}
+have @psi k l (e : is_true (eqb k l)) : natR k l.
+  - elim: k l e  => [| k ihk] l e.
+    + case: l e => [| l] // _; exact OR.
+    + case: l e => [| l] // e. 
+      exact: SR (ihk _ e). 
+  - have phiK k l r : psi k l (phi k l r) = r.
+    + elim: r => {k l} // k l r e /=.
+      by rewrite [X in SR _ _ X]e. 
+    + rewrite -(phiK m n nR) -(phiK m n nR').
+      suff -> : phi _ _ nR = phi _ _ nR' by [].
+      apply uip_lifted_bool.
+Defined.
 
 Definition map_nat : nat -> nat := idmap.
 
@@ -44,10 +80,9 @@ Definition R_in_map_nat : forall {n n' : nat}, natR n n' -> map_nat n = n' :=
 
 Definition R_in_mapK_nat : forall {n n' : nat} (nR : natR n n'),
   map_in_R_nat (R_in_map_nat nR) = nR.
-Proof.
-move=> n n'; elim=> //= {}n {}n' nR IHn.
-by elim: {2}_ / IHn; elim (R_in_map_nat nR).
-Defined.
+Proof. 
+by move=> n n'; case: _ / => //= {}n {}n' nR; apply: natR_irrelevant.
+Qed.
 
 Definition Param_nat_sym {n n' : nat} : natR n n' -> natR n' n.
 Proof.
@@ -58,19 +93,13 @@ Defined.
 
 Definition Param_nat_sym_inv {n n' : nat} :
   forall (nR : natR n n'), Param_nat_sym (Param_nat_sym nR) = nR.
-Proof.
-  intro nR. induction nR; simpl.
-  - reflexivity.
-  - rewrite IHnR. reflexivity.
-Defined.
+Proof. by elim => //= {}n {}n' nR ->. Defined.
 
-Definition natR_sym : forall (n n' : nat), sym_rel natR n n' <~> natR n n'.
+Definition natR_sym : forall (n n' : nat), sym_rel natR n n' <->> natR n n'.
 Proof.
-  intros n n'.
-  unshelve eapply equiv_adjointify.
+  intros n n'; unshelve eexists _, _.
   - apply Param_nat_sym.
   - apply Param_nat_sym.
-  - intro nR. apply Param_nat_sym_inv.
   - intro nR. apply Param_nat_sym_inv.
 Defined.
 

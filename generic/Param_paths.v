@@ -12,7 +12,7 @@
 (*****************************************************************************)
 
 From Coq Require Import ssreflect.
-Require Import HoTT_compatibility Hierarchy.
+Require Import Stdlib Hierarchy Param_lemmas.
 
 Set Universe Polymorphism.
 Unset Universe Minimization ToSet.
@@ -78,9 +78,10 @@ Definition paths_R_in_mapK@{i}
     paths_map_in_R@{i} A A' AR x x' xR y y' yR e e'
         (paths_R_in_map@{i} A A' AR x x' xR y y' yR e e' u) = u.
 Proof.
-move=> e e' [] //=.
-set X := (X in transport _ X _).
-have -> // : X = 1%path by exact: Prop_irrelevance.
+  move=> e e' [] //=.
+  case (R_in_mapK AR x x' xR).
+  case: _ / (R_in_map AR x x' xR).
+  done.
 Qed.
 
 Definition Map0_paths

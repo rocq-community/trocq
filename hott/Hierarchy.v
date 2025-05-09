@@ -12,8 +12,7 @@
 (*****************************************************************************)
 
 From Coq Require Import ssreflect.
-From HoTT Require Import HoTT.
-Require Import HoTT_additions Database.
+Require Import Stdlib Database.
 From elpi Require Import elpi.
 
 From Trocq.Elpi Extra Dependency "util.elpi" as util.
@@ -226,57 +225,6 @@ Notation IsUMap := Map4.Has.
 Notation MkUMap := Map4.BuildHas.
 Arguments Map4.BuildHas {A B R}.
 Arguments Param44.BuildRel {A B R}.
-
-(* symmetry lemmas for Map *)
-
-Definition eq_Map0@{i} {A A' : Type@{i}} {R R' : A -> A' -> Type@{i}} :
-  (forall a a', R a a' <~> R' a a') ->
-  Map0.Has@{i} R' -> Map0.Has@{i} R.
-Proof.
-  move=> RR' []; exists.
-Defined.
-
-Definition eq_Map1@{i} {A A' : Type@{i}} {R R' : A -> A' -> Type@{i}} :
-  (forall a a', R a a' <~> R' a a') ->
-  Map1.Has@{i} R' -> Map1.Has@{i} R.
-Proof.
-  move=> RR' [m]; exists. exact.
-Defined.
-
-Definition eq_Map2a@{i} {A A' : Type@{i}} {R R' : A -> A' -> Type@{i}} :
-  (forall a a', R a a' <~> R' a a') ->
-  Map2a.Has@{i} R' -> Map2a.Has@{i} R.
-Proof.
-  move=> RR' [m mR]; exists m.
-  move=> a' b /mR /(RR' _ _)^-1%equiv; exact.
-Defined.
-
-Definition eq_Map2b@{i} {A A' : Type@{i}} {R R' : A -> A' -> Type@{i}} :
-  (forall a a', R a a' <~> R' a a') ->
-  Map2b.Has@{i} R' -> Map2b.Has@{i} R.
-Proof.
-  move=> RR' [m Rm]; unshelve eexists m.
-  - move=> a' b /(RR' _ _)/Rm; exact.
-Defined.
-
-Definition eq_Map3@{i} {A A' : Type@{i}} {R R' : A -> A' -> Type@{i}} :
-  (forall a a', R a a' <~> R' a a') ->
-  Map3.Has@{i} R' -> Map3.Has@{i} R.
-Proof.
-  move=> RR' [m mR Rm]; unshelve eexists m.
-  - move=> a' b /mR /(RR' _ _)^-1%equiv; exact.
-  - move=> a' b /(RR' _ _)/Rm; exact.
-Defined.
-
-Definition eq_Map4@{i} {A A' : Type@{i}} {R R' : A -> A' -> Type@{i}} :
-  (forall a a', R a a' <~> R' a a') ->
-  Map4.Has@{i} R' -> Map4.Has@{i} R.
-Proof.
-move=> RR' [m mR Rm RmK]; unshelve eexists m _ _.
-- move=> a' b /mR /(RR' _ _)^-1%equiv; exact.
-- move=> a' b /(RR' _ _)/Rm; exact.
-- by move=> a' b r /=; rewrite RmK [_^-1%function _]equiv_funK.
-Defined.
 
 (* instances of MapN for A = A *)
 (* allows to build id_ParamMN : forall A, ParamMN.Rel A A *)

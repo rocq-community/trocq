@@ -118,19 +118,16 @@ Definition path_forall_types `{Funext} A F G :
   (forall (a : A), F a = G a) -> (forall a, F a) = (forall a, G a).
 Proof. by move=> /(path_forall _ _)->. Defined.
 
-Definition equiv_flip@{i k | i <= k} :
-	forall (A B : Type@{i}) (P : A -> B -> Type@{k}),
-    Equiv@{k k} (forall (a : A) (b : B), P a b) (forall (b : B) (a : A), P a b).
-Proof.
-  intros A B P.
-  unshelve eapply Build_Equiv@{k k}.
-  - exact (@flip@{i i k} A B P).
-  - by unshelve eapply
-      (@Build_IsEquiv@{k k}
-        (forall (a : A) (b : B), P a b) (forall (b : B) (a : A), P a b)
-        (@flip@{i i k} A B P)
-        (@flip@{i i k} B A (fun (b : B) (a : A) => P a b))).
-Defined.
-
 Notation "A <--> B" := ((A -> B) * (B -> A))%type (at level 70) : fibration_scope.
-Notation "A <->> B" := {f : A -> B & { g : B -> A & forall x, g (f x) = x}} (at level 70) : fibration_scope.
+
+(* TODO: that's an awful name *)
+Definition LeftInversesBetween@{i} (A B: Type@{i}) : Type@{i} := {
+  f : A -> B | {
+  g : B -> A | (
+  forall x, g (f x) = x
+)}}.
+Notation "A <->> B" := (LeftInversesBetween A B) (at level 70) : fibration_scope.
+
+Definition equiv_flip@{i k} (A B : Type@{i}) (P : A -> B -> Type@{k}) :
+  LeftInversesBetween@{i} (forall (a : A) (b : B), P a b) (forall (b : B) (a : A), P a b).
+Proof. by do 2!exists (fun PAB b a => PAB a b). Defined.

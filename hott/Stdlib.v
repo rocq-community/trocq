@@ -11,11 +11,5 @@
 (*                            * see LICENSE file for the text of the license *)
 (*****************************************************************************)
 
-From elpi Require Export elpi.
-From Trocq Require Export
-  Database Hierarchy Vernac Param Common
-  Param_arrow Param_Type Param_forall Param_prod Param_sigma
-  Param_Empty Param_option Param_sum Param_trans Param_paths Param_vector
-  Param_nat Param_list Param_bool Param_lemmas.
-
-(* TODO: should we also export some variant-specific files, such as Param_Prop.v? *)
+From HoTT Require Export HoTT.
+From Trocq Require Export HoTT_additions.

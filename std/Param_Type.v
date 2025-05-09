@@ -12,7 +12,7 @@
 (*****************************************************************************)
 
 From elpi Require Import elpi.
-Require Import HoTT_compatibility Hierarchy Database.
+Require Import Stdlib Hierarchy Database.
 
 From Trocq.Elpi Extra Dependency "util.elpi" as util.
 From Trocq.Elpi Extra Dependency "class.elpi" as class.
