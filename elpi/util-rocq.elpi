@@ -50,6 +50,10 @@ coq.gref.string-map.domain Map Set :- std.do! [
 
 namespace util {
 
+pred argument->gref i:argument, o:gref.
+argument->gref (str S) GR :- coq.locate S GR.
+argument->gref (trm T) GR :- coq.term->gref T GR.
+
 % named-coe Rec1 Rec2 Coe Depth
 % builds a function from (p?global (indt Rec1)) to (p?global (indt Rec1))
 % assuming

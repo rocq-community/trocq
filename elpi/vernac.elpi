@@ -55,11 +55,8 @@ main [str "Register", str "Funext", str S] :- !, std.do! [
 
 % command to add custom witnesses to the database
 % and tells trocq to use it immediately
-main [str "Use", str X] :- !,
-  coq.locate X GR, main [str "Use", trm (global GR)].
-
-main [str "Use", trm X] :- !, std.do! [
-  coq.term->gref X GRR,
+main [str "Use", X] :- !, std.do! [
+  util.argument->gref X GRR,
   coq.env.typeof GRR XTy,
   param-class.type->classes XTy Class CList GR GR',
   coq.info "accumultating" GR "@" Class "(" CList ") ~" GR' ":." GRR,
