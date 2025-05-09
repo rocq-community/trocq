@@ -82,9 +82,6 @@ main [str "Use", trm X] :- !, std.do! [
         ":." (const WCRR),
   ])
 ].
-% coq.elpi.accumulate _ "trocq.db"
-%   (clause _ (before "default-gref")
-%     (trocq.db.gref GR (pc map4 map2b) [] {{:gref int}} {{:gref Rp42b}})),
 
 % serveral use in one go!
 main [str "Use", X, Y | Rest] :- !, std.do![
