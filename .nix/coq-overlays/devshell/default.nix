@@ -14,7 +14,7 @@ mkCoqDerivation {
     echo '`nix-build` is not supported.'
     echo
     echo 'You can either:'
-    echo '- run ${
+    echo '- run `nix-build --argstr job trocq`, ${
       lib.concatMapStringsSep " or " (variant: "`nix-build --argstr job ${variant.pname}`") trocq.variants
     }'
     echo '- if you want to experiment, run `nix-shell` to spawn a shell with the dependencies of all trocq variants.'
