@@ -54,7 +54,7 @@ main [str "Register", str "Funext", str S] :- !, std.do! [
 ].
 
 % command to add custom witnesses to the database
-
+% and tells trocq to use it immediately
 main [str "Use", str X] :- !,
   coq.locate X GR, main [str "Use", trm (global GR)].
 
