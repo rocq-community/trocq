@@ -19,6 +19,7 @@ Require Export Param_Type Param_arrow Param_forall.
 
 From Trocq.Elpi Extra Dependency "annot.elpi" as annot.
 From Trocq.Elpi Extra Dependency "util.elpi" as util.
+From Trocq.Elpi Extra Dependency "util-rocq.elpi" as util_rocq.
 From Trocq.Elpi Extra Dependency "class.elpi" as class.
 From Trocq.Elpi Extra Dependency "param-class-util.elpi" as param_class_util.
 From Trocq.Elpi Extra Dependency "param.elpi" as param.
@@ -68,6 +69,7 @@ Elpi Accumulate File constraint_graph.
 Elpi Accumulate File constraints_impl.
 Elpi Accumulate File param_class_util.
 Elpi Accumulate File param.
+Elpi Accumulate File util_rocq.
 Elpi Accumulate File tactic.
 
-Tactic Notation "trocq" := elpi trocq.
+Tactic Notation "trocq" ident_list(l) := elpi trocq ltac_string_list:(l).

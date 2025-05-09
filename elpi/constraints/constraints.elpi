@@ -44,4 +44,6 @@ pred eq i:param-class, i:param-class.
 % trigger reduction of the graph and instantiation of variables
 pred reduce-graph.
 
+pred local-db i:list prop.
+
 } % cstr

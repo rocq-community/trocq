@@ -91,6 +91,8 @@ eq C1 C2 :- geq C1 C2, geq C2 C1.
 reduce-graph :-
   declare_constraint internal.c.reduce-graph [_].
 
+local-db DB :- declare_constraint (internal.c.db DB) [_].
+
 % ==================================================================================================
 
 namespace internal {
@@ -173,6 +175,9 @@ constraint c.univ-link c.univ-link? c.univ-link- {
 % store the constraint graph in the Elpi constraint store
 pred c.graph o:constraint-graph.
 
+% stores the local db
+pred c.db o:list prop.
+
 % constraints to trigger addition of information to the constraint graph
 pred c.dep-pi o:class-id, o:class-id, o:class-id.
 pred c.dep-arrow o:class-id, o:class-id, o:class-id.
@@ -183,7 +188,7 @@ pred c.geq o:or class-id param-class, o:or class-id param-class.
 % trigger reduction of the graph
 pred c.reduce-graph.
 
-constraint c.graph c.dep-pi c.dep-arrow c.dep-type c.dep-gref c.geq c.reduce-graph {
+constraint c.graph c.dep-pi c.dep-arrow c.dep-type c.dep-gref c.geq c.reduce-graph c.db {
   rule \ (c.graph G) (c.dep-pi ID IDA IDB) <=> (
     cstr-graph.add-dep-pi ID IDA IDB G G',
     declare_constraint (c.graph G') [_]
@@ -204,7 +209,7 @@ constraint c.graph c.dep-pi c.dep-arrow c.dep-type c.dep-gref c.geq c.reduce-gra
     cstr-graph.add-geq IDorC1 IDorC2 G G',
     declare_constraint (c.graph G') [_]
   ).
-  rule \ (c.graph G) (c.reduce-graph) <=> (std.do! [
+  rule (c.db DB) \ (c.graph G) (c.reduce-graph) <=> (std.do! [
     coq.say "final constraint graph START:",
     vars? IDs,
     util.when-debug dbg.full (
@@ -217,11 +222,12 @@ constraint c.graph c.dep-pi c.dep-arrow c.dep-type c.dep-gref c.geq c.reduce-gra
       coq.say "order:" SortedIDs,
       coq.say "***********************************************************************************"
     ),
-    reduce SortedIDs G FinalValues,
-    util.when-debug dbg.full (coq.say "final values:" FinalValues),
-    std.forall FinalValues instantiate-coq
-  ]
-  ).
+    DB => std.do! [
+      reduce SortedIDs G FinalValues,
+      util.when-debug dbg.steps (coq.say "final values:" FinalValues),
+      std.forall FinalValues instantiate-coq
+    ]
+  ]).
 }
 
 % reduce the graph by instantiating variables in the precedence order and updating the graph

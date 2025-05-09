@@ -17,11 +17,35 @@ evar _ _ _ :- !.
 :before "coq-assign-evar-refined"
 evar _ _ _ :- !.
 
+pred known->gref i:prop, o:prop.
+known->gref
+  (trocq.db.known-gref _Rel GR OutCl Classes GR' GRR)
+  (trocq.db.gref GR OutCl Classes GR' GRR :- !).
+
+pred load-rel i:gref, o:list prop.
+load-rel GRRel DB :- std.do! [
+  std.findall
+    (trocq.db.known-gref GRRel _GR _OutCl _Classes _GR' _GRR)
+    AllRel,
+  std.map AllRel known->gref DB
+].
+
+pred load-rels i:list gref, o:list prop.
+load-rels GRRels DB :- std.do! [
+  std.map GRRels load-rel DBs,
+  std.flatten DBs DB
+].
+
 solve InitialGoal NewGoals :- debug dbg.full => std.do! [
-  InitialGoal = goal _Context _ G _ [],
+  InitialGoal = goal _Context _ G _ Args,
   std.assert-ok! (coq.typecheck G Ty) "goal ill-typed",
+  util.when-debug dbg.full (coq.say "translating args" Args),
+  std.map Args util.argument->gref GRArgs,
+  util.when-debug dbg.full (coq.say "loading rels" GRArgs),
+  load-rels GRArgs DB,
+  util.when-debug dbg.full (coq.say "local DB" DB),
   util.when-debug dbg.full (coq.say "goal" G),
-  translate-goal Ty G (pc map0 map1) G' GR,
+  translate-goal DB Ty G (pc map0 map1) G' GR,
   util.when-debug dbg.full (coq.say "trocq:" G "~" G' "by" GR),
   FinalProof = {{ @comap lp:G lp:G' lp:GR (_ : lp:G') }},
   util.when-debug dbg.full (coq.say FinalProof),
@@ -32,8 +56,8 @@ solve InitialGoal NewGoals :- debug dbg.full => std.do! [
   refine.no_check EFinalProof InitialGoal NewGoals
 ].
 
-pred translate-goal i:term, i:term, i:param-class, o:term, o:term.
-translate-goal Ty G (pc M N) G' GR' :- std.do! [
+pred translate-goal i:list prop, i:term, i:term, i:param-class, o:term, o:term.
+translate-goal DB Ty G (pc M N) G' GR' :- DB => std.do! [
   cstr.init,
   if (Ty = sort (typ _))
     (T = (app [pglobal (const {trocq.db.ptype}) _, {trocq.db.map-class->term M}, {trocq.db.map-class->term N}]))
@@ -54,6 +78,7 @@ translate-goal Ty G (pc M N) G' GR' :- std.do! [
     coq.say "***********************************************************************************"
   ),
   % reduce the graph, so the variables all become ground in the terms
+  cstr.local-db DB,
   cstr.reduce-graph,
   % now we can remove the weaken placeholders and replace them with real weakening functions
   % or nothing if it is weaken α α

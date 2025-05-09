@@ -108,7 +108,7 @@ Lemma RTrue : Param01.Rel True True.
 Admitted.
 Lemma Runit : Param01.Rel unit unit.
 Admitted.
-Trocq Use Rp Rmul Rzero Param10_paths Reqmodp01 RTrue Runit.
+Trocq RelatedWith Rp Rp Rmul Rzero Reqmodp01 RTrue Runit.
 
 Local Open Scope ring_scope.
 
@@ -117,7 +117,7 @@ Lemma IntRedModZp :
  forall (m n : int),  m = int_mul n n -> eqmodp m n.
 Proof.
 move=> Hyp.
-trocq; simpl.
+trocq Rp; simpl.
 exact: Hyp.
 Qed.
 
