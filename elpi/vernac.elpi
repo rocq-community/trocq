@@ -99,7 +99,7 @@ usage-msg U :-
     "usage:",
     "- Trocq Register Univalence <u>",
     "- Trocq Register Funext <f>",
-    "- Trocq Use <RTrocq>",
+    "- Trocq Use <RTrocq>+",
     "", "",
   ] U.
 
