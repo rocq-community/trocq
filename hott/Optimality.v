@@ -1,4 +1,4 @@
-From Coq Require Import ssreflect.
+Require Import ssreflect.
 From Trocq Require Import Stdlib Trocq.
 
 Set Universe Polymorphism.

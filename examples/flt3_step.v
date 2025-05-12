@@ -11,7 +11,7 @@
 (*                            * see LICENSE file for the text of the license *)
 (*****************************************************************************)
 
-From Coq Require Import ssreflect.
+Require Import ssreflect.
 From mathcomp Require Import all_ssreflect all_algebra.
 From Trocq Require Import Trocq.
 

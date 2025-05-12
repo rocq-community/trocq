@@ -4,13 +4,21 @@
   shell-attribute = "devshell";
   attribute = "trocq";
 
-  default-bundle = "8.20";
-  bundles."8.20" = {
+  default-bundle = "coq-9.0";
+  bundles."coq-8.20" = {
     trocq-std.main-job = true;
     trocq-hott.main-job = true;
 
     coqPackages.coq.override.version = "8.20";
     coqPackages.coq-elpi.override.version = "master";
+  };
+  bundles."coq-9.0" = {
+    trocq-std.main-job = true;
+    trocq-hott.main-job = true;
+
+    coqPackages.coq.override.version = "9.0";
+    coqPackages.coq-elpi.override.version = "master";
+    rocqPackages.rocq-elpi.override.version = "master";
   };
 
   cachix.coq = { };

@@ -12,7 +12,7 @@
 (*****************************************************************************)
 
 From elpi Require Import elpi.
-From Coq Require Import ssreflect.
+Require Import ssreflect.
 Require Import Stdlib Hierarchy Database Param_lemmas.
 
 From Trocq.Elpi Extra Dependency "util-rocq.elpi" as util_rocq.

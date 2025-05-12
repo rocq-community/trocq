@@ -12,7 +12,7 @@
 (*****************************************************************************)
 
 From elpi Require Import elpi.
-From Coq Require Import ssreflect.
+Require Import ssreflect.
 From Trocq Require Import Trocq.
 
 Set Universe Polymorphism.

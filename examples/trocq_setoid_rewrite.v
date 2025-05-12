@@ -11,7 +11,7 @@
 (*                            * see LICENSE file for the text of the license *)
 (*****************************************************************************)
 
-From Coq Require Import ssreflect.
+Require Import ssreflect.
 From Coq Require Import Setoid.
 From Trocq Require Import Trocq.
 

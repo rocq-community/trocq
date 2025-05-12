@@ -11,7 +11,7 @@
 (*                            * see LICENSE file for the text of the license *)
 (*****************************************************************************)
 
-From Coq Require Import ssreflect.
+Require Import ssreflect.
 From Trocq Require Import Trocq Param_list.
 From Trocq_examples Require Import int_to_Zp.
 

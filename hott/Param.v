@@ -12,7 +12,7 @@
 (*****************************************************************************)
 
 From elpi Require Import elpi.
-From Coq Require Import ssreflect.
+Require Import ssreflect.
 Require Export Database.
 Require Import Hierarchy.
 Require Export Param_Type Param_arrow Param_forall.

@@ -11,7 +11,7 @@
 (*                            * see LICENSE file for the text of the license *)
 (*****************************************************************************)
 
-From Coq Require Import ssreflect.
+Require Import ssreflect.
 Require Import Stdlib Hierarchy.
 
 Set Universe Polymorphism.

@@ -11,7 +11,7 @@
 (*                            * see LICENSE file for the text of the license *)
 (*****************************************************************************)
 
-From Coq Require Import ssreflect ssrbool.
+Require Import ssreflect ssrbool.
 Require Import Stdlib Hierarchy Param_lemmas.
 
 Set Universe Polymorphism.

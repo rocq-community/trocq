@@ -11,7 +11,7 @@
 (*                            * see LICENSE file for the text of the license *)
 (*****************************************************************************)
 
-From Coq Require Import ssreflect.
+Require Import ssreflect.
 From Trocq Require Import Trocq.
 From Trocq_examples Require Import N.
 From elpi Require Import elpi.

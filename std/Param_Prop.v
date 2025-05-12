@@ -12,7 +12,7 @@
 (*****************************************************************************)
 
 From elpi Require Import elpi.
-From Coq Require Import ssreflect.
+Require Import ssreflect.
 Require Import Stdlib Hierarchy Database.
 
 From Trocq.Elpi Extra Dependency "class.elpi" as class.
