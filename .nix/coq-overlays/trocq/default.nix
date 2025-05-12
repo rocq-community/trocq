@@ -4,7 +4,8 @@
   version ? null,
   trocq-std,
   trocq-hott,
-  trocq-examples,
+  trocq-std-examples,
+  trocq-hott-examples,
 }:
 
 stdenv.mkDerivation rec {
@@ -21,7 +22,10 @@ stdenv.mkDerivation rec {
       std
       hott
     ];
-    examples = trocq-examples.passthru;
+    examples = [
+      trocq-std-examples
+      trocq-hott-examples
+    ];
   };
 
   propagatedBuildInputs = passthru.variants;

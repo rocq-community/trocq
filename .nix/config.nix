@@ -6,7 +6,8 @@
 
   default-bundle = "8.20";
   bundles."8.20" = {
-    coqPackages.trocq-examples = { };
+    trocq-std.main-job = true;
+    trocq-hott.main-job = true;
 
     coqPackages.coq.override.version = "8.20";
     coqPackages.coq-elpi.override.version = "master";
