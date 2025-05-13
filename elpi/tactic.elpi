@@ -36,19 +36,19 @@ load-rels GRRels DB :- std.do! [
   std.flatten DBs DB
 ].
 
-solve InitialGoal NewGoals :- debug dbg.full => std.do! [
+solve InitialGoal NewGoals :- log-level level.info => std.do! [
   InitialGoal = goal _Context _ G _ Args,
   std.assert-ok! (coq.typecheck G Ty) "goal ill-typed",
-  util.when-debug dbg.full (coq.say "translating args" Args),
+  util.at-level level.info (coq.say "translating args" Args),
   std.map Args util.argument->gref GRArgs,
-  util.when-debug dbg.full (coq.say "loading rels" GRArgs),
+  util.at-level level.info (coq.say "loading rels" GRArgs),
   load-rels GRArgs DB,
-  util.when-debug dbg.full (coq.say "local DB" DB),
-  util.when-debug dbg.full (coq.say "goal" G),
+  util.at-level level.info (coq.say "local DB" DB),
+  util.at-level level.info (coq.say "goal" {coq.pp->string {coq.term->pp G}}),
   translate-goal DB Ty G (pc map0 map1) G' GR,
-  util.when-debug dbg.full (coq.say "trocq:" G "~" G' "by" GR),
+  util.at-level level.info (coq.say "trocq:" G "~" G' "by" GR),
   FinalProof = {{ @comap lp:G lp:G' lp:GR (_ : lp:G') }},
-  util.when-debug dbg.full (coq.say FinalProof),
+  util.at-level level.info (coq.say FinalProof),
 
   std.assert-ok! (coq.elaborate-skeleton FinalProof G EFinalProof) "proof elaboration error",
   std.assert-ok! (coq.typecheck EFinalProof G2) "proof typechecking error",
@@ -64,13 +64,13 @@ translate-goal DB Ty G (pc M N) G' GR' :- DB => std.do! [
     (T = (app [pglobal (const {trocq.db.pprop}) _, {trocq.db.map-class->term M}, {trocq.db.map-class->term N}])),
   % first annotate the initial goal with fresh parametricity class variables
   term->annot-term G AG,
-  util.when-debug dbg.steps (
+  util.at-level level.trace (
     coq.say "will translate" AG "at level" T,
     coq.say "***********************************************************************************"
   ),
   % generate the associated goal G' and witness GR
   param AG T G' GR,
-  util.when-debug dbg.steps (
+  util.at-level level.trace (
     coq.say "***********************************************************************************",
     coq.say "after translation:",
     coq.say "goal:" G',
@@ -83,7 +83,7 @@ translate-goal DB Ty G (pc M N) G' GR' :- DB => std.do! [
   % now we can remove the weaken placeholders and replace them with real weakening functions
   % or nothing if it is weaken α α
   param.subst-weaken GR GR',
-  util.when-debug dbg.steps (
+  util.at-level level.trace (
     coq.say "***********************************************************************************",
     coq.say "after reduction:",
     coq.say "goal:" {coq.term->string G'},

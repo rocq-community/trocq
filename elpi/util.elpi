@@ -22,18 +22,18 @@ kind or type -> type -> type.
 type inl A -> or A B.
 type inr B -> or A B.
 
-% to set level of verbosity of the tool
-kind debug-level type.
-type dbg.none debug-level.
-type dbg.steps debug-level.
-type dbg.full debug-level.
+kind verbosity type.
+type level.info verbosity.
+type level.debug verbosity.
+type level.trace verbosity.
 
-pred debug-level->int i:debug-level, o:int.
-debug-level->int dbg.none 0.
-debug-level->int dbg.steps 1.
-debug-level->int dbg.full 2.
+% Returns the numeric level associated to a verbosity, the higher the more verbose.
+pred verbosity->int i:verbosity, o:int.
+verbosity->int level.info 0.
+verbosity->int level.debug 1.
+verbosity->int level.trace 2.
 
-pred debug o:debug-level.
+pred log-level o:verbosity.
 
 namespace util {
 
@@ -46,10 +46,10 @@ cmp-int A B lt :- A < B, !.
 cmp-int A B eq :- A = B, !.
 cmp-int _ _ gt.
 
-pred when-debug i:debug-level, i:prop.
-when-debug L Log :- debug D, !,
-  if ({debug-level->int D} >= {debug-level->int L}) true Log.
-when-debug _ _.
+pred at-level i:verbosity, i:prop.
+at-level MinimumLevel Log :- log-level CurrentLevel, !,
+  if ({verbosity->int CurrentLevel} >= {verbosity->int MinimumLevel}) Log true.
+at-level _ _.
 
 pred when i:prop, i:prop.
 when Condition Goal :-
