@@ -13,8 +13,9 @@ N.v
 peano_bin_nat.v
 setoid_rewrite.v
 square_and_cube_mod7.v
-#stuck.v # broken
 summable.v
-#trocq_gen_rewrite.v # broken
 trocq_setoid_rewrite.v
-#Vector_tuple.v # broken
+# broken
+#trocq_gen_rewrite.v
+#stuck.v
+#Vector_tuple.v
