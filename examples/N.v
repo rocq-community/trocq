@@ -11,10 +11,11 @@
 (*                            * see LICENSE file for the text of the license *)
 (*****************************************************************************)
 
-From mathcomp Require Import all_ssreflect.
+From mathcomp Require Import ssreflect ssrnat.
 From Trocq Require Import Common.
 
 Set Universe Polymorphism.
+Set Bullet Behavior "Strict Subproofs".
 
 (* definition of binary natural numbers *)
 

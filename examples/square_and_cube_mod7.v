@@ -104,14 +104,14 @@ Lemma Rone : Rp one onep. Proof. done. Qed.
 (* These lemmas are about congruence mod 7, of + and * *)
 Lemma Radd : binop_param Rp Rp Rp add addp.
 Proof.
-rewrite /Rp /= /graph /==> x1 y1 <- x2 y2 <-.
-by rewrite /modp rmorphE.
+rewrite /Rp /SplitSurj.toParam /= /graph /==> x1 y1 <- x2 y2 <-.
+by rewrite /rel/= /modp rmorphE.
 Qed.
 
 Lemma Rmul : binop_param Rp Rp Rp mul mulp.
 Proof.
-rewrite /Rp /= /graph /= => x1 y1 <- x2 y2 <-.
-by rewrite /modp rmorphM.
+rewrite /Rp /SplitSurj.toParam /= /graph /= => x1 y1 <- x2 y2 <-.
+by rewrite /rel/= /modp rmorphM.
 Qed.
 
 Lemma Reqmodp01 : forall (m : int) (x : ℤ/7ℤ), Rp m x ->

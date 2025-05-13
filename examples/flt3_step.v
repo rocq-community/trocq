@@ -106,14 +106,14 @@ Lemma Rone : Rp one onep. Proof. done. Qed.
 (* These lemmas are about congruence mod 9, of + and * *)
 Lemma Radd : binop_param Rp Rp Rp add addp.
 Proof.
-rewrite /Rp /= /graph /==> x1 y1 <- x2 y2 <-.
-by rewrite /modp rmorphE.
+rewrite /Rp /SplitSurj.toParam /= /graph /==> x1 y1 <- x2 y2 <-.
+by rewrite /rel/= /modp rmorphE.
 Qed.
 
 Lemma Rmul : binop_param Rp Rp Rp mul mulp.
 Proof.
-rewrite /Rp /= /graph /= => x1 y1 <- x2 y2 <-.
-by rewrite /modp rmorphM.
+rewrite /Rp /SplitSurj.toParam /= /graph /= => x1 y1 <- x2 y2 <-.
+by rewrite /rel/= /modp rmorphM.
 Qed.
 
 (* This lemma says that mod-ing by 3 is the same as first mod-ing by 9 and then

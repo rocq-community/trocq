@@ -92,10 +92,18 @@ Definition Zp_add (x y : Zp) : 'Z_p := (x + y)%R.
 Definition Zp_mul (x y : Zp) : 'Z_p := (x * y)%R.
 
 Lemma Radd : binop_param Rp Rp Rp (int_add) (Zp_add).
-Proof. by move=> /= m _ <- n _ <- /=; rewrite rmorphD. Qed.
+Proof.
+  move=> /= m _ <- n _ <- /=.
+  rewrite /Rp /SplitSurj.toParam /rel /=.
+  by rewrite rmorphD.
+Qed.
 
 Lemma Rmul : binop_param Rp Rp Rp (int_mul) (Zp_mul).
-Proof. by move=> /= m _ <- n _ <- /=; rewrite rmorphM. Qed.
+Proof.
+  move=> /= m _ <- n _ <- /=.
+  rewrite /Rp /SplitSurj.toParam /rel /=.
+  by rewrite rmorphM.
+Qed.
 
 Definition Reqmodp01 : forall (m : int) (x : 'Z_p), Rp m x ->
   forall n y, Rp n y -> Param01.Rel (eqmodp m n) (eq_Zmodp x y).
