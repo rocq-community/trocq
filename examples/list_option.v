@@ -12,7 +12,7 @@
 (*****************************************************************************)
 
 Require Import ssreflect.
-From Trocq Require Import Trocq.
+From Trocq Require Import Stdlib Trocq.
 From Trocq Require Import Param_trans Param_list.
 
 Set Universe Polymorphism.

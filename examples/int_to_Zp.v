@@ -12,7 +12,7 @@
 (*****************************************************************************)
 
 From mathcomp Require Import all_ssreflect all_algebra.
-From Trocq Require Import Trocq.
+From Trocq Require Import Stdlib Trocq.
 Import GRing.Theory.
 Local Open Scope bool_scope.
 

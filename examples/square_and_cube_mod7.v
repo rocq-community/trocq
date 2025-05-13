@@ -13,7 +13,7 @@
 
 Require Import ssreflect.
 From mathcomp Require Import all_ssreflect all_algebra.
-From Trocq Require Import Trocq.
+From Trocq Require Import Stdlib Trocq.
 
 Import GRing.Theory.
 Open Scope ring_scope.

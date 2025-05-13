@@ -11,9 +11,8 @@
 (*                            * see LICENSE file for the text of the license *)
 (*****************************************************************************)
 
-Require Import ssreflect.
-From Coq Require Import Setoid.
-From Trocq Require Import Trocq.
+Require Import ssreflect Setoid.
+From Trocq Require Import Stdlib Trocq.
 
 Set Universe Polymorphism.
 
@@ -53,7 +52,7 @@ Lemma eqmodp01 :
   Param01.Rel (m == n)%int (m' == n')%int.
 Proof.
 move=> m m' Rm n n' Rn.
-apply: (@Param01.BuildRel (m == n)%int (m' == n')%int (fun _ _ => unit)).
+apply: (@Param01.BuildRel (m == n)%int (m' == n')%int (fun _ _ => Unit)).
 - constructor.
 - by constructor => mn; apply (eqmodp_morph _ _ Rm _ _ Rn).
 Qed.

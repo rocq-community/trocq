@@ -12,7 +12,7 @@
 (*****************************************************************************)
 
 Require Import ssreflect.
-From Trocq Require Import Trocq.
+From Trocq Require Import Stdlib Trocq.
 From Trocq_examples Require Import N.
 From elpi Require Import elpi.
 

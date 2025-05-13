@@ -13,7 +13,7 @@
 
 From elpi Require Import elpi.
 Require Import ssreflect.
-From Trocq Require Import Trocq.
+From Trocq Require Import Stdlib Trocq.
 
 Set Universe Polymorphism.
 

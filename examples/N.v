@@ -11,8 +11,8 @@
 (*                            * see LICENSE file for the text of the license *)
 (*****************************************************************************)
 
-From mathcomp Require Import ssreflect ssrnat.
-From Trocq Require Import Common.
+From Trocq Require Import Stdlib Common.
+From mathcomp Require Import ssreflect.
 
 Set Universe Polymorphism.
 Set Bullet Behavior "Strict Subproofs".
@@ -29,38 +29,38 @@ Delimit Scope positive_scope with positive.
 Bind Scope positive_scope with positive.
 
 Notation "1" := xH : positive_scope.
-Notation "p ~ 1" := (xI p)
- (at level 7, left associativity, format "p '~' '1'") : positive_scope.
-Notation "p ~ 0" := (xO p)
- (at level 7, left associativity, format "p '~' '0'") : positive_scope.
+Notation "p ! 1" := (xI p)
+ (at level 1, left associativity, format "p '!' '1'") : positive_scope.
+Notation "p ! 0" := (xO p)
+ (at level 1, left associativity, format "p '!' '0'") : positive_scope.
 
 Module Pos.
 Local Open Scope positive_scope.
 Fixpoint succ x :=
   match x with
-    | p~1 => (succ p)~0
-    | p~0 => p~1
-    | 1 => 1~0
+    | p!1 => (succ p)!0
+    | p!0 => p!1
+    | 1 => 1!0
   end.
 
 Fixpoint to_nat (x : positive) : nat :=
   match x with
-    | p~1 => 1 + (to_nat p + to_nat p)
-    | p~0 => to_nat p + to_nat p
+    | p!1 => 1 + (to_nat p + to_nat p)
+    | p!0 => to_nat p + to_nat p
     | 1 => 1
   end.
 
 Fixpoint add (x y : positive) : positive :=
   match x, y with
   | 1, p | p, 1 => succ p
-  | p~0, q~0 => (add p q)~0
-  | p~0, q~1 | p~1, q~0 => (add p q)~1
-  | p~1, q~1 => succ (add p q)~1
+  | p!0, q!0 => (add p q)!0
+  | p!0, q!1 | p!1, q!0 => (add p q)!1
+  | p!1, q!1 => succ (add p q)!1
   end.
 Infix "+" := add : positive_scope.
 Notation "p .+1" := (succ p) : positive_scope.
 
-Lemma addpp x : x + x = x~0. Proof. by elim: x => //= ? ->. Defined.
+Lemma addpp x : x + x = x!0. Proof. by elim: x => //= ? ->. Defined.
 Lemma addp1 x : x + 1 = x.+1. Proof. by elim: x. Defined.
 Lemma addpS x y : x + y.+1 = (x + y).+1.
 Proof. by elim: x y => // p IHp [q|q|]//=; rewrite ?IHp ?addp1//. Defined.
@@ -98,7 +98,7 @@ end.
 Infix "+" := add : N_scope.
 Notation "n .+1" := (succ n) : N_scope.
 
-Lemma addpp p : (Npos p + Npos p)%N = Npos p~0.
+Lemma addpp p : (Npos p + Npos p)%N = Npos p!0.
 Proof. by elim: p => //= p IHp; rewrite Pos.addpp. Defined.
 
 Definition to_nat (n : N) : nat :=
@@ -107,9 +107,24 @@ Definition to_nat (n : N) : nat :=
 Fixpoint of_nat (n : nat) : N :=
   match n with O => 0 | S n => succ (of_nat n) end.
 
+(* from ssrnat, inlined because ssrnat clashes with HoTT. *)
+Lemma addn0 : forall n, (n + 0)%nat = n.
+Proof.
+  move=> n; induction n as [|n IHn] => //= ;
+  rewrite IHn ;
+  done.
+Qed.
+Lemma addSn : forall n m, (S n + m)%nat = S (n + m)%nat.
+Proof. done. Qed.  
+Lemma addnS : forall n m, (n + S m)%nat = S (n + m)%nat.
+Proof.
+  move=> n m; induction n as [|n IHn] => /= [//|].
+  by rewrite IHn //.
+Qed.
+
 Lemma of_natD i j : of_nat (i + j) = (of_nat i + of_nat j)%N.
 Proof.
-elim: i j => [//|i IHi] [|j]; first by rewrite addn0.
+elim: i j => [//|i IHi] [|j] ; first by rewrite /= addn0.
 rewrite addSn addnS /= IHi.
 case: (of_nat i) => // p; case: (of_nat j) => //=.
 - by rewrite /succ/= Pos.addp1.
@@ -117,7 +132,7 @@ case: (of_nat i) => // p; case: (of_nat j) => //=.
 Defined.
 
 Local Definition of_nat_double p k :
-  of_nat k = Npos p -> of_nat (k + k) = Npos p~0.
+  of_nat k = Npos p -> of_nat (k + k) = Npos p!0.
 Proof. by move=> kp; rewrite of_natD kp addpp. Defined.
 
 Lemma to_natK (n : N) : of_nat (to_nat n) = n.

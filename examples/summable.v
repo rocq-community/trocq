@@ -12,7 +12,7 @@
 (*****************************************************************************)
 
 Require Import ssreflect.
-From Trocq Require Import Trocq.
+From Trocq Require Import Stdlib Trocq.
 
 Set Universe Polymorphism.
 
@@ -174,7 +174,7 @@ Definition R_add_xnnR :
   forall (r1 : nnR) (re1 : xnnR), R_nnR r1 re1 ->
   forall (r2 : nnR) (re2 : xnnR), R_nnR r2 re2 ->
     R_nnR (r1 + r2) (re1 + re2).
-Proof. by do 2!move=> ? [_ [<-]|//]. Qed.
+Proof. by do 2! move=> ? ? <-. Qed.
 
 Definition seq_nnR_add :
   forall (r1 : summable) (re1 : seq_xnnR), Rrseq r1 re1 ->
