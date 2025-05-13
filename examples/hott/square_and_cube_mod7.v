@@ -1,1 +1,0 @@
-../square_and_cube_mod7.v

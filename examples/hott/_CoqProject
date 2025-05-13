@@ -4,18 +4,20 @@
 
 -R . Trocq_examples
 
-#artifact_paper_example.v # broken on HoTT
-#flt3_step.v # broken on HoTT (mathcomp compatibility)
-#int_to_Zp.v # broken on HoTT (mathcomp compatibility)
+# fl3_step.v, int_to_Zp.v, square_and_cube_mod7.v depend on mathcomp features
+# that clashes with HoTT, so they are std-only.
+
 list_option.v
 misc.v
-#nat_ind.v # broken on HoTT
 N.v
 peano_bin_nat.v
 setoid_rewrite.v
-#square_and_cube_mod7.v # broken on HoTT (mathcomp compatibility)
-#stuck.v # broken
 summable.v
-#trocq_gen_rewrite.v # broken
-#trocq_setoid_rewrite.v # broken on HoTT
-#Vector_tuple.v # broken
+# broken on HoTT
+#artifact_paper_example.v
+#nat_ind.v
+#trocq_setoid_rewrite.v
+# broken
+#trocq_gen_rewrite.v
+#stuck.v
+#Vector_tuple.v
