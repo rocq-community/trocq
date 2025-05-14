@@ -59,10 +59,9 @@ sequent-style presentation.
   - Enzo Crance ([**@ecranceMERCE**](https://github.com/ecranceMERCE))
   - Assia Mahboubi ([**@amahboubi**](https://github.com/amahboubi))
 - License: [GNU Lesser General Public License v3.0](LICENSE)
-- Compatible Coq versions: 8.17
+- Compatible Coq versions: 8.20, 9.0
 - Additional dependencies:
-  - [Coq-Elpi custom version](https://github.com/ecranceMERCE/coq-elpi/tree/strat)
-  - [Coq-HoTT 8.17](https://github.com/HoTT/Coq-HoTT)
+  - [Coq-Elpi](https://github.com/LPCIC/coq-elpi)
 - Coq namespace: `Trocq`
 - Related publication(s):
   - [Trocq: Proof Transfer for Free, With or Without Univalence](https://hal.science/hal-04177913/document) 

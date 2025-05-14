@@ -66,16 +66,16 @@ license:
   file: LICENSE
 
 supported_coq_versions:
-  text: 8.20
-  opam: '{>= "8.20" & < "9.0"}'
+  text: "8.20, 9.0"
+  opam: '{>= "8.20" & < "9.1"}'
 
 tested_coq_opam_versions:
-- version: '8.20'
+- version: '8.20, 9.0'
 
 dependencies:
 - opam:
     name: coq-elpi
-    version: '{= "master"}'
+    version: '{= "2.5.2"}'
   description: |-
     [Coq-Elpi](https://github.com/LPCIC/coq-elpi)
 
