@@ -15,7 +15,7 @@ setoid_rewrite.v
 square_and_cube_mod7.v
 summable.v
 trocq_setoid_rewrite.v
-trocq_gen_rewrite.v
+stuck.v
+Vector_tuple.v
 # broken
-#stuck.v
-#Vector_tuple.v
+#trocq_gen_rewrite.v

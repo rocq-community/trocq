@@ -13,18 +13,40 @@
 
 Require Import ssreflect.
 From Trocq Require Import Trocq Param_list.
-From Trocq_examples Require Import int_to_Zp.
 
 Set Universe Polymorphism.
 
+Declare Scope int_scope.
+Delimit Scope int_scope with int.
+Delimit Scope int_scope with ℤ.
 Local Open Scope int_scope.
+Declare Scope Zmodp_scope.
+Delimit Scope Zmodp_scope with Zmodp.
 Local Open Scope Zmodp_scope.
+
+Definition binop_param {X X'} RX {Y Y'} RY {Z Z'} RZ
+   (f : X -> Y -> Z) (g : X' -> Y' -> Z') :=
+  forall x x', RX x x' -> forall y y', RY y y' -> RZ (f x y) (g x' y').
+
+(***
+We setup an axiomatic context in order not to develop
+arithmetic modulo in Coq/HoTT.
+**)
+Axiom (int@{i} : Type@{i}) (zero : int) (add : int -> int -> int)
+      (mul : int -> int -> int) (one : int).
+Axiom (addC : forall m n, add m n = add n m).
+Axiom (Zmodp : Type) (zerop : Zmodp) (addp : Zmodp -> Zmodp -> Zmodp)
+      (mulp : Zmodp -> Zmodp -> Zmodp) (onep : Zmodp).
+Axiom (modp : int -> Zmodp) (reprp : Zmodp -> int)
+      (reprpK : forall x, modp (reprp x) = x).
+
+Definition eqmodp (x y : int) := modp x = modp y.
 
 Definition Rp := SplitSurj.toParamSym (SplitSurj.Build reprpK).
 
 Axiom Rzero : Rp zerop zero.
-Variable Radd : binop_param Rp Rp Rp addp add.
-Variable paths_to_eqmodp : binop_param Rp Rp iff paths eqmodp.
+Axiom Radd : binop_param Rp Rp Rp addp add.
+Axiom paths_to_eqmodp : binop_param Rp Rp iff paths eqmodp.
 
 Trocq Use Rp Param01_paths Param10_paths Radd Rzero Param_cons Param_nil.
 

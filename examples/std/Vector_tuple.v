@@ -11,7 +11,7 @@
 (*                            * see LICENSE file for the text of the license *)
 (*****************************************************************************)
 
-From mathcomp Require Import ssreflect ssrfun ssrnat.
+From mathcomp Require Import ssreflect ssrfun.
 From Trocq Require Import Trocq.
 
 Set Universe Polymorphism.
@@ -149,8 +149,9 @@ Proof.
   unfold tuple_vectorR in *. rewrite <- tv1R, <- tv2R.
   induction n1.
   - simpl in t1. unfold append, tuple_to_vector at 2. simpl. reflexivity.
-  - destruct t1 as [t' a]. simpl in tv1R. simpl.
-    rewrite /graph/=.
+  - destruct t1 as [t' a].
+    simpl in *.
+    rewrite /rel/= /graph/=.
     apply ap.
     unshelve eapply IHn1.
     + exact (Vector.tail v1).
@@ -189,7 +190,7 @@ Proof.
   unfold tuple_vectorR.
   induction n; simpl.
   - reflexivity.
-  - rewrite /graph; apply ap. exact IHn.
+  - rewrite /rel/= /graph; apply ap. exact IHn.
 Defined.
 
 Definition Param_const
@@ -261,7 +262,7 @@ Proof.
   unfold R_trans, tuple_vectorR in *.
   exists (Vector.cons a v).
   split.
-  - simpl in *. unfold graph in *. simpl. apply ap. exact tvR.
+  - rewrite /rel/= /graph/=. apply ap. exact tvR.
   - apply Vector.consR.
     + exact aR.
     + exact vv'R.
@@ -278,7 +279,7 @@ Proof. by trocq. Qed.
 (* bounded nat and bitvector *)
 (* NB: we can use transitivity to make the proofs here too *)
 
-
+From mathcomp Require Import ssrnat.
 Module BV.
 
 Definition bounded_nat (k : nat) := {n : nat & n < expn 2 n = true}%nat.
