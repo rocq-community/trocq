@@ -17,6 +17,3 @@ artifact_paper_example.v
 nat_ind.v
 trocq_setoid_rewrite.v
 trocq_gen_rewrite.v
-# broken
-#stuck.v
-#Vector_tuple.v
