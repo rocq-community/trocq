@@ -210,7 +210,7 @@ constraint c.graph c.dep-pi c.dep-arrow c.dep-type c.dep-gref c.geq c.reduce-gra
     declare_constraint (c.graph G') [_]
   ).
   rule (c.db DB) \ (c.graph G) (c.reduce-graph) <=> (std.do! [
-    coq.say "final constraint graph START:",
+    logging.trace (coq.say "final constraint graph START:"),
     vars? IDs,
     logging.trace (
       coq.say "final constraint graph:",
