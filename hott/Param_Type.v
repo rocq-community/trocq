@@ -15,7 +15,6 @@ Require Import ssreflect.
 From elpi Require Import elpi.
 Require Import Hierarchy Stdlib Database Param_lemmas.
 
-From Trocq.Elpi Extra Dependency "util.elpi" as util.
 From Trocq.Elpi Extra Dependency "class.elpi" as class.
 From Trocq.Elpi.generation Extra Dependency "param-type.elpi" as param_type_generation.
 
@@ -31,7 +30,6 @@ Local Open Scope param_scope.
 
 Elpi Command genmaptype.
 Elpi Accumulate Db trocq.db.
-Elpi Accumulate File util.
 Elpi Accumulate File class.
 Elpi Accumulate File param_type_generation.
 
@@ -116,7 +114,6 @@ Defined.
 
 Elpi Command genparamtype.
 Elpi Accumulate Db trocq.db.
-Elpi Accumulate File util.
 Elpi Accumulate File class.
 Elpi Accumulate File param_type_generation.
 

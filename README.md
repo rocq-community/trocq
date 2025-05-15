@@ -94,6 +94,7 @@ And four commands:
 - `Trocq RelatedWith R t1 t2 ...` to associate `t1`, `t2`, ... to `R`.
   Subsequent calls to `trocq R` will be able to use the translations `t1`,
   `t2`, ...
+- `Trocq Logging "off"|"info"|"debug"|"trace"` to set the verbosity level.
 
 ## ESOP 2024 artifact documentation
 

@@ -18,7 +18,6 @@ Require Import Hierarchy.
 Require Export Param_Type Param_arrow Param_forall.
 
 From Trocq.Elpi Extra Dependency "annot.elpi" as annot.
-From Trocq.Elpi Extra Dependency "util.elpi" as util.
 From Trocq.Elpi Extra Dependency "util-rocq.elpi" as util_rocq.
 From Trocq.Elpi Extra Dependency "class.elpi" as class.
 From Trocq.Elpi Extra Dependency "param-class-util.elpi" as param_class_util.
@@ -35,12 +34,10 @@ Unset Universe Minimization ToSet.
 
 Elpi Command genpparam.
 Elpi Accumulate Db trocq.db.
-Elpi Accumulate File util.
 Elpi Accumulate File class.
 
 Elpi Command genpparamtype.
 Elpi Accumulate Db trocq.db.
-Elpi Accumulate File util.
 Elpi Accumulate File class.
 Elpi Accumulate File pparam_type_generation.
 
@@ -73,7 +70,6 @@ Elpi Query lp:{{
 
 Elpi Tactic trocq.
 Elpi Accumulate Db trocq.db.
-Elpi Accumulate File util.
 Elpi Accumulate File class.
 Elpi Accumulate File simple_graph.
 Elpi Accumulate File constraints.

@@ -36,7 +36,7 @@ load-rels GRRels DB :- std.do! [
   std.flatten DBs DB
 ].
 
-solve InitialGoal NewGoals :- log-level level.info => std.do! [
+solve InitialGoal NewGoals :- std.do! [
   InitialGoal = goal _Context _ G _ Args,
   std.assert-ok! (coq.typecheck G Ty) "goal ill-typed",
   util.at-level level.info (coq.say "translating args" Args),

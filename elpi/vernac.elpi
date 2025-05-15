@@ -116,6 +116,13 @@ main [str "RelatedWith", Rel, X, Y | Rest] :- !, std.do![
     main [str "RelatedWith",  Rel, X], main [str "RelatedWith", Rel, Y | Rest]].
 
 main [str "Usage"] :- !, coq.info {usage-msg}.
+
+main [str "Logging", str StrLevel] :- !,
+  string->verbosity StrLevel Level,
+  util.accumulate-replacing-named-clause _ "trocq.db" "log-level" (
+    log-level Level
+  ).
+
 main _ :- coq.error {std.string.concat "\n" ["command syntax error", {usage-msg}]}.
 
 pred usage-msg o:string.
@@ -126,6 +133,6 @@ usage-msg U :-
     "- Trocq Register Funext <f>",
     "- Trocq Use <RTrocq>+",
     "- Trocq RelatedWith <Relation> <RTrocq>+",
+    "- Trocq Logging [\"off\"|\"info\"|\"debug\"|\"trace\"]",
     "", "",
   ] U.
-

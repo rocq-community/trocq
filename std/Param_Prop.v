@@ -16,7 +16,6 @@ Require Import ssreflect.
 Require Import Stdlib Hierarchy Database.
 
 From Trocq.Elpi Extra Dependency "class.elpi" as class.
-From Trocq.Elpi Extra Dependency "util.elpi" as util.
 From Trocq.Elpi.generation Extra Dependency "param-prop.elpi" as param_prop_generation.
 
 Set Universe Polymorphism.
@@ -32,7 +31,6 @@ Local Open Scope param_scope.
 Elpi Command genmapprop.
 Elpi Accumulate Db trocq.db.
 Elpi Accumulate File class.
-Elpi Accumulate File util.
 Elpi Accumulate File param_prop_generation.
 
 Elpi Query lp:{{
