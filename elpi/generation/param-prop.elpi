@@ -49,8 +49,7 @@ generate-map-prop M RClass :- std.do! [
   %    "generate-map-prop: Decl ill-typed",
   % std.assert-ok! (coq.typecheck DeclSym _)
   %    "generate-map-prop: DeclSym ill-typed",
-  @udecl! [] tt [] tt =>
+  @univpoly! ==>
     coq.env.add-const MapProp Decl' _ @transparent! _,
-  @udecl!  [] tt [] tt =>
     coq.env.add-const MapPropSym DeclSym' _ @transparent! _
 ].

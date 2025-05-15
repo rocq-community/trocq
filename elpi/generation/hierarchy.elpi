@@ -234,7 +234,7 @@ generate-prop-id-param (pc M N as Class) :-
   std.assert-ok! (coq.typecheck Decl _) "generate-prop-id-param: Decl is ill-typed",
 
   IdParam is "Prop_id_Param" ^ MStr ^ NStr,
-  @udecl! [] tt [] tt => coq.env.add-const IdParam Decl _ @transparent! _.
+  @univpoly! => coq.env.add-const IdParam Decl _ @transparent! _.
 
 pred generate-prop-param-sym i:param-class.
 generate-prop-param-sym (pc M N as Class) :-
@@ -259,4 +259,4 @@ generate-prop-param-sym (pc M N as Class) :-
   map-class.to_string M MStr,
   map-class.to_string N NStr,
   ParamSym is "Prop_Param" ^ MStr ^ NStr ^ "_sym",
-  @udecl! [] tt [] tt => coq.env.add-const ParamSym Decl _ @transparent! _.
+  @univpoly! => coq.env.add-const ParamSym Decl _ @transparent! _.

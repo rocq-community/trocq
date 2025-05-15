@@ -78,8 +78,7 @@ main [str "Use", X] :- !, std.do! [
 
       param-class.to-string subclass Suffix,
       WName is BaseName ^ "_weakened_to_" ^ Suffix,
-      @udecl! [] tt [] tt =>
-        coq.env.add-const WName WTRR _ @transparent! WCRR,
+      (@univpoly! => coq.env.add-const WName WTRR _ @transparent! WCRR),
       coq.elpi.accumulate _ "trocq.db"
         (clause _ (before "default-gref")
           (trocq.db.gref GR subclass CList GR' (const WCRR))),
@@ -122,8 +121,7 @@ main [str "RelatedWith", Rel, X] :- !, std.do! [
       param-class.weaken-out subclass GRR WTRR,
       param-class.to-string subclass Suffix,
       WName is BaseName ^ "_weakened_to_" ^ Suffix,
-      @udecl! [] tt [] tt =>
-        coq.env.add-const WName WTRR _ @transparent! WCRR,
+      (@univpoly! => coq.env.add-const WName WTRR _ @transparent! WCRR),
       coq.elpi.accumulate _ "trocq.db"
         (clause _ _
           (trocq.db.known-gref GRRel GR subclass CList GR' (const WCRR))),
