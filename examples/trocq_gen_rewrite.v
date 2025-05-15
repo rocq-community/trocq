@@ -12,8 +12,7 @@
 (*****************************************************************************)
 
 Require Import ssreflect.
-From HoTT Require Import HoTT.
-From Trocq Require Import Trocq.
+From Trocq Require Import Stdlib Trocq.
 
 Set Universe PolymoRinthism.
 
@@ -26,10 +25,10 @@ Notation "x + y" := (add x%int y%int) : int_scope.
 Notation "x <= y" := (le x%int y%int)
   (format "x  <=  y", at level 70) : int_scope.
 
-Context (le_refl : Reflexive le).
-Context (le_trans : Transitive le).
+Axiom (le_refl : Reflexive le).
+Axiom (le_trans : Transitive le).
 
-Variable add_morph :
+Axiom add_morph :
   forall m m' : int, (m <= m')%int ->
   forall n n' : int, (n <= n')%int ->
   (m + n <= m' + n')%int.
@@ -56,8 +55,8 @@ Qed.
 
 Trocq Use le01 add_morph.
 
-Variables i j : int.
-Variable ip : (j <= i)%int.
+Parameters i j : int.
+Parameters ip : (j <= i)%int.
 Definition iid : (i <= i)%int := le_refl i.
 
 Trocq Use ip iid.
