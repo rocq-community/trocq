@@ -59,7 +59,7 @@ main [str "Use", X] :- !, std.do! [
   util.argument->gref X GRR,
   coq.env.typeof GRR XTy,
   param-class.type->classes XTy Class CList GR GR',
-  coq.info "accumultating" GR "@" Class "(" CList ") ~" GR' ":." GRR,
+  coq.info "accumulating" GR "@" Class "(" CList ") ~" GR' ":." GRR,
   coq.elpi.accumulate _ "trocq.db"
     (clause _ (before "default-gref")
       (trocq.db.gref GR Class CList GR' GRR)),
@@ -75,7 +75,7 @@ main [str "Use", X] :- !, std.do! [
       coq.elpi.accumulate _ "trocq.db"
         (clause _ (before "default-gref")
           (trocq.db.gref GR subclass CList GR' (const WCRR))),
-      coq.info "accumultating" GR "@" subclass "(" CList ") ~" GR'
+      coq.info "accumulating" GR "@" subclass "(" CList ") ~" GR'
         ":." (const WCRR),
   ])
 ].
