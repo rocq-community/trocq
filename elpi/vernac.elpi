@@ -112,6 +112,7 @@ main [str "RelatedWith", Rel, X] :- !, std.do! [
       ":." BaseName
       "attached to relation" GRRelId
   ),
+
   coq.elpi.accumulate _ "trocq.db"
     (clause _ _
       (trocq.db.known-gref GRRel GR Class CList GR' GRR)),
@@ -119,6 +120,7 @@ main [str "RelatedWith", Rel, X] :- !, std.do! [
       sigma WTRR Suffix WName WCRR \
     if (do-not-fail => trocq.db.known-gref GRRel GR subclass _ _ _) true (std.do! [
       param-class.weaken-out subclass GRR WTRR,
+
       param-class.to-string subclass Suffix,
       WName is BaseName ^ "_weakened_to_" ^ Suffix,
       (@univpoly! => coq.env.add-const WName WTRR _ @transparent! WCRR),
