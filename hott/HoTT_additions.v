@@ -129,5 +129,5 @@ Definition LeftInversesBetween@{i} (A B: Type@{i}) : Type@{i} := {
 Notation "A <->> B" := (LeftInversesBetween A B) (at level 70) : fibration_scope.
 
 Definition equiv_flip@{i k} (A B : Type@{i}) (P : A -> B -> Type@{k}) :
-  LeftInversesBetween@{i} (forall (a : A) (b : B), P a b) (forall (b : B) (a : A), P a b).
+  LeftInversesBetween@{k} (forall (a : A) (b : B), P a b) (forall (b : B) (a : A), P a b).
 Proof. by do 2!exists (fun PAB b a => PAB a b). Defined.

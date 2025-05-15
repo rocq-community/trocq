@@ -13,9 +13,9 @@ N.v
 peano_bin_nat.v
 setoid_rewrite.v
 summable.v
+artifact_paper_example.v
+nat_ind.v
 # broken on HoTT
-#artifact_paper_example.v
-#nat_ind.v
 #trocq_setoid_rewrite.v
 # broken
 #trocq_gen_rewrite.v
