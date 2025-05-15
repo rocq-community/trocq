@@ -84,7 +84,7 @@ pred param-type o:param-class, o:param-class, o:constant.
 % pparam-type (M,N) {{ PParamTypeMN }}
 pred pparam-type o:param-class, o:constant.
 pparam-type C _ :-
-  util.at-level level.trace (coq.say "pparam" C), fail.
+  logging.trace (coq.say "pparam" C), fail.
 :name "default-pparam-type"
 pparam-type C PParamType :- var C, !,
   declare_constraint (pparam-type C PParamType) [C].
@@ -92,7 +92,7 @@ pparam-type C PParamType :- var C, !,
 % param-arrow (M,N) {{ ParamArrowMN }}
 pred param-arrow o:param-class, o:constant.
 param-arrow C _ :-
-  util.at-level level.trace (coq.say "arrow" C), fail.
+  logging.trace (coq.say "arrow" C), fail.
 :name "default-param-arrow"
 param-arrow C ParamArrow :- var C, !,
   declare_constraint (param-arrow C ParamArrow) [C].
@@ -100,7 +100,7 @@ param-arrow C ParamArrow :- var C, !,
 % param-forall (M,N) {{ ParamForallMN }}
 pred param-forall o:param-class, o:constant.
 param-forall C _ :-
-  util.at-level level.trace (coq.say "forall" C), fail.
+  logging.trace (coq.say "forall" C), fail.
 :name "default-param-forall"
 param-forall C ParamForall :- var C, !,
   declare_constraint (param-forall C ParamForall) [C].

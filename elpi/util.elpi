@@ -46,6 +46,13 @@ pred log-level o:verbosity.
 :name "log-level"
 log-level level.info.
 
+pred logging.info i:prop.
+logging.info P :- util.at-level level.info P.
+pred logging.debug i:prop.
+logging.debug P :- util.at-level level.debug P.
+pred logging.trace i:prop.
+logging.trace P :- util.at-level level.trace P.
+
 namespace util {
 
 pred option.value i:option A, i:A, o:A.
