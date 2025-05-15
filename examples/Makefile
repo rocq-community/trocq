@@ -1,3 +1,6 @@
+all:
+.PHONY: all
+
 clean:
 	$(MAKE) -C hott clean
 	$(MAKE) -C std clean
