@@ -1,0 +1,20 @@
+-arg -indices-matter
+-arg -w -arg +elpi.typechecker
+
+-R . Trocq_examples
+
+artifact_paper_example.v
+flt3_step.v
+int_to_Zp.v
+list_option.v
+misc.v
+nat_ind.v
+N.v
+peano_bin_nat.v
+setoid_rewrite.v
+square_and_cube_mod7.v
+summable.v
+trocq_setoid_rewrite.v
+stuck.v
+Vector_tuple.v
+trocq_gen_rewrite.v

@@ -1,0 +1,262 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%                            %                     Trocq                      %
+%  _______                   %        Copyright (C) 2023 Inria & MERCE        %
+% |__   __|                  %     (Mitsubishi Electric R&D Centre Europe)    %
+%    | |_ __ ___   ___ __ _  %        Cyril Cohen <cyril.cohen@inria.fr>      %
+%    | | '__/ _ \ / __/ _` | %        Enzo Crance <enzo.crance@inria.fr>      %
+%    | | | | (_) | (_| (_| | %    Assia Mahboubi <assia.mahboubi@inria.fr>    %
+%    |_|_|  \___/ \___\__, | %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%                        | | %   This file is distributed under the terms of  %
+%                        |_| %   GNU Lesser General Public License Version 3  %
+%                            % (see LICENSE file for the text of the license) %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% Populate trocq.db.map->class from registered `trocq.mapM` global references.
+pred register-map-classes.
+register-map-classes :-
+  std.forall {map-class.all-of-kind all} (M\ sigma MStr Name GR\
+    map-class.to_string M MStr,
+    Name is "lib:trocq.map" ^ MStr,
+
+    coq.locate Name GR,
+    coq.elpi.accumulate _ "trocq.db" (clause _ _ (trocq.db.map->class M GR))
+  ).
+
+% Populate trocq.db.map-class->indc-class from registered `trocq.indc_mapN`
+% global references.
+pred register-map-inductives.
+register-map-inductives :-
+  std.forall {map-class.all-of-kind all} (M\ sigma MStr Name GR\
+    map-class.to_string M MStr,
+    Name is "lib:trocq.indc_map" ^ MStr,
+
+    coq.locate Name GR,
+    coq.elpi.accumulate _ "trocq.db" (clause _ _ (trocq.db.map-class->indc-class M GR))
+  ).
+
+% Generate a module with a record type containing:
+% - a relation R : A -> B -> Type;
+% - a covariant (A to B) instance of one of the classes of Map listed above;
+% - a contravariant (B to A) instance.
+% Projections are also generated so that all fields are accessible from the top record.
+pred generate-module i:param-class.
+generate-module (pc M N as Class) :-
+  coq.univ.new U,
+  coq.univ.variable U L,
+  coq.univ-instance UI [L],
+  @uinstance! UI ==>
+
+  TypeU = sort (typ U),
+  coq.env.global {trocq.db.sym-rel} SymRel,
+
+  % generate record
+  trocq.db.map->class M CovariantSubRecordGR,
+  trocq.db.map->class N ContravariantSubRecordGR,
+  coq.env.global CovariantSubRecordGR CovariantSubRecord,
+  coq.env.global ContravariantSubRecordGR ContravariantSubRecord,
+
+  RelDecl =
+    parameter "A" _ TypeU (a\
+      parameter "B" _ TypeU (b\
+        record "Rel" (sort (typ {coq.univ.alg-super U})) "BuildRel" (
+          field [] "R" {{
+            lp:a -> lp:b -> lp:TypeU
+          }} r\
+          field [] "covariant" {{
+            lp:CovariantSubRecord lp:a lp:b lp:r
+          }} _\
+          field [] "contravariant" {{
+            lp:ContravariantSubRecord lp:b lp:a (lp:SymRel lp:a lp:b lp:r)
+          }} _\
+        end-record))),
+  (@keep-alg-univs! =>
+    std.assert-ok! (coq.typecheck-indt-decl RelDecl) "generate-module: RelDecl is ill-typed"),
+  (@primitive! => @udecl! [L] ff [] tt ==> coq.env.add-indt RelDecl TrocqInd,coq.env.indt TrocqInd _ _ _ _ [TrocqBuild] _),
+  coq.env.global (indt TrocqInd) Rel,
+  coq.env.projections TrocqInd
+    [some CR, some CovariantProj, some ContravariantProj],
+  coq.env.global (const CR) R,
+  % add record to the database for later use
+  coq.elpi.accumulate _ "trocq.db"
+    (clause _ (after "default-r") (trocq.db.r Class CR)),
+  coq.elpi.accumulate execution-site "trocq.db"
+    (clause _ _ (trocq.db.rel Class (indt TrocqInd) (indc TrocqBuild)
+      (const CR) (const CovariantProj) (const ContravariantProj))),
+
+  % generate projections on the covariant subrecord
+  map-class.fields M MFields,
+  CovariantSubRecordGR = indt CovariantSubRecordIndt,
+  coq.env.projections CovariantSubRecordIndt MSomeProjs,
+  coq.env.global (const CovariantProj) Covariant,
+  std.forall2 MFields MSomeProjs (field-name\ some-pr\ sigma Pr Proj Decl\
+    some-pr = some Pr,
+    coq.env.global (const Pr) Proj,
+
+    Decl = {{
+      fun (A: lp:TypeU) (B: lp:TypeU) (P: lp:Rel A B) =>
+        lp:Proj A B (lp:R A B P) (lp:Covariant A B P)
+    }},
+    std.assert-ok! (coq.typecheck Decl _) "generate-module: Decl is ill-typed",
+    @udecl! [L] ff [] tt => coq.env.add-const field-name Decl _ @transparent! _
+  ),
+
+  % generate projections on the contravariant subrecord
+  map-class.cofields N NCoFields,
+  coq.env.global (const ContravariantProj) Contravariant,
+  ContravariantSubRecordGR = indt ContravariantSubRecordIndt,
+  coq.env.projections ContravariantSubRecordIndt NSomeProjs,
+  std.forall2 NCoFields NSomeProjs (field-name\ some-pr\ sigma Pr Proj Decl\
+    some-pr = some Pr,
+    coq.env.global (const Pr) Proj,
+
+    Decl = {{
+      fun (A: lp:TypeU) (B: lp:TypeU) (P: lp:Rel A B) =>
+        lp:Proj B A (lp:SymRel A B (lp:R A B P)) (lp:Contravariant A B P)
+    }},
+    std.assert-ok! (coq.typecheck Decl _) "generate-module: Decl is ill-typed",
+    @udecl! [L] ff [] tt => coq.env.add-const field-name Decl _ @transparent! _
+  ).
+
+% Generate 2 functions of weakening per possible weakening:
+%  one on the left and one on the right, if possible
+pred generate-forget i:param-class.
+generate-forget Class :-
+  trocq.db.rel Class RelMN _ _ _ _,
+  std.forall {param-class.weakenings-from Class} (c\
+    sigma ForgetName RelMN'\
+    std.do! [
+      param-class.add-2-suffix "_" Class c "forget_" ForgetName,
+      trocq.db.rel c RelMN' _ _ _ _,
+      util.add-named-coe ForgetName RelMN RelMN' _
+    ]
+  ).
+
+% Populate the trocq.db.id-map and trocq.db.id-map-sym predicates with
+% registered trocq.id_mapM and trocq.id_mapN_sym global references.
+pred register-id-maps.
+register-id-maps :-
+  std.forall {map-class.all-of-kind all} (M\ sigma MStr IdMapStr IdMapSymStr Id_Map Id_Map_Sym\
+    map-class.to_string M MStr,
+    IdMapStr is "lib:trocq.id_map" ^ MStr,
+    IdMapSymStr is IdMapStr ^ "_sym",
+
+    coq.locate IdMapStr (const Id_Map),
+    coq.locate IdMapSymStr (const Id_Map_Sym),
+
+    coq.elpi.accumulate _ "trocq.db" (clause _ _ (trocq.db.id-map M Id_Map)),
+    coq.elpi.accumulate _ "trocq.db" (clause _ _ (trocq.db.id-map-sym M Id_Map_Sym))
+  ).
+
+pred generate-id-param i:param-class.
+generate-id-param (pc M N as Class) :-
+  coq.univ.new U,
+  coq.univ.variable U L,
+  coq.univ-instance UI [L],
+  @uinstance! UI ==>
+
+  TypeU = sort (typ U),
+  Paths = {trocq.db.paths UI},
+
+  trocq.db.rel Class _ BuildRelGR _ _ _,
+  coq.env.global BuildRelGR BuildRel,
+
+  coq.env.global (const {trocq.db.id-map M}) IdMap,
+  coq.env.global (const {trocq.db.id-map-sym N}) IdMapSym,
+
+  Decl = {{
+    fun (A: lp:TypeU) =>
+      lp:BuildRel A A (lp:Paths A) (lp:IdMap A) (lp:IdMapSym A)
+  }},
+  std.assert-ok! (coq.typecheck Decl _) "generate-id-param: Decl is ill-typed",
+
+  map-class.to_string M MStr,
+  map-class.to_string N NStr,
+  IdParam is "id_Param" ^ MStr ^ NStr,
+  (@udecl! [L] ff [] tt => coq.env.add-const IdParam Decl _ @transparent! CIdParam),
+
+  coq.elpi.accumulate _ "trocq.db"
+    (clause _ _ (trocq.db.id-param Class CIdParam)).
+
+pred generate-param-sym i:param-class.
+generate-param-sym (pc M N as Class) :-
+  coq.univ.new U,
+  coq.univ.variable U L,
+  coq.univ-instance UI [L],
+  @uinstance! UI ==>
+
+  TypeU = sort (typ U),
+  coq.env.global {trocq.db.sym-rel} SymRel,
+
+  trocq.db.rel Class RelMNGR _ RMNGR CovariantMNGR ContravariantMNGR,
+  coq.env.global RelMNGR RelMN,
+  coq.env.global RMNGR RMN,
+  coq.env.global CovariantMNGR CovariantMN,
+  coq.env.global ContravariantMNGR ContravariantMN,
+
+  trocq.db.rel (pc N M) _ BuildRelNMGR _ _ _,
+  coq.env.global BuildRelNMGR BuildRelNM,
+
+  Decl = {{
+    fun (A: lp:TypeU) (B: lp:TypeU) (P: lp:RelMN A B) =>
+      lp:BuildRelNM B A
+        (lp:SymRel A B (lp:RMN A B P))
+        (lp:ContravariantMN A B P)
+        (lp:CovariantMN A B P)
+  }},
+  std.assert-ok! (coq.typecheck Decl _) "generate-param-sym: Decl is ill-typed",
+
+  map-class.to_string M MStr,
+  map-class.to_string N NStr,
+  ParamSym is "Param" ^ MStr ^ NStr ^ "_sym",
+  (@udecl! [L] ff [] tt => coq.env.add-const ParamSym Decl _ @transparent! CParamSym),
+
+  coq.elpi.accumulate _ "trocq.db"
+    (clause _ _ (trocq.db.param-sym Class CParamSym)).
+
+pred generate-prop-id-param i:param-class.
+generate-prop-id-param (pc M N as Class) :-
+  Paths = {trocq.db.paths _},
+
+  map-class.to_string M MStr,
+  map-class.to_string N NStr,
+
+  trocq.db.rel Class _ BuildRelGR _ _ _,
+  coq.locate {calc ("Prop_id_Map" ^ MStr)} IdMapGR,
+  coq.locate {calc ("Prop_id_Map" ^ NStr ^ "_sym")} IdMapSymGR,
+  coq.env.global BuildRelGR BuildRel,
+  coq.env.global IdMapGR IdMap,
+  coq.env.global IdMapSymGR IdMapSym,
+
+  Decl = {{
+    fun (A: Prop) =>
+      lp:BuildRel A A (lp:Paths A) (lp:IdMap A) (lp:IdMapSym A)
+  }},
+  std.assert-ok! (coq.typecheck Decl _) "generate-prop-id-param: Decl is ill-typed",
+
+  IdParam is "Prop_id_Param" ^ MStr ^ NStr,
+  @univpoly! => coq.env.add-const IdParam Decl _ @transparent! _.
+
+pred generate-prop-param-sym i:param-class.
+generate-prop-param-sym (pc M N as Class) :-
+  trocq.db.rel Class RelMNGR _ RMNGR CovariantMNGR ContravariantMNGR,
+  trocq.db.rel (pc N M) _ BuildRelNMGR _ _ _,
+  coq.env.global BuildRelNMGR BuildRelNM,
+  coq.env.global {trocq.db.sym-rel} SymRel,
+  coq.env.global RelMNGR RelMN,
+  coq.env.global RMNGR RMN,
+  coq.env.global ContravariantMNGR ContravariantMN,
+  coq.env.global CovariantMNGR CovariantMN,
+
+  Decl = {{
+    fun (A: Prop) (B: Prop) (R: lp:RelMN A B) =>
+      lp:BuildRelNM B A
+        (lp:SymRel A B (lp:RMN A B R))
+        (lp:ContravariantMN A B R)
+        (lp:CovariantMN A B R)
+  }},
+  std.assert-ok! (coq.typecheck Decl _) "generate-prop-param-sym: Decl ill-typed",
+
+  map-class.to_string M MStr,
+  map-class.to_string N NStr,
+  ParamSym is "Prop_Param" ^ MStr ^ NStr ^ "_sym",
+  @univpoly! => coq.env.add-const ParamSym Decl _ @transparent! _.

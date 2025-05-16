@@ -1,0 +1,19 @@
+-arg -noinit
+-arg -indices-matter
+-arg -w -arg +elpi.typechecker
+
+-R . Trocq_examples
+
+# fl3_step.v, int_to_Zp.v, square_and_cube_mod7.v depend on mathcomp features
+# that clashes with HoTT, so they are std-only.
+
+list_option.v
+misc.v
+N.v
+peano_bin_nat.v
+setoid_rewrite.v
+summable.v
+artifact_paper_example.v
+nat_ind.v
+trocq_setoid_rewrite.v
+trocq_gen_rewrite.v

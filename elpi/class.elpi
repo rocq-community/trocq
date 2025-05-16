@@ -1,0 +1,276 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%                            %                     Trocq                      %
+%  _______                   %        Copyright (C) 2023 Inria & MERCE        %
+% |__   __|                  %     (Mitsubishi Electric R&D Centre Europe)    %
+%    | |_ __ ___   ___ __ _  %        Cyril Cohen <cyril.cohen@inria.fr>      %
+%    | | '__/ _ \ / __/ _` | %        Enzo Crance <enzo.crance@inria.fr>      %
+%    | | | | (_) | (_| (_| | %    Assia Mahboubi <assia.mahboubi@inria.fr>    %
+%    |_|_|  \___/ \___\__, | %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%                        | | %   This file is distributed under the terms of  %
+%                        |_| %   GNU Lesser General Public License Version 3  %
+%                            % (see LICENSE file for the text of the license) %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% -----------------------------------------------------------------------------
+% definitions about map & parametricity classes
+% -----------------------------------------------------------------------------
+
+% Note: should only contain definitions available during synterp
+
+% a parametricity class is a pair of map classes (levels in our hierarchy)
+kind map-class type.
+type map0  map-class.
+type map1  map-class.
+type map2a map-class.
+type map2b map-class.
+type map3  map-class.
+type map4  map-class.
+
+% high = axiom might be required (on product and universe)
+kind class-kind type.
+type low class-kind.
+type high class-kind.
+type all class-kind.
+
+namespace map-class {
+
+pred all-of-kind o:class-kind, o:list map-class.
+all-of-kind all [map0, map1, map2a, map2b, map3, map4].
+all-of-kind low [map0, map1, map2a].
+all-of-kind high [map2b, map3, map4].
+
+pred to_string i:map-class, o:string.
+to_string map0  "0".
+to_string map1  "1".
+to_string map2a "2a".
+to_string map2b "2b".
+to_string map3  "3".
+to_string map4  "4".
+
+pred add-suffix i:map-class, i:string, o:string.
+add-suffix Class P S :- S is P ^ {map-class.to_string Class}.
+
+pred add-2-suffix i:string,
+  i:map-class, i:map-class, i:string, o:string.
+add-2-suffix Sep Class1 Class2 P S :-
+   S is P ^ {map-class.to_string Class1} ^ Sep ^ {map-class.to_string Class2}.
+
+% names of the fields contained in a witness of a given level
+pred fields i:map-class, o:list string.
+fields map0  [].
+fields map1  ["map"].
+fields map2a ["map", "map_in_R"].
+fields map2b ["map", "R_in_map"].
+fields map3  ["map", "map_in_R", "R_in_map"].
+fields map4  ["map", "map_in_R", "R_in_map", "R_in_mapK"].
+
+pred cofields i:map-class, o:list string.
+cofields map0  [].
+cofields map1  ["comap"].
+cofields map2a ["comap", "comap_in_R"].
+cofields map2b ["comap", "R_in_comap"].
+cofields map3  ["comap", "comap_in_R", "R_in_comap"].
+cofields map4  ["comap", "comap_in_R", "R_in_comap", "R_in_comapK"].
+
+% lower/higher levels at distance 1 from a given level
+pred weakenings-from i:map-class, o:list map-class.
+weakenings-from map0  [].
+weakenings-from map1  [map0].
+weakenings-from map2a [map1].
+weakenings-from map2b [map1].
+weakenings-from map3  [map2a, map2b].
+weakenings-from map4  [map3].
+
+pred weakenings-to i:map-class, o:list map-class.
+weakenings-to map0  [map1].
+weakenings-to map1  [map2a, map2b].
+weakenings-to map2a [map3].
+weakenings-to map2b [map3].
+weakenings-to map3  [map4].
+weakenings-to map4  [].
+
+% lower/higher levels at distance 1 from a given level
+pred all-weakenings-from i:map-class, o:list map-class.
+all-weakenings-from map0  [].
+all-weakenings-from map1  [map0].
+all-weakenings-from map2a [map1, map0].
+all-weakenings-from map2b [map1, map0].
+all-weakenings-from map3  [map2a, map2b, map1, map0].
+all-weakenings-from map4  [map3, map2a, map2b, map1, map0].
+
+% all possible parametricity classes that can be created by combinations of 2 lists of map classes
+pred product i:list map-class, i:list map-class, o:list param-class.
+product Ms Ns Classes :-
+  std.map Ms (m\ cs\
+    std.map Ns (n\ c\ c = pc m n) cs
+  ) ClassesLL,
+  std.flatten ClassesLL Classes.
+
+% least upper bound containing all the fields of the two provided map classes
+pred union i:map-class, i:map-class, o:map-class.
+union map4  _     map4.
+union map3  map4  map4 :- !.
+union map3  _     map3.
+union map2b map4  map4 :- !.
+union map2b map3  map3 :- !.
+union map2b map2a map3 :- !.
+union map2b _     map2b.
+union map2a map4  map4 :- !.
+union map2a map3  map3 :- !.
+union map2a map2b map3 :- !.
+union map2a _     map2a.
+union map1  map4  map4 :- !.
+union map1  map3  map3 :- !.
+union map1  map2b map2b :- !.
+union map1  map2a map2a :- !.
+union map1  _     map1.
+union map0  M     M.
+
+% greatest lower bound containing the fields in common in the two provided map classes
+pred inter i:map-class, i:map-class, o:map-class.
+inter map0  _     map0.
+inter map1  map0  map0 :- !.
+inter map1  _     map1.
+inter map2a map0  map0 :- !.
+inter map2a map1  map1 :- !.
+inter map2a map2b map1 :- !.
+inter map2a _     map2a.
+inter map2b map0  map0 :- !.
+inter map2b map1  map1 :- !.
+inter map2b map2a map1 :- !.
+inter map2b _     map2b.
+inter map3  map4  map3 :- !.
+inter map3  M     M.
+inter map4  M     M.
+
+% partial order on map classes
+pred geq i:map-class, i:map-class.
+geq map4  _.
+geq map3  M :- std.mem! [map0, map1, map2a, map2b, map3] M.
+geq map2a M :- std.mem! [map0, map1, map2a] M.
+geq map2b M :- std.mem! [map0, map1, map2b] M.
+geq map1  M :- std.mem! [map0, map1] M.
+geq map0  map0.
+
+% minimal dependencies to translate a dependent product, see the table in the article
+pred dep-pi i:map-class, o:param-class, o:param-class.
+dep-pi map0  (pc map0 map0)  (pc map0 map0).
+dep-pi map1  (pc map0 map2a) (pc map1 map0).
+dep-pi map2a (pc map0 map4)  (pc map2a map0).
+dep-pi map2b (pc map0 map2a) (pc map2b map0).
+dep-pi map3  (pc map0 map4)  (pc map3 map0).
+dep-pi map4  (pc map0 map4)  (pc map4 map0).
+
+% minimal dependencies to translate an arrow type, see the table in the article
+pred dep-arrow i:map-class, o:param-class, o:param-class.
+dep-arrow map0  (pc map0 map0)  (pc map0 map0).
+dep-arrow map1  (pc map0 map1)  (pc map1 map0).
+dep-arrow map2a (pc map0 map2b) (pc map2a map0).
+dep-arrow map2b (pc map0 map2a) (pc map2b map0).
+dep-arrow map3  (pc map0 map3)  (pc map3 map0).
+dep-arrow map4  (pc map0 map4)  (pc map4 map0).
+
+} % map-class
+
+kind param-class type.
+type pc map-class -> map-class -> param-class.
+
+namespace param-class {
+
+pred all-of-kind o:class-kind, o:list param-class.
+all-of-kind high ParamClasses :-
+  map-class.all-of-kind all AllMapClasses,
+  map-class.all-of-kind high HighMapClasses,
+  map-class.product HighMapClasses AllMapClasses ParamClasses1,
+  map-class.product AllMapClasses HighMapClasses ParamClasses2,
+  std.append ParamClasses1 ParamClasses2 ParamClasses.
+all-of-kind Kind ParamClasses :-
+  map-class.all-of-kind Kind MapClasses,
+  map-class.product MapClasses MapClasses ParamClasses.
+
+pred to_string i:param-class, o:string.
+to_string (pc M N) S :-
+  S is {map-class.to_string M} ^ {map-class.to_string N}.
+
+pred add-suffix i:param-class, i:string, o:string.
+add-suffix Class P S :- S is P ^ {param-class.to_string Class}.
+
+pred add-2-suffix i:string,
+  i:param-class, i:param-class, i:string, o:string.
+add-2-suffix Sep Class1 Class2 P S :-
+   S is P ^ {param-class.to_string Class1} ^ Sep ^ {param-class.to_string Class2}.
+
+% extensions of functions over map classes to parametricity classes
+
+pred weakenings-from i:param-class, o:list param-class.
+weakenings-from (pc M N) Classes :-
+  map-class.weakenings-from M Ms,
+  map-class.weakenings-from N Ns,
+  map-class.product [M] Ns MClasses,
+  map-class.product Ms [N] NClasses,
+  std.flatten [MClasses, NClasses] Classes.
+
+pred weakenings-to i:param-class, o:list param-class.
+weakenings-to (pc M N) Classes :-
+  map-class.weakenings-to M Ms,
+  map-class.weakenings-to N Ns,
+  map-class.product Ms Ns Classes,
+  map-class.product [M] Ns MClasses,
+  map-class.product Ms [N] NClasses,
+  std.flatten [MClasses, NClasses] Classes.
+
+pred all-weakenings-from i:param-class, o:list param-class.
+all-weakenings-from (pc M N) Classes :-
+  map-class.all-weakenings-from M Ms,
+  map-class.all-weakenings-from N Ns,
+  map-class.product Ms Ns StrictClasses,
+  map-class.product [M] Ns MClasses,
+  map-class.product Ms [N] NClasses,
+  std.flatten [StrictClasses, MClasses, NClasses] Classes.
+
+pred negate i:param-class, o:param-class.
+negate (pc M N) (pc N M).
+
+pred union i:param-class, i:param-class, o:param-class.
+union (pc M1 N1) (pc M2 N2) (pc M N) :-
+  map-class.union M1 M2 M,
+  map-class.union N1 N2 N.
+
+pred inter i:param-class, i:param-class, o:param-class.
+inter C C' _ :- logging.trace (coq.say C C'), fail.
+inter (pc M1 N1) (pc M2 N2) (pc M N) :-
+  map-class.inter M1 M2 M,
+  map-class.inter N1 N2 N.
+
+pred geq i:param-class, i:param-class.
+geq (pc M1 N1) (pc M2 N2) :-
+  map-class.geq M1 M2,
+  map-class.geq N1 N2.
+
+pred dep-pi i:param-class, o:param-class, o:param-class.
+dep-pi (pc M N) ClassA ClassB :-
+  map-class.dep-pi M ClassAM ClassBM,
+  map-class.dep-pi N ClassAN ClassBN,
+  union ClassAM {param-class.negate ClassAN} ClassA,
+  union ClassBM {param-class.negate ClassBN} ClassB.
+
+pred dep-arrow i:param-class, o:param-class, o:param-class.
+dep-arrow (pc M N) ClassA ClassB :-
+  map-class.dep-arrow M ClassAM ClassBM,
+  map-class.dep-arrow N ClassAN ClassBN,
+  union ClassAM {param-class.negate ClassAN} ClassA,
+  union ClassBM {param-class.negate ClassBN} ClassB.
+
+pred to-string i:param-class, o:string.
+to-string (pc M N) String :- std.do! [
+  map-class.to_string M MStr,
+  map-class.to_string N NStr,
+  String is MStr ^ NStr
+].
+
+% succeed if the parametricity class contains a map class over 2b
+% this means that a translation of a sort at this class will require univalence,
+% and the translation of a dependent product will require funext
+pred requires-axiom i:param-class.
+requires-axiom (pc M N) :- (std.mem! [map2b, map3, map4] M ; std.mem! [map2b, map3, map4] N).
+
+} % param-class

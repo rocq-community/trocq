@@ -1,0 +1,148 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%                            %                     Trocq                      %
+%  _______                   %        Copyright (C) 2023 Inria & MERCE        %
+% |__   __|                  %     (Mitsubishi Electric R&D Centre Europe)    %
+%    | |_ __ ___   ___ __ _  %        Cyril Cohen <cyril.cohen@inria.fr>      %
+%    | | '__/ _ \ / __/ _` | %        Enzo Crance <enzo.crance@inria.fr>      %
+%    | | | | (_) | (_| (_| | %    Assia Mahboubi <assia.mahboubi@inria.fr>    %
+%    |_|_|  \___/ \___\__, | %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%                        | | %   This file is distributed under the terms of  %
+%                        |_| %   GNU Lesser General Public License Version 3  %
+%                            % (see LICENSE file for the text of the license) %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+pred generate-param-arrow
+  i:param-class, i:univ, i:univ, i:univ.variable, i:univ.variable,
+  i:univ.variable.
+generate-param-arrow (pc M N as Class) Ui Uj Li Lj Lk :-
+  % we need to generate Map in both ways, so we must add the dependencies
+  % from both sides to get the final classes we shall ask for A and B
+  map-class.dep-arrow M ClassAM ClassBM,
+  map-class.dep-arrow N NegClassAN NegClassBN,
+  param-class.negate NegClassAN ClassAN,
+  param-class.negate NegClassBN ClassBN,
+  param-class.union ClassAM ClassAN ClassA,
+  ClassA = pc MA NA,
+  param-class.union ClassBM ClassBN ClassB,
+  ClassB = pc MB NB,
+  map-class.to_string M MStr,
+  map-class.to_string N NStr,
+  coq.univ-instance UIi [Li],
+  coq.univ-instance UIj [Lj],
+  coq.univ-instance UIk [Lk],
+  coq.univ-instance UIij [Li, Lj],
+  coq.univ-instance UIik [Li, Lk],
+  coq.univ-instance UIijk [Li, Lj, Lk],
+  trocq.db.rel (pc MA NA) RelA _ RA _ _,
+  trocq.db.rel (pc MB NB) RelB _ RB _ _,
+  trocq.db.rel (pc M N) _ BuildRel _ _ _,
+  coq.locate "R_arrow" RArrow,
+  coq.locate {calc ("Map" ^ MStr ^ "_arrow")} MapM,
+  coq.locate {calc ("Map" ^ NStr ^ "_arrow")} MapN,
+  coq.locate {calc ("eq_Map" ^ NStr)} EqMapN,
+  coq.locate "equiv_flip" EquivFlip,
+  ParamSymA = const {trocq.db.param-sym (pc MA NA)},
+  ParamSymB = const {trocq.db.param-sym (pc MB NB)},
+  % build functions doing several weakenings at once
+  param-class.forget ClassA (pc map0 map0) ForgetA0F,
+  param-class.forget ClassB (pc map0 map0) ForgetB0F,
+  param-class.forget ClassA ClassAM ForgetADepMF,
+  param-class.forget ClassB ClassBM ForgetBDepMF,
+  param-class.forget {param-class.negate ClassA} NegClassAN ForgetADepNF,
+  param-class.forget {param-class.negate ClassB} NegClassBN ForgetBDepNF,
+  % we cut the proof into multiple parts for readability
+  RArrowF = (a\ a'\ aR\ b\ b'\ bR\
+    app [pglobal RArrow UIij,
+      a, a', ForgetA0F UIi a a' aR, b, b', ForgetB0F UIj b b' bR]
+  ),
+  EqMapR1F = (a\ a'\ aR\ b\ b'\ bR\
+    fun `f'` (prod `_` a' _\ b') f'\
+    fun `f` (prod `_` a _\ b) f\
+      prod `a` a x\ prod `a'` a' x'\
+        prod `_` (app [pglobal RA UIi, a, a', aR, x, x']) _\
+          app [pglobal RB UIj, b, b', bR, app [f, x], app [f', x']]
+  ),
+  EqMapR2F = (a\ a'\ aR\ b\ b'\ bR\
+    fun `f'` (prod `_` a' _\ b') f'\
+    fun `f` (prod `_` a _\ b) f\
+      prod `a'` a' x'\ prod `a` a x\
+        prod `_` (app [pglobal RA UIi, a, a', aR, x, x']) _\
+          app [pglobal RB UIj, b, b', bR, app [f, x], app [f', x']]
+  ),
+  EqMapR1R2EquivF = (a\ a'\ aR\ b\ b'\ bR\
+    fun `f'` (prod `_` a' _\ b') f'\
+    fun `f` (prod `_` a _\ b) f\
+      app [pglobal EquivFlip UIik, a, a',
+        (fun `a` a x\ fun `a'` a' x'\
+          prod `aR` (app [pglobal RA UIi, a, a', aR, x, x']) xR\
+            app [pglobal RB UIj, b, b', bR, app [f, x], app [f', x']])]
+  ),
+  % there is one call to MapM_arrow and one on MapN_arrow on the symmetric
+  % relation; both can need funext depending on M and N
+  MapMArgsF = (a\ a'\ aR\ b\ b'\ bR\ [
+    a, a', ForgetADepMF UIi a a' aR, b, b', ForgetBDepMF UIj b b' bR
+  ]),
+  MapNArgsF = (a\ a'\ aR\ b\ b'\ bR\ [
+    a', a, ForgetADepNF UIi a' a (app [pglobal ParamSymA UIi, a, a', aR]),
+    b', b, ForgetBDepNF UIj b' b (app [pglobal ParamSymB UIj, b, b', bR])
+  ]),
+  if (std.mem! [map2b, map3, map4] M) (
+    FunextDecl = true,
+    MapMF = (funext\ a\ a'\ aR\ b\ b'\ bR\
+      app [pglobal MapM UIijk, funext | MapMArgsF a a' aR b b' bR]),
+    if (std.mem! [map2b, map3, map4] N) (
+      MapNF = (funext\ a\ a'\ aR\ b\ b'\ bR\
+        app [pglobal MapN UIijk, funext | MapNArgsF a a' aR b b' bR])
+    ) (
+      MapNF = (_\ a\ a'\ aR\ b\ b'\ bR\
+        app [pglobal MapN UIijk | MapNArgsF a a' aR b b' bR])
+    )
+  ) (
+    MapMF = (_\ a\ a'\ aR\ b\ b'\ bR\
+      app [pglobal MapM UIijk | MapMArgsF a a' aR b b' bR]),
+    if (std.mem! [map2b, map3, map4] N) (
+      FunextDecl = true,
+      MapNF = (funext\ a\ a'\ aR\ b\ b'\ bR\
+        app [pglobal MapN UIijk, funext | MapNArgsF a a' aR b b' bR])
+    ) (
+      FunextDecl = false,
+      MapNF = (_\ a\ a'\ aR\ b\ b'\ bR\
+        app [pglobal MapN UIijk | MapNArgsF a a' aR b b' bR])
+    )
+  ),
+  % ParamMN_arrow proof
+  DeclF = (funext\
+    fun `A` (sort (typ Ui)) a\
+    fun `A'` (sort (typ Ui)) a'\
+    fun `AR` (app [pglobal RelA UIi, a, a']) aR\
+    fun `B` (sort (typ Uj)) b\
+    fun `B'` (sort (typ Uj)) b'\
+    fun `BR` (app [pglobal RelB UIj, b, b']) bR\
+      app [pglobal BuildRel UIk,
+        (prod `_` a _\ b),
+        (prod `_` a' _\ b'),
+        RArrowF a a' aR b b' bR,
+        MapMF funext a a' aR b b' bR,
+        app [pglobal EqMapN UIk,
+          (prod `_` a' _\ b'),
+          (prod `_` a _\ b),
+          EqMapR1F a a' aR b b' bR,
+          EqMapR2F a a' aR b b' bR,
+          EqMapR1R2EquivF a a' aR b b' bR,
+          MapNF funext a a' aR b b' bR]]
+  ),
+  % add an additional binder for funext in case it is needed
+  if (FunextDecl) (
+    coq.locate "Funext" Funext,
+    Decl = (fun `H` (global Funext) funext\ DeclF funext)
+  ) (
+    Dummy = (fun `x` (sort (typ Ui)) x\ x),
+    Decl = DeclF Dummy
+  ),
+  ParamArrow is "Param" ^ MStr ^ NStr ^ "_arrow",
+  % this typecheck is very important: it adds L < L1 to the constraint graph
+  std.assert-ok! (coq.typecheck Decl _) "generate-param-arrow: Decl is ill-typed",
+  (@udecl! [Li, Lj, Lk] ff [le Li Lk, le Lj Lk] tt =>
+    coq.env.add-const ParamArrow Decl _ @transparent! Const),
+  coq.elpi.accumulate _ "trocq.db" (clause _ (after "default-param-arrow")
+    (trocq.db.param-arrow Class Const)).

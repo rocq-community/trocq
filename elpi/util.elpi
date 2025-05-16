@@ -14,30 +14,44 @@
 % utility predicates
 % -----------------------------------------------------------------------------
 
-% Some of the Coq native predicates raise errors in Elpi, stopping all
-% ongoing computations. Adding a custom flag like do-not-fail gives us an
-% extra catch-all case in the native predicate, when this flag is active,
-% meaning the predicate will just not succeed, instead of raising an error.
+% Note: should only contain definitions available during synterp
+
 pred do-not-fail.
-:before "term->gref:fail"
-coq.term->gref _ _ :- do-not-fail, !, false.
 
 kind or type -> type -> type.
 type inl A -> or A B.
 type inr B -> or A B.
 
-% to set level of verbosity of the tool
-kind debug-level type.
-type dbg.none debug-level.
-type dbg.steps debug-level.
-type dbg.full debug-level.
+kind verbosity type.
+type level.off verbosity.
+type level.info verbosity.
+type level.debug verbosity.
+type level.trace verbosity.
 
-pred debug-level->int i:debug-level, o:int.
-debug-level->int dbg.none 0.
-debug-level->int dbg.steps 1.
-debug-level->int dbg.full 2.
+% Returns the numeric level associated to a verbosity, the higher the more verbose.
+pred verbosity->int i:verbosity, o:int.
+verbosity->int level.off -1.
+verbosity->int level.info 0.
+verbosity->int level.debug 1.
+verbosity->int level.trace 2.
 
-pred debug o:debug-level.
+% Returns the verbosity level given a name.
+pred string->verbosity i:string o:verbosity.
+string->verbosity "off" level.off.
+string->verbosity "info" level.info.
+string->verbosity "debug" level.debug.
+string->verbosity "trace" level.trace.
+
+pred log-level o:verbosity.
+:name "log-level"
+log-level level.info.
+
+pred logging.info i:prop.
+logging.info P :- util.at-level level.info P.
+pred logging.debug i:prop.
+logging.debug P :- util.at-level level.debug P.
+pred logging.trace i:prop.
+logging.trace P :- util.at-level level.trace P.
 
 namespace util {
 
@@ -50,14 +64,14 @@ cmp-int A B lt :- A < B, !.
 cmp-int A B eq :- A = B, !.
 cmp-int _ _ gt.
 
+pred at-level i:verbosity, i:prop.
+at-level MinimumLevel Log :- log-level CurrentLevel, !,
+  if ({verbosity->int CurrentLevel} >= {verbosity->int MinimumLevel}) Log true.
+at-level _ _.
+
 pred when i:prop, i:prop.
 when Condition Goal :-
   if (Condition) Goal true.
-
-pred when-debug i:debug-level, i:prop.
-when-debug L Log :- debug D, !,
-  when ({debug-level->int D} >= {debug-level->int L}) Log.
-when-debug _ _.
 
 pred unless i:prop, i:prop.
 unless Condition Goal :-
@@ -88,12 +102,23 @@ delete A [A|Xs] Xs :- !.
 delete A [X|Xs] [X|Xs'] :- delete A Xs Xs'.
 delete _ [] [].
 
-% subst-gref T GR' T'
-% substitutes GR for GR' in T if T = (global GR) or (pglobal GR I)
-pred subst-gref i:term, i:gref, o:term.
-subst-gref (global _) GR' Tm' :- !, coq.env.global GR' Tm'.
-subst-gref (pglobal _ I) GR' Tm' :- !,
-  @uinstance! I => coq.env.global GR' Tm'.
-subst-gref T _ _ :- coq.error T "is not a gref".
+% Elpi does not allow replacing a named clause with a named clause. This is not allowed:
+%   coq.elpi.accumulate Scope Database (clause ClauseName (replace ClauseName) Content)
+% (read the explanation: https://github.com/LPCIC/elpi/blob/62d3f0c311206cb4b0cf033c34fca8336c61822e/ELPI.md?plain=1#L281)
+% This utility predicate emulates this feature.
+% However it does not solve the fundamental issue that lead Elpi to forbid
+% this, so one has to be cautious when using it.
+pred accumulate-replacing-named-clause i:scope, i:id, i:id, i:prop.
+accumulate-replacing-named-clause Scope Database ClauseName Content :-
+  GraftingPoint is ClauseName ^ "-temporary-grafting-point",
+  coq.elpi.accumulate Scope Database (clause GraftingPoint (after ClauseName) Content),
+  coq.elpi.accumulate Scope Database (clause _ (remove ClauseName) Content),
+  coq.elpi.accumulate Scope Database (clause ClauseName (before GraftingPoint) Content),
+  coq.elpi.accumulate Scope Database (clause _ (remove GraftingPoint) Content).
 
 } % util
+
+pred std.string.list->set i:list string, o:std.string.set.
+std.string.list->set [] Empty :- std.string.set.empty Empty.
+std.string.list->set [S|Rest] Set :-
+  std.string.set.add S {std.string.list->set Rest} Set.

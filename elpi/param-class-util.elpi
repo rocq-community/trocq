@@ -1,0 +1,93 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%                            %                     Trocq                      %
+%  _______                   %        Copyright (C) 2023 Inria & MERCE        %
+% |__   __|                  %     (Mitsubishi Electric R&D Centre Europe)    %
+%    | |_ __ ___   ___ __ _  %        Cyril Cohen <cyril.cohen@inria.fr>      %
+%    | | '__/ _ \ / __/ _` | %        Enzo Crance <enzo.crance@inria.fr>      %
+%    | | | | (_) | (_| (_| | %    Assia Mahboubi <assia.mahboubi@inria.fr>    %
+%    |_|_|  \___/ \___\__, | %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%                        | | %   This file is distributed under the terms of  %
+%                        |_| %   GNU Lesser General Public License Version 3  %
+%                            % (see LICENSE file for the text of the license) %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% -----------------------------------------------------------------------------
+% utilities about param-class
+% -----------------------------------------------------------------------------
+
+namespace param-class {
+
+% generate a weakening function from a parametricity class to another, by forgetting fields 1 by 1
+pred forget i:param-class, i:param-class, o:univ-instance -> term -> term -> term -> term.
+forget (pc M N) (pc M N) (_\ _\ _\ r\ r) :- !.
+forget (pc M N) (pc M N') ForgetF :- !,
+  std.mem {map-class.weakenings-from N} N1,
+  forget (pc M N1) (pc M N') ForgetF', !,
+  map-class.to_string M MStr,
+  coq.locate
+    {calc ("forget_" ^ MStr ^ {map-class.to_string N} ^ "_" ^ MStr ^ {map-class.to_string N1})} Forget1,
+  ForgetF = (ui\ a\ b\ r\ ForgetF' ui a b (app [pglobal Forget1 ui, a, b, r])).
+forget (pc M N) (pc M' N') ForgetF :-
+  std.mem {map-class.weakenings-from M} M1,
+  forget (pc M1 N) (pc M' N') ForgetF', !,
+  map-class.to_string N NStr,
+  coq.locate
+    {calc ("forget_" ^ {map-class.to_string M} ^ NStr ^ "_" ^ {map-class.to_string M1} ^ NStr)} Forget1,
+  ForgetF = (ui\ a\ b\ r\ ForgetF' ui a b (app [pglobal Forget1 ui, a, b, r])).
+
+% weaking of the out class of a gref.
+% e.g. if GR has type `forall A B, R A B -> Param21 X Y`
+% then `weaken-out (pc map1 map0) GR T`
+% where `T` has type `forall A B, R A B -> Param10 X Y`
+pred weaken-out i:param-class, i:gref, o:term.
+weaken-out OutC GR WT :- std.do! [
+  coq.env.global GR T,
+  coq.env.typeof GR Ty,
+  replace-out-ty OutC Ty WTy,
+  std.assert-ok! (coq.elaborate-skeleton T WTy WT)
+    "weaken-out: failed to weaken"
+].
+
+pred replace-out-ty i:param-class, i:term, o:term.
+replace-out-ty OutC (prod N A B) (prod N A B') :- !,
+   pi x\ replace-out-ty OutC (B x) (B' x).
+replace-out-ty OutC InT OutT :- std.do! [
+    coq.safe-dest-app InT HD Ts,
+    trocq.db.gref->class OutGRClass OutC,
+    subst-gref HD OutGRClass HD',
+    coq.mk-app HD' Ts OutT
+  ].
+
+% find classes present in a term
+pred type->class i:term, o:list param-class, o:list term.
+type->class X [Class] Ts :-
+  coq.safe-dest-app X HD Ts,
+  (do-not-fail => coq.term->gref HD GRClass),
+  trocq.db.gref->class GRClass Class.
+type->class X [] Ts :- coq.safe-dest-app X _ Ts.
+type->class _ [] [].
+
+pred type->classes.rec i:term, o:list param-class, o:list param-class.
+type->classes.rec (prod N A B) OutList BLast:- !,
+  @pi-decl N A x\
+    type->classes.rec A AList ALast, !,
+    type->classes.rec (B x) BList BLast, !,
+    std.append {std.append AList ALast} BList OutList.
+type->classes.rec X [] Class :- !, type->class X Class _.
+
+pred type->classes.main i:term, o:list param-class, o:list param-class, o:gref, o:gref.
+type->classes.main (prod N A B) OutList BLast GR GR' :- !,
+  @pi-decl N A x\
+    type->classes.rec A AList ALast, !,
+    type->classes.main (B x) BList BLast GR GR', !,
+    std.append {std.append AList ALast} BList OutList.
+type->classes.main X [] Class GR GR' :- !,
+    type->class X Class Ts, !,
+    std.rev Ts [T', T | _],
+    coq.term->gref T GR, coq.term->gref T' GR'.
+
+pred type->classes i:term, o:param-class, o:list param-class, o:gref, o:gref.
+type->classes T OutClass DepClasses GR GR' :-
+  type->classes.main T DepClasses LastClass GR GR',
+  if (LastClass = [OutClass]) true (OutClass = pc map0 map0).
+
+} % param-class
