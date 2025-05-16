@@ -97,7 +97,7 @@ Defined.
 
 Lemma ap_path_forall `{Funext} X Y (f g : forall x : X, Y x) x (e : f == g):
   ap (fun f => f x) (path_forall f g e) = e x.
-Proof. exact: Prop_irrelevance. Qed.
+Proof. by rewrite -{2}(apD10_retr _ _ e). Qed.
 
 (* (04, 40) + funext -> 40 *)
 Definition Map4_forall@{i j k} `{Funext}

@@ -113,18 +113,6 @@ Proof.
   rewrite <- (R_in_mapK PB).
   set u := (R_in_map _ _ _ _).
   by dependent inversion u.
-  (** or 
-  move=> f f' fR /=.
-  apply path_forall@{i k k} => a.
-  apply path_forall@{i k k} => a'.
-  apply path_arrow@{i k k} => aR /=.
-  elim/(ind_comap PA): _ => {a aR}.
-  rewrite transport1.
-  set X := transport _ _ _.
-  have -> : X = R_in_map PB (f (comap PA a')) (f' a') (fR (comap PA a') a'
-    (comap_in_R PA a' (comap PA a') 1)).
-    exact: Prop_irrelevance.
-  by elim/(ind_map PB): _ (fR _ _ _) / _.*)
 Defined.
 
 (* Param_arrowMN : forall A A' AR B B' BR, ParamMN.Rel (A -> B) (A' -> B') *)

@@ -209,9 +209,6 @@ Reserved Infix "mod" (at level 40, no associativity).
 Reserved Notation "p ~ 1" (at level 7, left associativity, format "p '~' '1'").
 Reserved Notation "p ~ 0" (at level 7, left associativity, format "p '~' '0'").
 
-Definition Prop_irrelevance_type := forall (P : Prop) (p q : P), p = q.
-Axiom Prop_irrelevance : Prop_irrelevance_type.
-
 Notation Unit := unit.
 Notation none := None.
 Notation Bool := bool.
