@@ -73,23 +73,31 @@ Open Scope path_scope.
 Definition inv_V {A : Type} {x y : A} (p : x = y) : (p^)^ = p :=
   match p with idpath => 1 end.
 
+Definition ap := f_equal.
+Arguments ap {A B} f {x y}.
+
 (* relation for forall *)
 Monomorphic Axiom Funext : Prop.
 Existing Class Funext.
-Axiom path_forall@{i j} : forall `{Funext} {A : Type@{i}} {P : A -> Type@{j}} 
-  (f g : forall x : A, P x), f == g -> f = g.
-Global Arguments path_forall {_ A%_type_scope P} (f g)%_function_scope _.
-
-Lemma path_arrow `{Funext} {A B : Type} (f g : A -> B) :
+Definition apD10 {A} {B : A -> Type} {f g : forall x, B x} (h : f = g)
+  : f == g
+  := fun x => match h with idpath => 1 end.
+Axiom path_forall : forall `{Funext} {A : Type} {B : A -> Type} (f g : forall x : A, B x),
   f == g -> f = g.
-Proof. apply path_forall. Defined.
+Axiom apD10_retr : forall `{Funext} {A: Type} {B : A -> Type} (f g : forall x : A, B x),
+  apD10 o (path_forall f g) == idmap.
+Axiom apD10_sect : forall `{Funext} {A: Type} {B : A -> Type} (f g : forall x : A, B x),
+  (path_forall f g) o apD10 == idmap.
+Axiom apD10_adj : forall `{Funext} {A: Type} {B : A -> Type} (f g : forall x : A, B x),
+  forall x : f = g, apD10_retr f g (apD10 x) = ap apD10 (apD10_sect f g x).
+
+Definition path_arrow `{Funext} {A B : Type} (f g : A -> B)
+  : (f == g) -> (f = g)
+  := path_forall f g.
 
 Definition equiv_flip@{i k} (A B : Type@{i}) (P : A -> B -> Type@{k}) :
 (forall (a : A) (b : B), P a b) <->> (forall (b : B) (a : A), P a b).
 Proof. by do 2!exists (fun PAB b a => PAB a b). Defined.
-
-Definition ap := f_equal.
-Arguments ap {A B} f {x y}.
 
 Definition inverse2 {A : Type} {x y : A} {p q : x = y} : p = q -> p^ = q^.
 Proof. exact: ap. Defined.
@@ -173,7 +181,10 @@ ap f (p^) = (ap f p)^
 :=
 match p with idpath => 1 end. 
 
-Definition apD10 {A} {B:A->Type} {f g : forall x, B x} (h:f = g) : f == g := fun x => match h with idpath => 1 end.
+Definition apD10_path_forall_cancel `{Funext} :
+  forall {A : Type} {B : A -> Type} {f g : forall x : A, B x} (p : forall x, f x = g x),
+    apD10 (path_forall f g p) = p.
+Proof. intros; by apply apD10_retr. Defined.
 
 Definition transport_apD10 :
   forall {A : Type} {B : A -> Type} {a : A} (P : B a -> Type)
@@ -183,12 +194,6 @@ Definition transport_apD10 :
 Proof.
   intros A B a P t1 t2 [] p; reflexivity.
 Defined.
-
-Definition apD10_path_forall_cancel `{Funext} :
-  forall {A : Type} {B : A -> Type} {f g : forall x : A, B x} (p : forall x, f x = g x),
-    apD10 (path_forall f g p) = p.
-Proof.
-Admitted.
 
 (****)
 
