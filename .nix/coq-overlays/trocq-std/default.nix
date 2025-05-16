@@ -1,7 +1,6 @@
 {
   lib,
   mkCoqDerivation,
-  coq,
   coq-elpi,
   trocq,
 }:
