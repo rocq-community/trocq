@@ -1,6 +1,6 @@
 (*****************************************************************************)
 (*                            *                    Trocq                     *)
-(*  _______                   *       Copyright (C) 2023 Inria & MERCE       *)
+(*  _______                   *           Copyright (C) 2023 MERCE           *)
 (* |__   __|                  *    (Mitsubishi Electric R&D Centre Europe)   *)
 (*    | |_ __ ___   ___ __ _  *       Cyril Cohen <cyril.cohen@inria.fr>     *)
 (*    | | '__/ _ \ / __/ _` | *       Enzo Crance <enzo.crance@inria.fr>     *)
@@ -12,9 +12,11 @@
 (*****************************************************************************)
 
 From elpi Require Import elpi.
+Require Import ssreflect.
 Require Import Stdlib Hierarchy Database.
 
 From Trocq.Elpi Extra Dependency "class.elpi" as class.
+From Trocq.Elpi.generation Extra Dependency "param-prop.elpi" as param_prop_generation.
 From Trocq.Elpi.generation Extra Dependency "param-type.elpi" as param_type_generation.
 
 Set Universe Polymorphism.
@@ -33,11 +35,6 @@ Elpi Accumulate File class.
 Elpi Accumulate File param_type_generation.
 
 Elpi Query lp:{{
-  coq.univ.new U,
-  coq.univ.variable U L,
-  coq.univ.alg-super U U1,
-  % cannot have only one binder in the declaration because this line creates a fresh level:
-  coq.univ.variable U1 L1,
   map-class.all-of-kind all Classes,
   map-class.all-of-kind low LowClasses,
   std.forall LowClasses (m\
@@ -68,6 +65,28 @@ Elpi Query lp:{{
         std.forall AllClasses (q\
           generate-param-type (pc m n) (pc p q) U L L1
         )
+      )
+    )
+  ).
+}}.
+
+(* generate MapM_PropNP@{i} :
+    MapM.Has Prop@{i} Prop@{i} ParamNP.Rel@{i},
+  for all N P, for M = map2a and below (above, NP is always 44)
+  + symmetry MapM_Prop_symNP *)
+
+Elpi Command genmapprop.
+Elpi Accumulate Db trocq.db.
+Elpi Accumulate File class.
+Elpi Accumulate File param_prop_generation.
+
+Elpi Query lp:{{
+  map-class.all-of-kind all Classes,
+  map-class.all-of-kind low LowClasses,
+  std.forall LowClasses (m\
+    std.forall Classes (n\
+      std.forall Classes (p\
+        generate-map-prop m (pc n p)
       )
     )
   ).
