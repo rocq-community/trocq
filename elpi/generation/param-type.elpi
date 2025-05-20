@@ -26,7 +26,7 @@ generate-fields map2a R RClass U L L1 [R, Map, MapInR] :-
   coq.univ-instance UI1 [L1],
   coq.univ-instance UI11 [L1, L1],
   Paths = {trocq.db.paths UI1},
-  Transport = pglobal {coq.locate "transport"} UI11,
+  Transport = pglobal {trocq.db.transport} UI11,
   IdParam = pglobal (const {trocq.db.id-param RClass}) UI,
   MapInR = {{
     fun (A B: lp:Type) (e: lp:Paths lp:Type A B) =>
@@ -111,7 +111,7 @@ generate-param-type (pc M N as Class) RClass U L L1 :-
 
   % in the univalent case, add the axiom in the binder
   if (UnivalentDeclM = true ; UnivalentDeclN = true) (
-    Univalence = global {coq.locate "Univalence"},
+    Univalence = global {trocq.db.univalence-type},
 
     Decl = {{
       fun (H: lp:Univalence) =>

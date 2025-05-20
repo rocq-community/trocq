@@ -71,6 +71,8 @@ pred weaken o:constant.
 % univ-instance of size 0, 0 but was given an instance of size 0, 1".
 % Understand what's going on and use `coq.env.global` instead.
 pred paths i:univ-instance o:term.
+pred transport o:gref.
+pred univalence-type o:gref.
 pred sym-rel o:gref.
 
 pred ptype-or-pprop i:term, o:constant.

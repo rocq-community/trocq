@@ -21,7 +21,7 @@ generate-fields map2a R RClass [R, Map, MapInR] :- std.do! [
   Map = (fun `T` Prop t\ t),
   (pi a\ coq.mk-app R [a] (RF a)),
   Paths = {trocq.db.paths _},
-  coq.locate "transport" Transport,
+  trocq.db.transport Transport,
   IdParam = const {trocq.db.id-param RClass},
   coq.env.global Transport TransportTm,
   coq.env.global IdParam IdParamTm,
