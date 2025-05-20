@@ -17,6 +17,8 @@ Require Import Stdlib Hierarchy Param_lemmas.
 Set Universe Polymorphism.
 Unset Universe Minimization ToSet.
 
+Import HoTTNotations.
+
 Inductive pathsR@{i}
   (A A' : Type@{i}) (AR : A -> A' -> Type@{i}) (x : A) (x' : A') (xR : AR x x') :
   forall (y : A) (y' : A') (yR : AR y y'), x = y -> x' = y' -> Type@{i} :=

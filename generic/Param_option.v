@@ -17,6 +17,8 @@ Require Import Stdlib Hierarchy Param_lemmas.
 Set Universe Polymorphism.
 Unset Universe Minimization ToSet.
 
+Import HoTTNotations.
+
 Inductive optionR (A A' : Type) (AR : A -> A' -> Type) :
   option A -> option A' -> Type :=
     | someR :

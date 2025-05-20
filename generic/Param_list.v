@@ -18,6 +18,8 @@ Set Universe Polymorphism.
 Unset Universe Minimization ToSet.
 Set Asymmetric Patterns.
 
+Import HoTTNotations.
+
 Inductive listR (A A' : Type) (AR : A -> A' -> Type) : list A -> list A' -> Type :=
   | nilR : listR A A' AR (@nil A) (@nil A')
   | consR :

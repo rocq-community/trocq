@@ -48,7 +48,7 @@ Definition onep : Zmod9 := Zp1.
 
 (* Quotient *)
 Definition modp : int -> Zmod9 := fun x => (x)%:~R.
-Definition reprp : Zmod9 -> int := idmap.
+Definition reprp : Zmod9 -> int := id.
 
 Lemma reprpK : forall x, modp (reprp x) = x. Proof. exact: natr_Zp. Qed.
 
@@ -81,7 +81,7 @@ Notation "x + y" := (add x%int y%int) : int_scope.
 Notation "x + y" := (addp x%Zmod9 y%Zmod9) : Zmod9_scope.
 Notation "x * y" := (mul x%int y%int) : int_scope.
 Notation "x * y" := (mulp x%Zmod9 y%Zmod9) : Zmod9_scope.
-Notation not A := (A -> Empty).
+Notation not A := (A -> False).
 Notation "m ^ 2" := (m * m)%int (at level 2) : int_scope.
 Notation "m ^ 2" := (m * m)%Zmod9 (at level 2) : Zmod9_scope.
 Notation "m ³" := (m * m * m)%int (at level 2) : int_scope.

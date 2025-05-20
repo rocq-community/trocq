@@ -50,7 +50,7 @@ Definition onep : ℤ/7ℤ := Zp1.
 
 (* Quotient *)
 Definition modp : int -> ℤ/7ℤ := fun x => (x)%:~R.
-Definition reprp : ℤ/7ℤ -> int := idmap.
+Definition reprp : ℤ/7ℤ -> int := id.
 
 Lemma reprpK : forall x, modp (reprp x) = x. Proof. exact: natr_Zp. Qed.
 
@@ -80,7 +80,7 @@ Notation "x + y" := (add x%int y%int) : int_scope.
 Notation "x + y" := (addp x%Zmod7 y%Zmod7) : Zmod7_scope.
 Notation "x * y" := (mul x%int y%int) : int_scope.
 Notation "x * y" := (mulp x%Zmod7 y%Zmod7) : Zmod7_scope.
-Notation not A := (A -> Empty).
+Notation not A := (A -> False).
 Notation "m ²" := (m * m)%int (at level 2) : int_scope.
 Notation "m ²" := (m * m)%Zmod7 (at level 2) : Zmod7_scope.
 Notation "m ³" := (m * m * m)%int (at level 2) : int_scope.

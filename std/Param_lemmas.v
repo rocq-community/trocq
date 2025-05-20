@@ -17,6 +17,7 @@ Require Import Stdlib Hierarchy.
 Set Universe Polymorphism.
 Unset Universe Minimization ToSet.
 
+Import HoTTNotations.
 Local Open Scope param_scope.
 
 (* General theorems *)

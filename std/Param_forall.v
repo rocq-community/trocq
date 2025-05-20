@@ -22,6 +22,7 @@ From Trocq.Elpi.generation Extra Dependency "param-forall.elpi" as param_forall_
 Set Universe Polymorphism.
 Unset Universe Minimization ToSet.
 
+Import HoTTNotations.
 Local Open Scope param_scope.
 
 Elpi Command genparamforall.

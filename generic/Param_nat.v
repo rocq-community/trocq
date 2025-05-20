@@ -17,6 +17,8 @@ Require Import Stdlib Hierarchy Param_lemmas.
 Set Universe Polymorphism.
 Unset Universe Minimization ToSet.
 
+Import HoTTNotations.
+
 Inductive natR : nat -> nat -> Type :=
   | OR : natR O O
   | SR : forall (n n' : nat), natR n n' -> natR (S n) (S n').
