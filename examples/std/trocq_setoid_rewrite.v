@@ -52,7 +52,7 @@ Lemma eqmodp01 :
   Param01.Rel (m == n)%int (m' == n')%int.
 Proof.
 move=> m m' Rm n n' Rn.
-apply: (@Param01.BuildRel (m == n)%int (m' == n')%int (fun _ _ => Unit)).
+apply: (@Param01.BuildRel (m == n)%int (m' == n')%int (fun _ _ => unit)).
 - constructor.
 - by constructor => mn; apply (eqmodp_morph _ _ Rm _ _ Rn).
 Qed.

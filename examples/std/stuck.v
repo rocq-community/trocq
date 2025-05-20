@@ -46,7 +46,7 @@ Definition Rp := SplitSurj.toParamSym (SplitSurj.Build reprpK).
 
 Axiom Rzero : Rp zerop zero.
 Axiom Radd : binop_param Rp Rp Rp addp add.
-Axiom paths_to_eqmodp : binop_param Rp Rp iff paths eqmodp.
+Axiom paths_to_eqmodp : binop_param Rp Rp iff eq eqmodp.
 
 Trocq Use Rp Param01_paths Param10_paths Radd Rzero Param_cons Param_nil.
 

@@ -17,6 +17,8 @@ Require Import Stdlib Hierarchy Common Param_lemmas.
 Set Universe Polymorphism.
 Unset Universe Minimization ToSet.
 
+Import HoTTNotations.
+
 (* transitivity proofs for Param
  * makes some proofs easier cf example in Vector_tuple.v
  *)

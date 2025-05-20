@@ -18,6 +18,8 @@ Set Asymmetric Patterns.
 Set Universe Polymorphism.
 Unset Universe Minimization ToSet.
 
+Import HoTTNotations.
+
 Module Vector.
 
 (* the standard vector type *)

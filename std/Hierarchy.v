@@ -15,15 +15,15 @@ Require Import ssreflect.
 Require Import Stdlib Database.
 From elpi Require Import elpi.
 
+Set Universe Polymorphism.
+Unset Universe Minimization ToSet.
+Set Polymorphic Inductive Cumulativity.
+
+Import HoTTNotations.
 From Trocq.Elpi Extra Dependency "util.elpi" as util.
 From Trocq.Elpi Extra Dependency "util-rocq.elpi" as util_rocq.
 From Trocq.Elpi Extra Dependency "class.elpi" as class.
 From Trocq.Elpi.generation Extra Dependency "hierarchy.elpi" as hierarchy_generation.
-
-Set Universe Polymorphism.
-Unset Universe Minimization ToSet.
-
-Set Polymorphic Inductive Cumulativity.
 
 Elpi Command genhierarchy.
 Elpi Accumulate Db trocq.db.
@@ -41,9 +41,6 @@ Register map2b as trocq.indc_map2b.
 Register map3 as trocq.indc_map3.
 Register map4 as trocq.indc_map4.
 Elpi Query lp:{{register-map-inductives}}.
-
-Local Open Scope fibration_scope.
-Local Open Scope path_scope.
 
 (*************************)
 (* Parametricity Classes *)
@@ -117,6 +114,8 @@ Register PProp as trocq.pprop.
 Register weaken as trocq.weaken.
 
 Definition sym_rel@{i} {A B : Type@{i}} (R : A -> B -> Type@{i}) := fun b a => R a b.
+
+Import HoTTNotations.
 
 Register sym_rel as trocq.sym_rel.
 Register paths as trocq.paths.

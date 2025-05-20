@@ -22,6 +22,7 @@ From Trocq.Elpi.generation Extra Dependency "param-arrow.elpi" as param_arrow_ge
 Set Universe Polymorphism.
 Unset Universe Minimization ToSet.
 
+Import HoTTNotations.
 Local Open Scope param_scope.
 
 Elpi Command genparamarrow.

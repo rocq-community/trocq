@@ -17,6 +17,8 @@ Require Import Stdlib Hierarchy.
 Set Universe Polymorphism.
 Unset Universe Minimization ToSet.
 
+Import HoTTNotations.
+
 Inductive EmptyR : Empty -> Empty -> Type := .
 
 Definition map_Empty (e : Empty) : Empty := e.

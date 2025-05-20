@@ -17,6 +17,8 @@ Require Import Stdlib Hierarchy Param_lemmas.
 Set Universe Polymorphism.
 Unset Universe Minimization ToSet.
 
+Import HoTTNotations.
+
 Inductive sigR
   A A' (AR : A -> A' -> Type)
   P P' (PR : forall a a', AR a a' -> P a -> P' a' -> Type) :

@@ -21,7 +21,7 @@ Set Universe Polymorphism.
 Definition tuple (A : Type) : nat -> Type :=
   fix F n :=
     match n with
-    | O => Unit
+    | O => unit
     | S n' => (F n' * A)%type
     end.
 
@@ -75,7 +75,7 @@ Definition vector_to_tupleK {A : Type} :
   forall {n : nat} (v : Vector.t A n), tuple_to_vector (vector_to_tuple v) = v :=
     fix F n v :=
       match v with
-      | Vector.nil => idpath
+      | Vector.nil => erefl
       | Vector.cons _ a v' => ap (Vector.cons a) (F _ v')
       end.
 
@@ -87,14 +87,14 @@ Proof.
       match n as k
       return forall (t : tuple A k), vector_to_tuple (tuple_to_vector t) = t
       with
-      | O => fun t => match t with tt => idpath end
+      | O => fun t => match t with tt => erefl end
       | S m => _
       end
   ).
   intros [t' a].
   apply path_prod; simpl.
   - exact (F m t').
-  - apply idpath.
+  - apply erefl.
 Defined.
 
 Definition Param44_tuple_vector_d (A : Type) (n : nat) : Param44.Rel (tuple A n) (Vector.t A n).
@@ -273,7 +273,7 @@ Trocq Use Param2a0_tuple_vector Param02b_tuple_vector Param2a0_nat.
 
 Lemma append_comm_cons : forall {A : Type} {n1 n2 : nat}
     (v1 : tuple A n1) (v2 : tuple A n2) (a : A),
-  @paths (tuple A (S (n1 + n2))) (cons a (append v1 v2)) (append (cons a v1) v2).
+  @eq (tuple A (S (n1 + n2))) (cons a (append v1 v2)) (append (cons a v1) v2).
 Proof. by trocq. Qed.
 
 (* bounded nat and bitvector *)
@@ -283,7 +283,7 @@ From mathcomp Require Import ssrnat.
 Module BV.
 
 Definition bounded_nat (k : nat) := {n : nat & n < expn 2 n = true}%nat.
-Definition bitvector := (Vector.t Bool).
+Definition bitvector := (Vector.t bool).
 
 (* bounded_nat k ~ bitvector k' *)
 
@@ -363,7 +363,7 @@ Definition Param44_bnat_bv (k k' : nat) (kR : natR k k') :
 Proof.
   unshelve eapply (@Param44_trans _ (bitvector k) _).
   - exact Param44_bnat_bv_d.  
-  - exact (Vector.Param44 Bool Bool Param44_Bool k k' kR).
+  - exact (Vector.Param44 bool bool Param44_Bool k k' kR).
 Defined.
 
 Definition Param2a0_bnat_bv (k k' : nat) (kR : natR k k') :
@@ -372,10 +372,10 @@ Definition Param2a0_bnat_bv (k k' : nat) (kR : natR k k') :
 
 (* operations to get and set bits *)
 
-Axiom setBit_bv : forall {k : nat}, bitvector k -> nat -> Bool -> bitvector k.
-Axiom setBit_bnat : forall {k : nat}, bounded_nat k -> nat -> Bool -> bounded_nat k.
-Axiom getBit_bv : forall {k : nat}, bitvector k -> nat -> Bool.
-Axiom getBit_bnat : forall {k : nat}, bounded_nat k -> nat -> Bool.
+Axiom setBit_bv : forall {k : nat}, bitvector k -> nat -> bool -> bitvector k.
+Axiom setBit_bnat : forall {k : nat}, bounded_nat k -> nat -> bool -> bounded_nat k.
+Axiom getBit_bv : forall {k : nat}, bitvector k -> nat -> bool.
+Axiom getBit_bnat : forall {k : nat}, bounded_nat k -> nat -> bool.
 
 (* setBit_bnat ~ setBit_bv *)
 
@@ -384,10 +384,10 @@ Axiom setBitR :
     (k k' : nat) (kR : natR k k')
     (bn : bounded_nat k) (bv' : bitvector k') 
     (r : R_trans
-          (@R_bnat_bv k) (Vector.Param44 Bool Bool Param44_Bool k k' kR) bn bv')
+          (@R_bnat_bv k) (Vector.Param44 bool bool Param44_Bool k k' kR) bn bv')
     (n n' : nat) (nR : natR n n')
-    (b b' : Bool) (bR : BoolR b b'),
-      R_trans (@R_bnat_bv k) (Vector.Param44 Bool Bool Param44_Bool k k' kR)
+    (b b' : bool) (bR : BoolR b b'),
+      R_trans (@R_bnat_bv k) (Vector.Param44 bool bool Param44_Bool k k' kR)
         (setBit_bnat bn n b) (setBit_bv bv' n' b').
 
 (* getBit_bnat ~ getBit_bv *)
@@ -397,7 +397,7 @@ Axiom getBitR :
     (k k' : nat) (kR : natR k k')
     (bn : bounded_nat k) (bv' : bitvector k') 
     (r : R_trans
-          (@R_bnat_bv k) (Vector.Param44 Bool Bool Param44_Bool k k' kR) bn bv')
+          (@R_bnat_bv k) (Vector.Param44 bool bool Param44_Bool k k' kR) bn bv')
     (n n' : nat) (nR : natR n n'),
       BoolR (getBit_bnat bn n) (getBit_bv bv' n').
 
@@ -406,7 +406,7 @@ Axiom Param10_le :
     BoolR (n1 <= n2)%nat (n1' <= n2')%nat.
 
 Axiom setBitThenGetSame :
-  forall {k : nat} (bv : bitvector k) (i : nat) (b : Bool),
+  forall {k : nat} (bv : bitvector k) (i : nat) (b : bool),
     (i < k)%nat = true -> getBit_bv (setBit_bv bv i b) i = b.
 
 
@@ -414,7 +414,7 @@ Trocq Use Param2a0_nat Param44_Bool Param2a0_bnat_bv getBitR setBitR.
 Trocq Use Param01_paths Param10_paths Param10_le trueR SR.
 
 Lemma setBitThenGetSame' :
-  forall {k : nat} (bn : bounded_nat k) (i : nat) (b : Bool),
+  forall {k : nat} (bn : bounded_nat k) (i : nat) (b : bool),
     (i < k)%nat = true -> getBit_bnat (setBit_bnat bn i b) i = b.
 Proof.
   trocq. exact @setBitThenGetSame.

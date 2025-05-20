@@ -16,7 +16,7 @@ From Trocq Require Export Stdlib Hierarchy.
 
 Set Universe Polymorphism.
 
-Local Open Scope param_scope.
+Import HoTTNotations.
 
 Definition graph@{i} {A B : Type@{i}} (f : A -> B) := paths o f.
 

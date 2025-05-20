@@ -14,6 +14,8 @@
 Require Import ssreflect.
 From Trocq Require Import Stdlib Trocq.
 
+Import HoTTNotations.
+
 Set Universe Polymorphism.
 
 (* first, we axiomatise non negative reals *)
@@ -67,7 +69,7 @@ Notation "'Σ' ue" := (sum_xnnR ue) (at level 35) : xnnR_scope.
 Axiom sum_xnnR_add :
   forall u v : seq_xnnR, (Σ (u + v))%xnnR = (Σ u + Σ v)%xnnR.
 
-Definition isFin (re : xnnR) : Bool :=
+Definition isFin (re : xnnR) : Bool:=
   match re with Fin _ => true | _ => false end.
 
 (* summability is defined in terms of infinite sums *)

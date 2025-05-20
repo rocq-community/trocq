@@ -13,3 +13,7 @@
 
 From HoTT Require Export HoTT.
 From Trocq Require Export HoTT_additions.
+
+Module HoTTNotations.
+  (* Stub for compatibility with stdlib version  *)
+End HoTTNotations.

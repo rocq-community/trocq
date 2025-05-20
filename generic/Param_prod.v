@@ -17,6 +17,8 @@ Require Import Stdlib Hierarchy Param_lemmas.
 Set Universe Polymorphism.
 Unset Universe Minimization ToSet.
 
+Import HoTTNotations.
+
 Inductive prodR
   {A A'} (AR : A -> A' -> Type) {B B'} (BR : B -> B' -> Type) : A * B -> A' * B' -> Type :=
     | pairR a a' (aR : AR a a') b b' (bR : BR b b') : prodR AR BR (a, b) (a', b').
