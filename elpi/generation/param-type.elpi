@@ -16,95 +16,120 @@ pred generate-fields
   i:univ.variable, i:univ.variable, o:list term.
 generate-fields map0 R _ _ _ _ [R].
 generate-fields map1 R _ U _ _ [R, Map] :-
-  Map = (fun `T` (sort (typ U)) t\ t).
+  Type = sort (typ U),
+  Map = {{ fun (T: lp:Type) => T }}.
 generate-fields map2a R RClass U L L1 [R, Map, MapInR] :-
   Type = sort (typ U),
+  Map = {{ fun (T: lp:Type) => T }},
+
   coq.univ-instance UI [L],
   coq.univ-instance UI1 [L1],
   coq.univ-instance UI11 [L1, L1],
-  Map = (fun `T` Type t\ t),
-  (pi a\ coq.mk-app R [a] (RF a)),
   Paths = {trocq.db.paths UI1},
-  coq.locate "transport" Transport,
-  IdParam = const {trocq.db.id-param RClass},
-  MapInR =
-    (fun `A` Type a\ fun `B` Type b\
-      fun `e` (app [Paths, Type, a, b]) e\
-        app [pglobal Transport UI11, Type, RF a, a, b,
-          e, app [pglobal IdParam UI, a]]).
+  Transport = pglobal {coq.locate "transport"} UI11,
+  IdParam = pglobal (const {trocq.db.id-param RClass}) UI,
+  MapInR = {{
+    fun (A B: lp:Type) (e: lp:Paths lp:Type A B) =>
+      lp:Transport lp:Type (lp:R A) A B e (lp:IdParam A)
+  }}.
 
 pred generate-map-type
   i:map-class, i:param-class, i:univ, i:univ.variable, i:univ.variable.
 generate-map-type M RClass U L L1 :-
-  trocq.db.rel RClass R _ _ _ _,
-  Type = sort (typ U),
+  trocq.db.rel RClass RGR _ _ _ _,
   coq.univ-instance UI [L],
+  R = pglobal RGR UI,
+
+  Type = sort (typ U),
+  generate-fields M R RClass U L L1 Fields,
+
   coq.univ-instance UI1 [L1],
-  generate-fields M (pglobal R UI) RClass U L L1 Fields,
-  coq.locate "sym_rel" SymRel,
+  SymRel = pglobal {trocq.db.sym-rel} UI1,
+
   generate-fields
-    M (app [pglobal SymRel UI1, Type, Type, pglobal R UI])
+    M {{ lp:SymRel lp:Type lp:Type lp:R }}
     RClass U L L1 FieldsSym,
-  coq.locate {calc ("Map" ^ {map-class.to_string M} ^ ".BuildHas")} BuildHas,
-  Decl = app [pglobal BuildHas UI1, Type, Type | Fields],
-  DeclSym = app [pglobal BuildHas UI1, Type, Type | FieldsSym],
-  MapType is
-    "Map" ^ {map-class.to_string M} ^ "_Type" ^ {param-class.to_string RClass},
-  MapTypeSym is
-    "Map" ^ {map-class.to_string M} ^ "_Type_sym" ^
-    {param-class.to_string RClass},
+
+  coq.locate {calc ("Map" ^ {map-class.to_string M} ^ ".BuildHas")} BuildHasGR,
+  BuildHas = pglobal BuildHasGR UI1,
+
+  Decl = app [BuildHas, Type, Type | Fields],
+  DeclSym = app [BuildHas, Type, Type | FieldsSym],
+
   % these typechecks are very important: they add L < L1 to the constraint graph
   std.assert-ok! (coq.typecheck Decl _) "generate-map-type: Decl ill-typed",
   std.assert-ok! (coq.typecheck DeclSym _) "generate-map-type: DeclSym ill-typed",
+
   @udecl! [L, L1] ff [lt L L1] tt ==>
+    MapType is
+      "Map" ^ {map-class.to_string M} ^ "_Type" ^ {param-class.to_string RClass},
     coq.env.add-const MapType Decl _ @transparent! _,
+
+    MapTypeSym is
+      "Map" ^ {map-class.to_string M} ^ "_Type_sym" ^ {param-class.to_string RClass},
     coq.env.add-const MapTypeSym DeclSym _ @transparent! _.
 
 pred generate-param-type
   i:param-class, i:param-class, i:univ, i:univ.variable, i:univ.variable.
 generate-param-type (pc M N as Class) RClass U L L1 :-
+  Type = sort (typ U),
+
+  trocq.db.rel Class _ BuildRelGR _ _ _,
+  coq.univ-instance UI1 [L1],
+  BuildRel = pglobal BuildRelGR UI1,
+
   map-class.to_string M MStr,
   map-class.to_string N NStr,
-  coq.univ-instance UI [L],
-  coq.univ-instance UI1 [L1],
-  coq.univ-instance UI2 [L, L1],
-  trocq.db.rel Class _ BuildRel _ _ _,
   coq.locate
-    {calc ("Map" ^ MStr ^ "_Type" ^ {param-class.to_string RClass})} MapType,
+    {calc ("Map" ^ MStr ^ "_Type" ^ {param-class.to_string RClass})} MapTypeGR,
   coq.locate
     {calc ("Map" ^ NStr ^ "_Type_sym" ^ {param-class.to_string RClass})}
-    MapTypeSym,
-  trocq.db.rel RClass R _ _ _ _,
+    MapTypeSymGR,
+  coq.univ-instance UI2 [L, L1],
+  MapType = pglobal MapTypeGR UI2,
+  MapTypeSym = pglobal MapTypeSymGR UI2,
+
+  trocq.db.rel RClass RGR _ _ _ _,
+  coq.univ-instance UI [L],
+  R = pglobal RGR UI,
+
   if (std.mem! [map2b, map3, map4] M) (
-    UnivalentDecl = true,
-    MapTypeF = (u\ app [pglobal MapType UI2, u]),
-    if (std.mem! [map2b, map3, map4] N)
-      (MapTypeSymF = (u\ app [pglobal MapTypeSym UI2, u]))
-      (MapTypeSymF = (_\ pglobal MapTypeSym UI2))
+    UnivalentDeclM = true,
+    MapTypeF = (univalence\ {{ lp:MapType lp:univalence }})
   ) (
-    MapTypeF = (_\ pglobal MapType UI2),
-    if (std.mem! [map2b, map3, map4] N) (
-      MapTypeSymF = (u\ app [pglobal MapTypeSym UI2, u]),
-      UnivalentDecl = true
-    ) (
-      MapTypeSymF = (_\ pglobal MapTypeSym UI2),
-      UnivalentDecl = false
-    )
+    UnivalentDeclM = false,
+    MapTypeF = (_\ MapType)
   ),
+
+  if (std.mem! [map2b, map3, map4] N) (
+    UnivalentDeclN = true,
+    MapTypeSymF = (univalence\ {{ lp:MapTypeSym lp:univalence }})
+  ) (
+    UnivalentDeclN = false,
+    MapTypeSymF = (_\ MapTypeSym)
+  ),
+
   % in the univalent case, add the axiom in the binder
-  if (UnivalentDecl) (
-    coq.locate "Univalence" Univalence,
-    Decl =
-      (fun `H` (global Univalence) u\
-        app [pglobal BuildRel UI1, sort (typ U), sort (typ U), pglobal R UI,
-          MapTypeF u, MapTypeSymF u])
+  if (UnivalentDeclM = true ; UnivalentDeclN = true) (
+    Univalence = global {coq.locate "Univalence"},
+
+    Decl = {{
+      fun (H: lp:Univalence) =>
+        lp:BuildRel lp:Type lp:Type
+          lp:R
+          lp:{{ MapTypeF {{H}} }}
+          lp:{{ MapTypeSymF {{H}} }}
+    }}
   ) (
-    Dummy = (fun `x` (sort (typ U)) x\ x),
-    Decl =
-      app [pglobal BuildRel UI1, sort (typ U), sort (typ U), pglobal R UI,
-        MapTypeF Dummy, MapTypeSymF Dummy]
+    Decl = {{
+      lp:BuildRel lp:Type lp:Type
+        lp:R
+        lp:{{ MapTypeF _ }}
+        lp:{{ MapTypeSymF _ }}
+    }}
   ),
-  ParamType is "Param" ^ MStr ^ NStr ^ "_Type" ^ {param-class.to_string RClass},
+
+  ParamType is "Param" ^ {param-class.to_string Class} ^ "_Type" ^ {param-class.to_string RClass},
   % this typecheck is very important: it adds L < L1 to the constraint graph
   std.assert-ok! (coq.typecheck Decl _) "generate-param-type: Decl is ill-typed",
   (@udecl! [L, L1] ff [lt L L1] tt =>
