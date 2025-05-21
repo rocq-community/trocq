@@ -93,17 +93,14 @@ Lemma Rlookup_or_compute k n (m : M nat) :
   (k <= n -> R k n m (fibo n)) ->
   R k (maxn k n.+1) (lookup_or_compute n m) (fibo n).
 Proof.
-move=> Rmm' c Hc.
-rewrite /lookup_or_compute.
-rewrite runStateTbind runStateTget bindretf /= Hc /fibo_trunc.
+rewrite /lookup_or_compute => Rmm' /=.
+have -> : fibo n = Ret (fibo_trunc k) >> Ret (fibo n)
+        :> (idfun : monad) nat by [].
+apply: Rbind; first exact: Rget.
+rewrite /fibo_trunc /= /NId /=.
 case: ltnP => nk.
-  rewrite runStateTret /=.
-  split => //. 
-  apply: boolp.funext => x.
-  by have -> : maxn k n.+1 = k by lia.
-rewrite -/(fibo_trunc _) -Hc.
-move: c Hc.
-rewrite -/(R _ _ _ _).
+  have -> : maxn k n.+1 = k by lia.
+  exact: Rret.
 have -> : fibo n = Ret (fibo n) >>= fun x => Ret tt >> Ret x
         :> (idfun : monad) nat by [].
 have -> : maxn k n.+1 = n.+1 by lia.
