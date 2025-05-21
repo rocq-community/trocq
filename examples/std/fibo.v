@@ -31,6 +31,7 @@ Fixpoint fibo_memo n : M nat :=
     match n with
     | 0 => Ret 0
     | (0 as n).+1 =>
+        (* need a recursive call to ensure fibo 0 is in the cache for fibo 1 *)
         do _ <- fibo_memo n;
         Ret 0.+1
     | (m.+1 as n).+1 =>
@@ -98,12 +99,9 @@ have -> : fibo n = Ret (fibo_trunc k) >> Ret (fibo n)
         :> (idfun : monad) nat by [].
 apply: Rbind; first exact: Rget.
 rewrite /fibo_trunc /= /NId /=.
-case: ltnP => nk.
-  have -> : maxn k n.+1 = k by lia.
-  exact: Rret.
+case: (ltnP k n.+1) => nk; last exact: Rret.
 have -> : fibo n = Ret (fibo n) >>= fun x => Ret tt >> Ret x
         :> (idfun : monad) nat by [].
-have -> : maxn k n.+1 = n.+1 by lia.
 exact/(Rbind (Rmm' nk))/Rbind/Rret/Rupdate.
 Qed.
 
@@ -127,6 +125,27 @@ apply: Rbind; first exact: IH.
 rewrite (_ : maxn _ _ = n.+2); last by lia.
 exact: Rret.
 Qed.
+
+(*
+About Fix.
+
+Lemma well_founded_ltn : well_founded (fun x y => x < y).
+Proof. move=> x. Search Acc.
+
+Definition ltn_rec A :
+*)
+
+Variable F : forall N : monad, forall n, (forall k, k < n -> N nat) -> N nat. 
+Let fixF (n : nat) : nat := ltn_ind (F idfun) n.
+Let Fmemo := fun n f => lookup_or_compute n (F M n f).
+Let fixFmemo := ltn_ind Fmemo.
+
+Lemma fixFmemo_ok : forall n k,
+    R k (maxn k n.+1) (fixFmemo n) (fixF n).
+Proof.
+rewrite /fixFmemo /Fmemo /fixF /=.
+elim/ltn_ind => -[|n] IH k.
+Abort.
 
 End with_cache.
 
