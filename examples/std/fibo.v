@@ -64,7 +64,7 @@ move=> c Hc.
 by rewrite runStateTret.
 Qed.
 
-Lemma Rlookup_and_compute k n (m : M nat) :
+Lemma Rlookup_or_compute k n (m : M nat) :
   (k <= n -> R k (maxn k n.+1) m (fibo n)) ->
   R k (maxn k n.+1) (lookup_or_compute n m) (fibo n).
 Proof.
@@ -110,18 +110,19 @@ Lemma cacheok : forall n k,
 Proof.
 elim/ltn_ind => -[|n] IH k.
   rewrite [fibo_memo _]/=.
-  apply: Rlookup_and_compute.
+  apply: Rlookup_or_compute.
   rewrite bindretf.
-  have -> : fibo 0 = (Ret tt >>= fun=> Ret 0 : (idfun : monad) nat) by [].
+  have -> : fibo 0 = Ret tt >> Ret 0 :> (idfun : monad) nat by [].
   rewrite leqn0 => /eqP ->.
   apply: Rbind.
     exact: Rupdate.
   exact: Rret.
 rewrite [fibo_memo _]/=.
 case: n IH => [|n] IH.
-  apply: Rlookup_and_compute => k1.
+  apply: Rlookup_or_compute => k1.
   rewrite bindA.
-  have -> : fibo 1 = Ret 0 >> (Ret tt >> Ret (fibo 1)) :> (idfun : monad) nat by [].
+  have -> : fibo 1 = Ret 0 >> (Ret tt >> Ret (fibo 1))
+          :> (idfun : monad) nat by [].
   apply: Rbind.
     exact: IH.
   rewrite (bindretf 1).
@@ -130,9 +131,11 @@ case: n IH => [|n] IH.
     exact: Rupdate.
   have -> : maxn k 2 = 2 by lia.
   exact: Rret.
-apply: Rlookup_and_compute => Hk.
+apply: Rlookup_or_compute => Hk.
 rewrite bindA.
-have -> : fibo n.+2 = Ret (fibo n) >> (Ret (fibo n.+1) >> (Ret tt >> Ret (fibo n.+2))) :> (idfun : monad) nat by [].
+have -> : fibo n.+2 =
+          Ret (fibo n) >> (Ret (fibo n.+1) >> (Ret tt >> Ret (fibo n.+2)))
+        :> (idfun : monad) nat by [].
 apply: Rbind.
   exact: IH.
 rewrite bindA.
