@@ -1,4 +1,4 @@
-From Trocq Require Import -(notations) Trocq.
+From Trocq Require Import Trocq.
 From mathcomp Require Import all_ssreflect zify lra.
 From monae Require Import preamble hierarchy monad_lib monad_model.
 
@@ -50,8 +50,6 @@ Definition fibocache k :=
 Definition R {X} k1 k2 (s : M X) (n : (idfun : monad) X) : Type :=
   forall c, goodcache k1 c ->
             (runStateT s c).1 = n /\ goodcache k2 (runStateT s c).2.
-
-Infix "=" := Logic.eq : type_scope.
 
 Lemma Rget k : R k k get (fibo_trunc k).
 Proof.
