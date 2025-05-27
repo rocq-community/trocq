@@ -34,8 +34,13 @@ generate-fields map2a R RClass U L L1 [R, Map, MapInR] :-
   }}.
 
 pred generate-map-type
-  i:map-class, i:param-class, i:univ, i:univ.variable, i:univ.variable.
-generate-map-type M RClass U L L1 :-
+  i:map-class, i:param-class.
+generate-map-type M RClass :-
+  coq.univ.new U,
+  coq.univ.variable U L,
+  coq.univ.alg-super U U1,
+  coq.univ.variable U1 L1,
+
   trocq.db.rel RClass RGR _ _ _ _,
   coq.univ-instance UI [L],
   R = pglobal RGR UI,
@@ -76,8 +81,12 @@ generate-map-type M RClass U L L1 :-
     )).
 
 pred generate-param-type
-  i:param-class, i:param-class, i:univ, i:univ.variable, i:univ.variable.
-generate-param-type (pc M N as Class) RClass U L L1 :-
+  i:param-class, i:param-class.
+generate-param-type (pc M N as Class) RClass :-
+  coq.univ.new U,
+  coq.univ.variable U L,
+  coq.univ.alg-super U U1,
+  coq.univ.variable U1 L1,
   Type = sort (typ U),
 
   trocq.db.rel Class _ BuildRelGR _ _ _,
