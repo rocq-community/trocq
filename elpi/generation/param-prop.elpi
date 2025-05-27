@@ -12,45 +12,54 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 pred generate-fields
-  i:map-class, i:term, i:param-class, o:list term.
-generate-fields map0 R _ [R].
-generate-fields map1 R _ [R, Map] :-
+  i:map-class, i:term, i:param-class, i:univ,
+  i:univ.variable, i:univ.variable, o:list term.
+generate-fields map0 R _ _ _ _ [R].
+generate-fields map1 R _ _ _ _ [R, Map] :-
   Prop = sort prop,
   Map = {{ fun (T: lp:Prop) => T }}.
-generate-fields map2a R RClass [R, Map, MapInR] :- std.do! [
+generate-fields map2a R RClass _ L L1 [R, Map, MapInR] :-
   Prop = sort prop,
   Map = {{ fun (T: lp:Prop) => T }},
 
-  Paths = {trocq.db.paths _},
-  coq.env.global {trocq.db.transport} Transport,
-  coq.env.global (const {trocq.db.id-param RClass}) IdParam,
+  coq.univ-instance UI [L],
+  coq.univ-instance UI1 [L1],
+  coq.univ-instance UI11 [L1, L1],
+  Paths = {trocq.db.paths UI1},
+  Transport = pglobal {trocq.db.transport} UI11,
+  IdParam = pglobal (const {trocq.db.id-param RClass}) UI,
   MapInR = {{
     fun (A B: lp:Prop) (e: lp:Paths lp:Prop A B) =>
       lp:Transport lp:Prop (lp:R A) A B e (lp:IdParam A)
-  }}
-].
+  }}.
 
 pred generate-map-prop i:map-class, i:param-class.
-generate-map-prop M RClass :- std.do! [
+generate-map-prop M RClass :-
+  coq.univ.new U,
+  coq.univ.variable U L,
+  coq.univ.alg-super U U1,
+  coq.univ.variable U1 L1,
+
   trocq.db.rel RClass RGR _ _ _ _,
-  coq.env.global RGR R,
+  coq.univ-instance UI [L],
+  R = pglobal RGR UI,
 
   Prop = sort prop,
-  generate-fields M R RClass Fields,
+  generate-fields M R RClass U L L1 Fields,
 
-  coq.env.global {trocq.db.sym-rel} SymRel,
+  coq.univ-instance UI1 [L1],
+  SymRel = pglobal {trocq.db.sym-rel} UI1,
 
   generate-fields
     M {{ lp:SymRel lp:Prop lp:Prop lp:R }}
-    RClass FieldsSym,
+    RClass U L L1 FieldsSym,
 
   coq.locate {calc ("Map" ^ {map-class.to_string M} ^ ".BuildHas")} BuildHasGR,
-  coq.env.global BuildHasGR BuildHas,
+  BuildHas = pglobal BuildHasGR UI1,
 
   Decl = app [BuildHas, Prop, Prop | Fields],
   DeclSym = app [BuildHas, Prop, Prop | FieldsSym],
 
-  % these typechecks are very important: they add L < L1 to the constraint graph
   std.assert-ok! (coq.elaborate-skeleton Decl _Ty Decl')
     "generate-map-prop: Decl cannot be elaborated",
   std.assert-ok! (coq.elaborate-skeleton DeclSym _Ty' DeclSym')
@@ -70,5 +79,4 @@ generate-map-prop M RClass :- std.do! [
     coq.env.add-const MapPropSym DeclSym' _ @transparent! ConstSym,
     coq.elpi.accumulate _ "trocq.db" (clause _ _ (
       trocq.db.map-sym-sort prop M RClass (const ConstSym)
-    ))
-].
+    )).
