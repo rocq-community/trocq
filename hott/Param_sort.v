@@ -34,11 +34,11 @@ Elpi Accumulate File class.
 Elpi Accumulate File param_type_generation.
 
 Elpi Query lp:{{
-  map-class.all-of-kind all Classes,
+  map-class.all-of-kind all AllClasses,
   map-class.all-of-kind low LowClasses,
   std.forall LowClasses (m\
-    std.forall Classes (n\
-      std.forall Classes (p\
+    std.forall AllClasses (n\
+      std.forall AllClasses (p\
         generate-map-type m (pc n p)
       )
     )
@@ -142,21 +142,21 @@ Elpi Accumulate File param_type_generation.
 
 Elpi Query lp:{{
   map-class.all-of-kind all AllClasses,
-  map-class.all-of-kind low Classes__,
-  map-class.all-of-kind high Classes44,
-  std.forall Classes__ (m\
-    std.forall Classes__ (n\
+  map-class.all-of-kind low LowClasses,
+  map-class.all-of-kind high HighClasses,
+  std.forall LowClasses (m\
+    std.forall LowClasses (n\
       std.forall AllClasses (p\
         std.forall AllClasses (q\
           generate-param-type (pc m n) (pc p q)
         )
       )
     ),
-    std.forall Classes44 (n\
+    std.forall HighClasses (n\
       generate-param-type (pc m n) (pc map4 map4)
     )
   ),
-  std.forall Classes44 (m\
+  std.forall HighClasses (m\
     std.forall AllClasses (n\
       generate-param-type (pc m n) (pc map4 map4)
     )
