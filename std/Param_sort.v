@@ -35,7 +35,12 @@ Elpi Accumulate File class.
 Elpi Accumulate File param_type_generation.
 
 Elpi Query lp:{{
+  coq.univ.new U,
+  coq.univ.variable U L,
+  coq.univ.alg-super U U1,
   map-class.all-of-kind all Classes,
+  % cannot have only one binder in the declaration because this line creates a fresh level:
+  coq.univ.variable U1 L1,
   map-class.all-of-kind low LowClasses,
   std.forall LowClasses (m\
     std.forall Classes (n\
