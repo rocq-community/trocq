@@ -59,10 +59,16 @@ generate-map-prop M RClass :- std.do! [
   @univpoly! ==>
     MapProp is
       "Map" ^ {map-class.to_string M} ^ "_Prop" ^ {param-class.to_string RClass},
-    coq.env.add-const MapProp Decl' _ @transparent! _,
+    coq.env.add-const MapProp Decl' _ @transparent! Const,
+    coq.elpi.accumulate _ "trocq.db" (clause _ _ (
+      trocq.db.map-sort prop M RClass (const Const)
+    )),
 
     MapPropSym is
       "Map" ^ {map-class.to_string M} ^ "_Prop_sym" ^
       {param-class.to_string RClass},
-    coq.env.add-const MapPropSym DeclSym' _ @transparent! _
+    coq.env.add-const MapPropSym DeclSym' _ @transparent! ConstSym,
+    coq.elpi.accumulate _ "trocq.db" (clause _ _ (
+      trocq.db.map-sym-sort prop M RClass (const ConstSym)
+    ))
 ].

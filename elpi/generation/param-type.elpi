@@ -63,11 +63,17 @@ generate-map-type M RClass U L L1 :-
   @udecl! [L, L1] ff [lt L L1] tt ==>
     MapType is
       "Map" ^ {map-class.to_string M} ^ "_Type" ^ {param-class.to_string RClass},
-    coq.env.add-const MapType Decl _ @transparent! _,
+    coq.env.add-const MapType Decl _ @transparent! Const,
+    coq.elpi.accumulate _ "trocq.db" (clause _ _ (pi U\
+      trocq.db.map-sort (typ U) M RClass (const Const)
+    )),
 
     MapTypeSym is
       "Map" ^ {map-class.to_string M} ^ "_Type_sym" ^ {param-class.to_string RClass},
-    coq.env.add-const MapTypeSym DeclSym _ @transparent! _.
+    coq.env.add-const MapTypeSym DeclSym _ @transparent! ConstSym,
+    coq.elpi.accumulate _ "trocq.db" (clause _ _ (pi U\
+      trocq.db.map-sym-sort (typ U) M RClass (const ConstSym)
+    )).
 
 pred generate-param-type
   i:param-class, i:param-class, i:univ, i:univ.variable, i:univ.variable.
@@ -78,13 +84,8 @@ generate-param-type (pc M N as Class) RClass U L L1 :-
   coq.univ-instance UI1 [L1],
   BuildRel = pglobal BuildRelGR UI1,
 
-  map-class.to_string M MStr,
-  map-class.to_string N NStr,
-  coq.locate
-    {calc ("Map" ^ MStr ^ "_Type" ^ {param-class.to_string RClass})} MapTypeGR,
-  coq.locate
-    {calc ("Map" ^ NStr ^ "_Type_sym" ^ {param-class.to_string RClass})}
-    MapTypeSymGR,
+  trocq.db.map-sort (typ _) M RClass MapTypeGR,
+  trocq.db.map-sym-sort (typ _) N RClass MapTypeSymGR,
   coq.univ-instance UI2 [L, L1],
   MapType = pglobal MapTypeGR UI2,
   MapTypeSym = pglobal MapTypeSymGR UI2,
@@ -134,4 +135,6 @@ generate-param-type (pc M N as Class) RClass U L L1 :-
   std.assert-ok! (coq.typecheck Decl _) "generate-param-type: Decl is ill-typed",
   (@udecl! [L, L1] ff [lt L L1] tt =>
     coq.env.add-const ParamType Decl _ @transparent! Const),
-  coq.elpi.accumulate _ "trocq.db" (clause _ _ (trocq.db.param-type Class RClass Const)).
+  coq.elpi.accumulate _ "trocq.db" (clause _ _ (pi U\
+    trocq.db.param-sort (typ U) Class RClass Const
+  )).

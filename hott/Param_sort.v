@@ -112,6 +112,34 @@ Proof.
     by rewrite uparam_equiv_id /= [path_universe_uncurried _] path_universe_1.
 Defined.
 
+Register Map2b_Type44 as trocq.map2b_type44.
+Register Map2b_Type_sym44 as trocq.map2b_type_sym44.
+Register Map3_Type44 as trocq.map3_type44.
+Register Map3_Type_sym44 as trocq.map3_type_sym44.
+Register Map4_Type44 as trocq.map4_type44.
+Register Map4_Type_sym44 as trocq.map4_type_sym44.
+
+Elpi Query lp:{{
+  coq.elpi.accumulate _ "trocq.db" (clause _ _ (pi U\
+    trocq.db.map-sort (typ U) map2b (pc map4 map4) {{:gref lib:trocq.map2b_type44}}
+  )),
+  coq.elpi.accumulate _ "trocq.db" (clause _ _ (pi U\
+    trocq.db.map-sym-sort (typ U) map2b (pc map4 map4) {{:gref lib:trocq.map2b_type_sym44}}
+  )),
+  coq.elpi.accumulate _ "trocq.db" (clause _ _ (pi U\
+    trocq.db.map-sort (typ U) map3 (pc map4 map4) {{:gref lib:trocq.map3_type44}}
+  )),
+  coq.elpi.accumulate _ "trocq.db" (clause _ _ (pi U\
+    trocq.db.map-sym-sort (typ U) map3 (pc map4 map4) {{:gref lib:trocq.map3_type_sym44}}
+  )),
+  coq.elpi.accumulate _ "trocq.db" (clause _ _ (pi U\
+    trocq.db.map-sort (typ U) map4 (pc map4 map4) {{:gref lib:trocq.map4_type44}}
+  )),
+  coq.elpi.accumulate _ "trocq.db" (clause _ _ (pi U\
+    trocq.db.map-sym-sort (typ U) map4 (pc map4 map4) {{:gref lib:trocq.map4_type_sym44}}
+  )).
+}}.
+
 Elpi Command genparamtype.
 Elpi Accumulate Db trocq.db.
 Elpi Accumulate File class.

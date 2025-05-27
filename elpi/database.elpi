@@ -79,9 +79,15 @@ pred ptype-or-pprop i:term, o:constant.
 ptype-or-pprop (pglobal (const PCst) _) PCst :- !,
   (ptype PCst; pprop PCst).
 
-% param-type β α {{ Param(β)_Type(α) }}
+% map-sort Sort M α {{ Map(M)_(Sort)(α) }}
+pred map-sort i:sort, o:map-class, o:param-class, o:gref.
+
+% map-sym-sort M α {{ Map(M)_(Sort)_sym(α) }}
+pred map-sym-sort i:sort, o:map-class, o:param-class, o:gref.
+
+% param-sort Sort β α {{ Param(β)_(Sort)(α) }}
 % with α the level of the R field, and β the structure given to it.
-pred param-type o:param-class, o:param-class, o:constant.
+pred param-sort i:sort, o:param-class, o:param-class, o:constant.
 
 % pparam-type (M,N) {{ PParamTypeMN }}
 pred pparam-type o:param-class, o:constant.
