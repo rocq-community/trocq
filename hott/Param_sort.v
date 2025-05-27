@@ -52,7 +52,7 @@ Elpi Query lp:{{
 
 (* now R is always Param44.Rel *)
 
-(* NB: here we would like to use i+1 instead of j but Coq does not allow it
+(* NB: here we would like to use i+1 instead of j but Rocq does not allow it
  * Map*.Has is a constant so it currently cannot be instantiated with an algebraic universe
  *)
 
