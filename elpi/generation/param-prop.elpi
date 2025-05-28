@@ -72,7 +72,7 @@ generate-map-prop M RClass :-
       "Map" ^ {map-class.to_string M} ^ "_Prop" ^ {param-class.to_string RClass},
     coq.env.add-const MapProp Decl' _ @transparent! Const,
     coq.elpi.accumulate _ "trocq.db" (clause _ _ (
-      trocq.db.map-sort prop M RClass (const Const)
+      trocq.db.map-sort tprop M RClass (const Const)
     )),
 
     MapPropSym is
@@ -80,7 +80,7 @@ generate-map-prop M RClass :-
       {param-class.to_string RClass},
     coq.env.add-const MapPropSym DeclSym' _ @transparent! ConstSym,
     coq.elpi.accumulate _ "trocq.db" (clause _ _ (
-      trocq.db.map-sym-sort prop M RClass (const ConstSym)
+      trocq.db.map-sym-sort tprop M RClass (const ConstSym)
     )).
 
 pred generate-param-prop

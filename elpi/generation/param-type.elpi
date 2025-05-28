@@ -68,15 +68,15 @@ generate-map-type M RClass :-
     MapType is
       "Map" ^ {map-class.to_string M} ^ "_Type" ^ {param-class.to_string RClass},
     coq.env.add-const MapType Decl _ @transparent! Const,
-    coq.elpi.accumulate _ "trocq.db" (clause _ _ (pi U\
-      trocq.db.map-sort (typ U) M RClass (const Const)
+    coq.elpi.accumulate _ "trocq.db" (clause _ _ (
+      trocq.db.map-sort ttype M RClass (const Const)
     )),
 
     MapTypeSym is
       "Map" ^ {map-class.to_string M} ^ "_Type_sym" ^ {param-class.to_string RClass},
     coq.env.add-const MapTypeSym DeclSym _ @transparent! ConstSym,
-    coq.elpi.accumulate _ "trocq.db" (clause _ _ (pi U\
-      trocq.db.map-sym-sort (typ U) M RClass (const ConstSym)
+    coq.elpi.accumulate _ "trocq.db" (clause _ _ (
+      trocq.db.map-sym-sort ttype M RClass (const ConstSym)
     )).
 
 pred generate-param-type
@@ -92,8 +92,8 @@ generate-param-type (pc M N as Class) RClass :-
   coq.univ-instance UI1 [L1],
   BuildRel = pglobal BuildRelGR UI1,
 
-  trocq.db.map-sort (typ _) M RClass MapTypeGR,
-  trocq.db.map-sym-sort (typ _) N RClass MapTypeSymGR,
+  trocq.db.map-sort ttype M RClass MapTypeGR,
+  trocq.db.map-sym-sort ttype N RClass MapTypeSymGR,
   coq.univ-instance UI2 [L, L1],
   MapType = pglobal MapTypeGR UI2,
   MapTypeSym = pglobal MapTypeSymGR UI2,
@@ -144,6 +144,6 @@ generate-param-type (pc M N as Class) RClass :-
   @univpoly! ==>
     ParamType is "Param" ^ {param-class.to_string Class} ^ "_Type" ^ {param-class.to_string RClass},
     coq.env.add-const ParamType Decl _ @transparent! Const,
-    coq.elpi.accumulate _ "trocq.db" (clause _ _ (pi U\
-      trocq.db.param-sort (typ U) Class RClass Const
+    coq.elpi.accumulate _ "trocq.db" (clause _ _ (
+      trocq.db.param-sort ttype Class RClass Const
     )).
