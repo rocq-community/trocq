@@ -82,3 +82,75 @@ generate-map-prop M RClass :-
     coq.elpi.accumulate _ "trocq.db" (clause _ _ (
       trocq.db.map-sym-sort prop M RClass (const ConstSym)
     )).
+
+pred generate-param-prop
+  i:param-class, i:param-class.
+generate-param-prop (pc M N as Class) RClass :-
+  coq.univ.new U,
+  coq.univ.variable U L,
+  coq.univ.alg-super U U1,
+  coq.univ.variable U1 L1,
+
+  Prop = sort prop,
+
+  trocq.db.rel Class _ BuildRelGR _ _ _,
+  coq.univ-instance UI1 [L1],
+  BuildRel = pglobal BuildRelGR UI1,
+
+  trocq.db.map-sort tprop M RClass MapPropGR,
+  trocq.db.map-sym-sort tprop N RClass MapPropSymGR,
+  coq.univ-instance UI2 [L, L1],
+  MapProp = pglobal MapPropGR UI2,
+  MapPropSym = pglobal MapPropSymGR UI2,
+
+  trocq.db.rel RClass RGR _ _ _ _,
+  coq.univ-instance UI [L],
+  R = pglobal RGR UI,
+
+  if (std.mem! [map2b, map3, map4] M) (
+    UnivalentDeclM = true,
+    MapPropF = (univalence\ {{ lp:MapProp lp:univalence }})
+  ) (
+    UnivalentDeclM = false,
+    MapPropF = (_\ MapProp)
+  ),
+
+  if (std.mem! [map2b, map3, map4] N) (
+    UnivalentDeclN = true,
+    MapPropSymF = (univalence\ {{ lp:MapPropSym lp:univalence }})
+  ) (
+    UnivalentDeclN = false,
+    MapPropSymF = (_\ MapPropSym)
+  ),
+
+  % in the univalent case, add the axiom in the binder
+  if (UnivalentDeclM = true ; UnivalentDeclN = true) (
+    Univalence = global {trocq.db.univalence-type},
+
+    Decl = {{
+      fun (H: lp:Univalence) =>
+        lp:BuildRel lp:Prop lp:Prop
+          lp:R
+          lp:{{ MapPropF {{H}} }}
+          lp:{{ MapPropSymF {{H}} }}
+    }}
+  ) (
+    Decl = {{
+      lp:BuildRel lp:Prop lp:Prop
+        lp:R
+        lp:{{ MapPropF _ }}
+        lp:{{ MapPropSymF _ }}
+    }}
+  ),
+
+  (@keepunivs! => std.assert-ok!
+    (coq.elaborate-skeleton Decl _Ty Decl')
+    "generate-param-prop: Decl cannot be elaborated"
+  ),
+
+  @univpoly! ==>
+    ParamProp is "Param" ^ {param-class.to_string Class} ^ "_Prop" ^ {param-class.to_string RClass},
+    coq.env.add-const ParamProp Decl' _ @transparent! Const,
+    coq.elpi.accumulate _ "trocq.db" (clause _ _ (
+      trocq.db.param-sort tprop Class RClass Const
+    )).

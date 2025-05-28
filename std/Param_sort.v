@@ -86,3 +86,22 @@ Elpi Query lp:{{
     )
   ).
 }}.
+
+Elpi Command genparamprop.
+Elpi Accumulate Db trocq.db.
+Elpi Accumulate File class.
+Elpi Accumulate File param_prop_generation.
+
+Elpi Query lp:{{
+  map-class.all-of-kind all AllClasses,
+  map-class.all-of-kind low LowClasses,
+  std.forall LowClasses (m\
+    std.forall LowClasses (n\
+      std.forall AllClasses (p\
+        std.forall AllClasses (q\
+          generate-param-prop (pc m n) (pc p q)
+        )
+      )
+    )
+  ).
+}}.
