@@ -16,8 +16,7 @@ Require Import ssreflect.
 Require Import Stdlib Hierarchy Database.
 
 From Trocq.Elpi Extra Dependency "class.elpi" as class.
-From Trocq.Elpi.generation Extra Dependency "param-prop.elpi" as param_prop_generation.
-From Trocq.Elpi.generation Extra Dependency "param-type.elpi" as param_type_generation.
+From Trocq.Elpi.generation Extra Dependency "param-sort.elpi" as param_sort_generation.
 
 Set Universe Polymorphism.
 Unset Universe Minimization ToSet.
@@ -32,7 +31,7 @@ Local Open Scope param_scope.
 Elpi Command genmaptype.
 Elpi Accumulate Db trocq.db.
 Elpi Accumulate File class.
-Elpi Accumulate File param_type_generation.
+Elpi Accumulate File param_sort_generation.
 
 Elpi Query lp:{{
   map-class.all-of-kind all AllClasses,
@@ -40,7 +39,7 @@ Elpi Query lp:{{
   std.forall LowClasses (m\
     std.forall AllClasses (n\
       std.forall AllClasses (p\
-        generate-map-type m (pc n p)
+        generate-map-sort ttype m (pc n p)
       )
     )
   ).
@@ -49,7 +48,7 @@ Elpi Query lp:{{
 Elpi Command genparamtype.
 Elpi Accumulate Db trocq.db.
 Elpi Accumulate File class.
-Elpi Accumulate File param_type_generation.
+Elpi Accumulate File param_sort_generation.
 
 Elpi Query lp:{{
   map-class.all-of-kind all AllClasses,
@@ -58,7 +57,7 @@ Elpi Query lp:{{
     std.forall LowClasses (n\
       std.forall AllClasses (p\
         std.forall AllClasses (q\
-          generate-param-type (pc m n) (pc p q)
+          generate-param-sort ttype (pc m n) (pc p q)
         )
       )
     )
@@ -73,7 +72,7 @@ Elpi Query lp:{{
 Elpi Command genmapprop.
 Elpi Accumulate Db trocq.db.
 Elpi Accumulate File class.
-Elpi Accumulate File param_prop_generation.
+Elpi Accumulate File param_sort_generation.
 
 Elpi Query lp:{{
   map-class.all-of-kind all AllClasses,
@@ -81,7 +80,7 @@ Elpi Query lp:{{
   std.forall LowClasses (m\
     std.forall AllClasses (n\
       std.forall AllClasses (p\
-        generate-map-prop m (pc n p)
+        generate-map-sort tprop m (pc n p)
       )
     )
   ).
@@ -90,7 +89,7 @@ Elpi Query lp:{{
 Elpi Command genparamprop.
 Elpi Accumulate Db trocq.db.
 Elpi Accumulate File class.
-Elpi Accumulate File param_prop_generation.
+Elpi Accumulate File param_sort_generation.
 
 Elpi Query lp:{{
   map-class.all-of-kind all AllClasses,
@@ -99,7 +98,7 @@ Elpi Query lp:{{
     std.forall LowClasses (n\
       std.forall AllClasses (p\
         std.forall AllClasses (q\
-          generate-param-prop (pc m n) (pc p q)
+          generate-param-sort tprop (pc m n) (pc p q)
         )
       )
     )

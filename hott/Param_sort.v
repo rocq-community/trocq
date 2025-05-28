@@ -16,7 +16,7 @@ From elpi Require Import elpi.
 Require Import Hierarchy Stdlib Database Param_lemmas.
 
 From Trocq.Elpi Extra Dependency "class.elpi" as class.
-From Trocq.Elpi.generation Extra Dependency "param-type.elpi" as param_type_generation.
+From Trocq.Elpi.generation Extra Dependency "param-sort.elpi" as param_sort_generation.
 
 Set Universe Polymorphism.
 Unset Universe Minimization ToSet.
@@ -31,7 +31,7 @@ Local Open Scope param_scope.
 Elpi Command genmaptype.
 Elpi Accumulate Db trocq.db.
 Elpi Accumulate File class.
-Elpi Accumulate File param_type_generation.
+Elpi Accumulate File param_sort_generation.
 
 Elpi Query lp:{{
   map-class.all-of-kind all AllClasses,
@@ -39,7 +39,7 @@ Elpi Query lp:{{
   std.forall LowClasses (m\
     std.forall AllClasses (n\
       std.forall AllClasses (p\
-        generate-map-type m (pc n p)
+        generate-map-sort ttype m (pc n p)
       )
     )
   ).
@@ -138,7 +138,7 @@ Elpi Query lp:{{
 Elpi Command genparamtype.
 Elpi Accumulate Db trocq.db.
 Elpi Accumulate File class.
-Elpi Accumulate File param_type_generation.
+Elpi Accumulate File param_sort_generation.
 
 Elpi Query lp:{{
   map-class.all-of-kind all AllClasses,
@@ -148,17 +148,17 @@ Elpi Query lp:{{
     std.forall LowClasses (n\
       std.forall AllClasses (p\
         std.forall AllClasses (q\
-          generate-param-type (pc m n) (pc p q)
+          generate-param-sort ttype (pc m n) (pc p q)
         )
       )
     ),
     std.forall HighClasses (n\
-      generate-param-type (pc m n) (pc map4 map4)
+      generate-param-sort ttype (pc m n) (pc map4 map4)
     )
   ),
   std.forall HighClasses (m\
     std.forall AllClasses (n\
-      generate-param-type (pc m n) (pc map4 map4)
+      generate-param-sort ttype (pc m n) (pc map4 map4)
     )
   ).
 }}.

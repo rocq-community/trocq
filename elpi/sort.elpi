@@ -17,3 +17,11 @@
 kind tsort type.
 type ttype tsort.
 type tprop tsort.
+
+pred tsort->sort i:tsort, i:univ, o:sort.
+tsort->sort ttype U (typ U).
+tsort->sort tprop _ prop.
+
+pred tsort->name i:tsort, o:string.
+tsort->name ttype "Type".
+tsort->name tprop "Prop".
