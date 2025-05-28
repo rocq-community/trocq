@@ -82,7 +82,7 @@ ptype-or-pprop (pglobal (const PCst) _) PCst :- !,
 % map-sort Sort M α {{ Map(M)_(Sort)(α) }}
 pred map-sort i:tsort, o:map-class, o:param-class, o:gref.
 
-% map-sym-sort M α {{ Map(M)_(Sort)_sym(α) }}
+% map-sym-sort Sort M α {{ Map(M)_(Sort)_sym(α) }}
 pred map-sym-sort i:tsort, o:map-class, o:param-class, o:gref.
 
 % param-sort Sort β α {{ Param(β)_(Sort)(α) }}
