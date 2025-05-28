@@ -60,12 +60,14 @@ generate-map-prop M RClass :-
   Decl = app [BuildHas, Prop, Prop | Fields],
   DeclSym = app [BuildHas, Prop, Prop | FieldsSym],
 
-  std.assert-ok! (coq.elaborate-skeleton Decl _Ty Decl')
-    "generate-map-prop: Decl cannot be elaborated",
-  std.assert-ok! (coq.elaborate-skeleton DeclSym _Ty' DeclSym')
-    "generate-map-prop: DeclSym cannot be elaborated",
+  (@keepunivs! ==>
+    std.assert-ok! (coq.elaborate-skeleton Decl _Ty Decl')
+      "generate-map-prop: Decl cannot be elaborated",
+    std.assert-ok! (coq.elaborate-skeleton DeclSym _Ty' DeclSym')
+      "generate-map-prop: DeclSym cannot be elaborated"
+  ),
 
-  @univpoly! ==>
+  @udecl! [L, L1] ff [] tt ==>
     MapProp is
       "Map" ^ {map-class.to_string M} ^ "_Prop" ^ {param-class.to_string RClass},
     coq.env.add-const MapProp Decl' _ @transparent! Const,

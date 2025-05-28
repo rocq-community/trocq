@@ -64,7 +64,7 @@ generate-map-type M RClass :-
   std.assert-ok! (coq.typecheck Decl _) "generate-map-type: Decl ill-typed",
   std.assert-ok! (coq.typecheck DeclSym _) "generate-map-type: DeclSym ill-typed",
 
-  @univpoly! ==>
+  @udecl! [L, L1] ff [] tt ==>
     MapType is
       "Map" ^ {map-class.to_string M} ^ "_Type" ^ {param-class.to_string RClass},
     coq.env.add-const MapType Decl _ @transparent! Const,
