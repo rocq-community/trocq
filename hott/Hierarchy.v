@@ -119,9 +119,10 @@ Register sym_rel as trocq.sym_rel.
 Register paths as trocq.paths.
 
 Elpi Query lp:{{
-  {{:gref lib:trocq.ptype}} = const PType,
-  coq.elpi.accumulate _ "trocq.db" (clause _ _ (trocq.db.ptype PType)),
-  {{:gref lib:trocq.weaken}} = const Weaken,
+  coq.elpi.accumulate _ "trocq.db" (clause _ _ (
+    trocq.db.psort ttype {{:gref lib:trocq.ptype}}
+  )),
+  const Weaken = {{:gref lib:trocq.weaken}},
   coq.elpi.accumulate _ "trocq.db" (clause _ _ (trocq.db.weaken Weaken)),
   coq.elpi.accumulate _ "trocq.db" (clause _ _ (trocq.db.transport {{:gref lib:trocq.transport}})),
   coq.elpi.accumulate _ "trocq.db" (clause _ _ (trocq.db.univalence-type {{:gref lib:trocq.univalence_type}})),

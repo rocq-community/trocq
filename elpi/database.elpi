@@ -52,8 +52,7 @@ pred id-param o:param-class, o:constant.
 % Given the class (M, N), obtain {{ParamMN_sym}}
 pred param-sym o:param-class, o:constant.
 
-pred ptype o:constant.
-pred pprop o:constant.
+pred psort o:tsort, o:gref.
 pred weaken o:constant.
 
 % remark: to allow for conditional polymorphicity, `paths` is a predicate
@@ -75,9 +74,9 @@ pred transport o:gref.
 pred univalence-type o:gref.
 pred sym-rel o:gref.
 
-pred ptype-or-pprop i:term, o:constant.
-ptype-or-pprop (pglobal (const PCst) _) PCst :- !,
-  (ptype PCst; pprop PCst).
+pred is-psort i:term, o:gref.
+is-psort (pglobal PCst _) PCst :- !,
+  sigma TSort\ psort TSort PCst.
 
 % map-sort Sort M α {{ Map(M)_(Sort)(α) }}
 pred map-sort i:tsort, o:map-class, o:param-class, o:gref.
