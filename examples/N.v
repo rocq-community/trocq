@@ -12,7 +12,7 @@
 (*****************************************************************************)
 
 From Trocq Require Import Stdlib Common.
-From mathcomp Require Import ssreflect.
+Require Import ssreflect.
 
 Set Universe Polymorphism.
 Set Bullet Behavior "Strict Subproofs".

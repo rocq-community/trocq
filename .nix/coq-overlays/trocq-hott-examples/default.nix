@@ -39,7 +39,5 @@ mkCoqDerivation {
 
   propagatedBuildInputs = [
     trocq.hott
-    mathcomp.ssreflect
-    mathcomp.algebra
   ];
 }
