@@ -6,5 +6,5 @@
 *.vos
 *~
 .*.d
-**/Makefile.conf
-**/Makefile.coq
+**/Makefile.rocq
+**/Makefile.rocq.conf
