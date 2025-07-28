@@ -17,6 +17,11 @@ From mathcomp Require Import ssreflect.
 Set Universe Polymorphism.
 Set Bullet Behavior "Strict Subproofs".
 
+Reserved Notation "p ! 1"
+ (at level 1, left associativity, format "p '!' '1'").
+Reserved Notation "p ! 0"
+ (at level 1, left associativity, format "p '!' '0'").
+
 (* definition of binary natural numbers *)
 
 Inductive positive : Set :=
@@ -29,10 +34,8 @@ Delimit Scope positive_scope with positive.
 Bind Scope positive_scope with positive.
 
 Notation "1" := xH : positive_scope.
-Notation "p ! 1" := (xI p)
- (at level 1, left associativity, format "p '!' '1'") : positive_scope.
-Notation "p ! 0" := (xO p)
- (at level 1, left associativity, format "p '!' '0'") : positive_scope.
+Notation "p ! 1" := (xI p) : positive_scope.
+Notation "p ! 0" := (xO p) : positive_scope.
 
 Module Pos.
 Local Open Scope positive_scope.
@@ -83,13 +86,12 @@ Coercion Npos : positive >-> N.
 Notation "0" := N0 : N_scope.
 
 Module N.
-Local Definition succ_subdef (n : N) : positive :=
+
+Definition succ (n : N) : N :=
  match n with
-   | N0 => 1%positive
-   | Npos p => Pos.succ p
+   | N0 => Npos 1%positive
+   | Npos p => Npos (Pos.succ p)
  end.
-Arguments succ_subdef /.
-Definition succ : N -> N := succ_subdef.
 
 Definition add (m n : N) := match m, n with
 | N0, x | x, N0 => x
@@ -124,7 +126,8 @@ Qed.
 
 Lemma of_natD i j : of_nat (i + j) = (of_nat i + of_nat j)%N.
 Proof.
-elim: i j => [//|i IHi] [|j] ; first by rewrite /= addn0.
+elim: i j => [//|i IHi] [|j].
+  by have := IHi 0; rewrite /= !addn0 => {1}-> /=; case: (of_nat i).
 rewrite addSn addnS /= IHi.
 case: (of_nat i) => // p; case: (of_nat j) => //=.
 - by rewrite /succ/= Pos.addp1.
