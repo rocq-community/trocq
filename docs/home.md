@@ -57,7 +57,7 @@ they are documented in the [INSTALL.md file](https://github.com/coq-community/tr
 
 There are several kinds of documentation for **Trocq**:
 
-1. The motivation, theoretical basis, and formal definition of **Trocq** are given in our [article](https://hal.science/hal-04177913/document), with details about our parametricity framework, the supported hierarchy of structures, *etc*.
+1. The motivation, theoretical basis, and formal definition of **Trocq** are given in our [original conference paper](https://hal.science/hal-04177913/document) or its [journal long version](https://inria.hal.science/hal-05192017/document), with details about our parametricity framework, the supported hierarchy of structures, *etc*.
 More theoretical details are available and implementation issues are discussed in a less space-constrained format in the related parts of Enzo Crance's [PhD thesis](https://ecrance.net/files/thesis-Enzo-Crance-en-light.pdf):
     - Part III, called *Trocq: proof transfer by parametricity*, currently page 69;
     - Part IV, called *Implementation of preprocessing tools with Coq-Elpi*, currently page 99.
