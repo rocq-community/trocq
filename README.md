@@ -61,7 +61,7 @@ sequent-style presentation.
   - Lucie Lahaye ([**@lweqx**](https://github.com/lweqx))
   - Assia Mahboubi ([**@amahboubi**](https://github.com/amahboubi))
 - License: [GNU Lesser General Public License v3.0](LICENSE)
-- Compatible Coq versions: 8.20, 9.0
+- Compatible Coq versions: 8.20, 9.0 and 9.1
 - Additional dependencies:
   - [Coq-Elpi](https://github.com/LPCIC/coq-elpi)
 - Coq namespace: `Trocq`
