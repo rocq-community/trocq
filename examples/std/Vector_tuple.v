@@ -362,7 +362,7 @@ Definition Param44_bnat_bv (k k' : nat) (kR : natR k k') :
   Param44.Rel (bounded_nat k) (bitvector k').
 Proof.
   unshelve eapply (@Param44_trans _ (bitvector k) _).
-  - exact Param44_bnat_bv_d.  
+  - exact Param44_bnat_bv_d.
   - exact (Vector.Param44 bool bool Param44_Bool k k' kR).
 Defined.
 
@@ -382,7 +382,7 @@ Axiom getBit_bnat : forall {k : nat}, bounded_nat k -> nat -> bool.
 Axiom setBitR :
   forall
     (k k' : nat) (kR : natR k k')
-    (bn : bounded_nat k) (bv' : bitvector k') 
+    (bn : bounded_nat k) (bv' : bitvector k')
     (r : R_trans
           (@R_bnat_bv k) (Vector.Param44 bool bool Param44_Bool k k' kR) bn bv')
     (n n' : nat) (nR : natR n n')
@@ -395,7 +395,7 @@ Axiom setBitR :
 Axiom getBitR :
   forall
     (k k' : nat) (kR : natR k k')
-    (bn : bounded_nat k) (bv' : bitvector k') 
+    (bn : bounded_nat k) (bv' : bitvector k')
     (r : R_trans
           (@R_bnat_bv k) (Vector.Param44 bool bool Param44_Bool k k' kR) bn bv')
     (n n' : nat) (nR : natR n n'),

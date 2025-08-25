@@ -32,23 +32,23 @@ Existing Instance eqp_sym.
 #[local] Axiom (eqp_trans : Transitive eqmodp).
 Existing Instance eqp_trans.
 
-#[local] Axiom add_morph : 
-  forall m m' : int, (m == m')%int ->  
-  forall n n' : int, (n == n')%int ->  
-  (m + n == m' + n')%int. 
+#[local] Axiom add_morph :
+  forall m m' : int, (m == m')%int ->
+  forall n n' : int, (n == n')%int ->
+  (m + n == m' + n')%int.
 
-Definition eqmodp_morph : 
-  forall m m' : int, (m == m')%int ->  
-  forall n n' : int, (n == n')%int ->  
+Definition eqmodp_morph :
+  forall m m' : int, (m == m')%int ->
+  forall n n' : int, (n == n')%int ->
   (m' == n')%int -> (m == n)%int.
 Proof.
 move=> m m' Rm n n' Rn Rmn.
 exact (eqp_trans _ _ _ Rm (eqp_trans _ _ _ Rmn (eqp_sym _ _ Rn))).
 Qed.
 
-Lemma eqmodp01 : 
-  forall m m' : int, (m == m')%int ->  
-  forall n n' : int, (n == n')%int ->  
+Lemma eqmodp01 :
+  forall m m' : int, (m == m')%int ->
+  forall n n' : int, (n == n')%int ->
   Param01.Rel (m == n)%int (m' == n')%int.
 Proof.
 move=> m m' Rm n n' Rn.

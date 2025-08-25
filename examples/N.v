@@ -11,8 +11,8 @@
 (*                            * see LICENSE file for the text of the license *)
 (*****************************************************************************)
 
+Require Import ssreflect.
 From Trocq Require Import Stdlib Common.
-From mathcomp Require Import ssreflect.
 
 Set Universe Polymorphism.
 Set Bullet Behavior "Strict Subproofs".
@@ -109,18 +109,11 @@ Fixpoint of_nat (n : nat) : N :=
 
 (* from ssrnat, inlined because ssrnat clashes with HoTT. *)
 Lemma addn0 : forall n, (n + 0)%nat = n.
-Proof.
-  move=> n; induction n as [|n IHn] => //= ;
-  rewrite IHn ;
-  done.
-Qed.
+Proof. by move=> n; induction n as [|n IHn] => //=; rewrite IHn. Qed.
 Lemma addSn : forall n m, (S n + m)%nat = S (n + m)%nat.
-Proof. done. Qed.  
+Proof. by []. Qed.
 Lemma addnS : forall n m, (n + S m)%nat = S (n + m)%nat.
-Proof.
-  move=> n m; induction n as [|n IHn] => /= [//|].
-  by rewrite IHn //.
-Qed.
+Proof. by move=> n m; induction n as [|n IHn] => /= [//|]; rewrite IHn //. Qed.
 
 Lemma of_natD i j : of_nat (i + j) = (of_nat i + of_nat j)%N.
 Proof.
