@@ -65,16 +65,14 @@ Here are the instructions:
 ### Via Opam (recommended only for ocaml/coq/opam users)
 
   1. Install [opam](https://opam.ocaml.org/doc/Install.html) and configure the [coq opam repository](https://coq.inria.fr/opam-using.html#coq-packages)
-  2. Install the custom version of `coq-elpi`
-  ```shell
-  opam pin add coq-elpi https://github.com/ecranceMERCE/coq-elpi/archive/refs/heads/strat.tar.gz
-  ```
   3. Build Trocq
   ```shell
   git clone https://github.com/coq-community/trocq.git
   cd trocq
-  opam install . --deps-only # to install dependencies
-  make   # or make -j <number-of-cores-on-your-machine>
+  opam install --deps-only ./coq-trocq.opam # to install dependencies
+  make -C std   # or make -j <number-of-cores-on-your-machine>
+  make -C std install
+  make -C examples/std   # or make -j <number-of-cores-on-your-machine>
   ```
   4. You can also run `make install` to install Trocq on your system.
 
