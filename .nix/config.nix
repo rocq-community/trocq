@@ -1,21 +1,34 @@
 {
   format = "1.0.0";
 
-  shell-attribute = "devshell";
   attribute = "trocq";
 
-  default-bundle = "coq-9.0";
-  bundles."coq-8.20" = {
-    coqPackages.trocq-std.main-job = true;
-    coqPackages.trocq-hott.main-job = true;
+  no-rocq-yet = true;
 
-    coqPackages.coq.override.version = "8.20";
-  };
-  bundles."coq-9.0" = {
-    coqPackages.trocq-std.main-job = true;
-    coqPackages.trocq-hott.main-job = true;
+  default-bundle = "rocq-9.1";
 
-    coqPackages.coq.override.version = "9.0";
+  bundles = let
+    common-bundles = {
+      coq-elpi.job = true;
+      trocq-std.main-job = true;
+      trocq-hott.main-job = true;
+    };
+  in {
+    "coq-8.20".coqPackages = common-bundles // {
+      coq.override.version = "8.20";
+    };
+    "rocq-9.0" = { rocqPackages = {
+      rocq-core.override.version = "9.0";
+    }; coqPackages = common-bundles // {
+      coq.override.version = "9.0";
+    }; };
+    "rocq-9.1" = { rocqPackages = {
+      rocq-core.override.version = "9.1";
+    }; coqPackages = common-bundles // {
+      coq.override.version = "9.1";
+      trocq-hott.job = false;  # HoTT isn't available yet for 9.1
+      trocq.job = false;  # depends on trocq-hott
+    }; };
   };
 
   cachix.coq = { };
