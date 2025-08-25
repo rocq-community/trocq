@@ -83,7 +83,7 @@ tested_coq_opam_versions:
 dependencies:
 - opam:
     name: coq-elpi
-    version: '{>= "2.5.2" & < "3.0~"}'
+    version: '{>= "2.5.2"}'
   description: |-
     [Coq-Elpi](https://github.com/LPCIC/coq-elpi)
 

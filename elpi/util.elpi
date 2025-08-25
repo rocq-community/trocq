@@ -59,7 +59,7 @@ pred option.value i:option A, i:A, o:A.
 option.value none Default Default.
 option.value (some A) _ A.
 
-pred cmp-int i:int, i:int, o:cmp.
+pred cmp-int o:int, o:int, o:cmp.
 cmp-int A B lt :- A < B, !.
 cmp-int A B eq :- A = B, !.
 cmp-int _ _ gt.

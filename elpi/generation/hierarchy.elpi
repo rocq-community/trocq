@@ -71,7 +71,7 @@ generate-module (pc M N as Class) :-
         end-record))),
   (@keep-alg-univs! =>
     std.assert-ok! (coq.typecheck-indt-decl RelDecl) "generate-module: RelDecl is ill-typed"),
-  (@primitive! => @udecl! [L] ff [] tt ==> coq.env.add-indt RelDecl TrocqInd,coq.env.indt TrocqInd _ _ _ _ [TrocqBuild] _),
+  (@primitive! ==> @udecl! [L] ff [] tt ==> coq.env.add-indt RelDecl TrocqInd,coq.env.indt TrocqInd _ _ _ _ [TrocqBuild] _),
   coq.env.global (indt TrocqInd) Rel,
   coq.env.projections TrocqInd
     [some CR, some CovariantProj, some ContravariantProj],

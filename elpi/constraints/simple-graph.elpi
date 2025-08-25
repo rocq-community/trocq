@@ -31,7 +31,7 @@ pred add-edge i:A, i:A, i:simple-graph A, o:simple-graph A.
 add-edge X Y (simple-graph G) (simple-graph G') :-
   util.map.update X (add-edge.aux Y) G G'.
 
-pred add-edge.aux i:A, i:option (list A), o:option (list A).
+pred add-edge.aux i:A, o:option (list A), o:option (list A).
 add-edge.aux Y none (some [Y]).
 add-edge.aux Y (some L) (some [Y|L]).
 

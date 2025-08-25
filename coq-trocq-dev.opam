@@ -38,7 +38,7 @@ build: [make "-j%{jobs}%"]
 install: [make "install"]
 depends: [
   "coq" {>= "8.20" & < "9.2"}
-  "coq-elpi" {>= "2.5.2" & < "3.0~"}
+  "coq-elpi" {>= "2.5.2"}
   "coq-hott"
   "coq-mathcomp-algebra"
 ]
