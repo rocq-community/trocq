@@ -77,7 +77,7 @@ in the [INSTALL.md file](INSTALL.md).
 
 ## Documentation
 
-See the [tutorial](artifact-doc/TUTORIAL.md) for concrete use cases.
+See the [tutorial](https://rocq-community.org/trocq/index.html#/quick-start) for concrete use cases.
 
 In short, the plugin provides a tactic:
 - `trocq` (without arguments) which attempts to run a translation on
