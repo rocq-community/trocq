@@ -11,7 +11,6 @@
 (*                            * see LICENSE file for the text of the license *)
 (*****************************************************************************)
 
-Require Import ssreflect.
 From mathcomp Require Import all_ssreflect all_algebra.
 From Trocq Require Import Stdlib Trocq.
 
@@ -164,7 +163,7 @@ Trocq Use Param01_Empty.
 Trocq Use Param10_Empty.
 
 Lemma flt3_step : forall (m n p : ℤ),
-  ((m * n * p)%Z % 3)%Z ≢ 0 -> (m³ + n³)%ℤ  ≠ p³%ℤ.
+  ((m * n * p)%Z % 3)%Z ≢ 0 -> (m³ + n³)%ℤ ≠ p³%ℤ.
 Proof.
 trocq=> /=.
 

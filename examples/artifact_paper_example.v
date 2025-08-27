@@ -14,11 +14,8 @@
 Require Import ssreflect.
 From Trocq Require Import Stdlib Trocq.
 From Trocq_examples Require Import N.
-From elpi Require Import elpi.
 
 Set Universe Polymorphism.
-
-(*Elpi Trace.*)
 
 (** In this example, we transport the induction principle on natural numbers
   from two equivalent representations of `N`: the unary one `nat` and the binary
@@ -45,4 +42,3 @@ Proof. trocq. (* replaces N by nat in the goal *) exact nat_rect. Defined.
     independence. *)
 Set Printing Depth 20.
 Print Assumptions N_Srec.
-

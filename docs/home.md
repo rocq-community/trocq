@@ -45,13 +45,7 @@ and readable code with respect to a sequent-style theoretical presentation.
 
 ## Building and installation instructions
 
-As **Trocq** is a prototype, it is currently unreleased, and depends on a
-[custom version](https://github.com/ecranceMERCE/coq-elpi/tree/strat)
-of **Coq-Elpi**. It is not yet packaged in **Opam** or **Nix**, but will be in
-the near future.
-
-There are however three ways to develop it and experiment with it,
-they are documented in the [INSTALL.md file](https://github.com/coq-community/trocq/blob/master/INSTALL.md) of the repository.
+See the [INSTALL.md file](https://github.com/coq-community/trocq/blob/master/INSTALL.md) of the repository.
 
 ## Documentation
 
