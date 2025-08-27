@@ -271,7 +271,7 @@ pred param.subst-weaken i:term, o:term.
 param.subst-weaken T T' :-
   trocq.db.weaken Weaken,
   (pi XR XR'\ copy (app [pglobal (const Weaken) _, _, _, _, _, _, _] as XR) XR' :- !,
-    copy.subst-weaken XR XR')
+    copy.subst-weaken XR XR', !)
       => copy T T'.
 pred copy.subst-weaken i:term, o:term.
 copy.subst-weaken (app [_, M, N, M', N', _, XR]) XR'' :-

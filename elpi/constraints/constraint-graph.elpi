@@ -201,6 +201,7 @@ instantiation-order IDs ConstraintGraph SortedIDs :-
 pred pp i:constraint-graph.
 pp (constraint-graph G) :-
   std.forall {std.map.bindings G} pp.aux.
+pred pp.aux i:pair class-id (pair (list cstr-graph.node) (list cstr-graph.node)).
 pp.aux (pr ID (pr LowerNodes HigherNodes)) :-
   logging.debug (
     coq.say "id" ID,
@@ -225,7 +226,7 @@ filter-var [node.const _|Nodes] IDs :-
   filter-var Nodes IDs.
 
 pred add-higher-node
-  i:node, i:option (pair (list node) (list node)), o:option (pair (list node) (list node)).
+  i:node, o:option (pair (list node) (list node)), o:option (pair (list node) (list node)).
 add-higher-node Node none (some (pr [] [Node])).
 add-higher-node Node (some (pr LowerNodes HigherNodes)) (some (pr LowerNodes [Node|HigherNodes])).
 
@@ -239,12 +240,12 @@ remove-higher-node Node (some (pr LowerNodes HigherNodes)) Nodes :-
     (Nodes = some (pr LowerNodes HigherNodes')).
 
 pred add-lower-node
-  i:node, i:option (pair (list node) (list node)), o:option (pair (list node) (list node)).
+  i:node, o:option (pair (list node) (list node)), o:option (pair (list node) (list node)).
 add-lower-node Node none (some (pr [Node] [])).
 add-lower-node Node (some (pr LowerNodes HigherNodes)) (some (pr [Node|LowerNodes] HigherNodes)).
 
 pred remove-lower-node
-  i:node, i:option (pair (list node) (list node)), o:option (pair (list node) (list node)).
+  i:node, o:option (pair (list node) (list node)), o:option (pair (list node) (list node)).
 remove-lower-node _ none none.
 remove-lower-node Node (some (pr LowerNodes HigherNodes)) Nodes :-
   util.delete Node LowerNodes LowerNodes',
@@ -257,8 +258,10 @@ to-precedence-graph IDs (constraint-graph G) PrecedenceGraph :-
   std.fold IDs {simple-graph.empty util.cmp-int} simple-graph.add-node SG,
   std.map.bindings G Bindings,
   std.fold Bindings SG to-precedence-graph.aux PrecedenceGraph.
+pred to-precedence-graph.aux i:pair class-id (pair (list cstr-graph.node) (list cstr-graph.node)), i:simple-graph int, o:simple-graph int.
 to-precedence-graph.aux (pr ID (pr _ HigherNodes)) G G' :-
   std.fold HigherNodes G (to-precedence-graph.aux2 ID) G'.
+pred to-precedence-graph.aux2 i:class-id, i:cstr-graph.node, i:simple-graph int, o:simple-graph int.
 to-precedence-graph.aux2 _ (node.const _) G G.
 to-precedence-graph.aux2 ID (node.var _ IDHs) G G' :-
   % for each variable Y higher than X in the constraint graph,
