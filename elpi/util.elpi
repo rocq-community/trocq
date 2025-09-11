@@ -46,11 +46,11 @@ pred log-level o:verbosity.
 :name "log-level"
 log-level level.info.
 
-pred logging.info i:prop.
+func logging.info prop.
 logging.info P :- util.at-level level.info P.
-pred logging.debug i:prop.
+func logging.debug prop.
 logging.debug P :- util.at-level level.debug P.
-pred logging.trace i:prop.
+func logging.trace prop.
 logging.trace P :- util.at-level level.trace P.
 
 namespace util {
@@ -64,9 +64,9 @@ cmp-int A B lt :- A < B, !.
 cmp-int A B eq :- A = B, !.
 cmp-int _ _ gt.
 
-pred at-level i:verbosity, i:prop.
+func at-level verbosity, prop.
 at-level MinimumLevel Log :- log-level CurrentLevel, !,
-  if ({verbosity->int CurrentLevel} >= {verbosity->int MinimumLevel}) Log true.
+  if ({verbosity->int CurrentLevel} >= {verbosity->int MinimumLevel}) Log true, !.
 at-level _ _.
 
 pred when i:prop, i:prop.
@@ -77,7 +77,7 @@ pred unless i:prop, i:prop.
 unless Condition Goal :-
   if (Condition) true Goal.
 
-pred if-suspend i:A, i:prop, i:prop, i:prop.
+pred if-suspend i:A, i:prop, i:(func), i:(func).
 if-suspend V B T E :- var V, !, declare_constraint (if B T E) [V].
 if-suspend _ B T E :- if B T E.
 
@@ -85,19 +85,19 @@ pred map.find-opt i:A, i:std.map A B, o:option B.
 map.find-opt K M (some V) :- std.map.find K M V, !.
 map.find-opt _ _ none.
 
-pred map.update i:A, i:(option B -> option B -> prop), i:std.map A B, o:std.map A B.
+func map.update A, (func option B -> option B), std.map A B -> std.map A B.
 map.update K F M M' :-
   map.find-opt K M (some V), !,
   F (some V) OV',
   if (OV' = some V')
-    (std.map.add K V' M M')  % replace
-    (std.map.remove K M M'). % remove
+    (std.map.add K V' M M', !)  % replace
+    (std.map.remove K M M', !). % remove
 map.update K F M M' :-
-  F none (some V'),
-  std.map.add K V' M M'.     % add
+  F none (some V'), !,
+  std.map.add K V' M M', !.     % add
 map.update _ _ M M.          % no-op
 
-pred delete i:A, i:list A, o:list A.
+func delete A, list A -> list A.
 delete A [A|Xs] Xs :- !.
 delete A [X|Xs] [X|Xs'] :- delete A Xs Xs'.
 delete _ [] [].

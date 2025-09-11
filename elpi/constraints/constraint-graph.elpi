@@ -51,21 +51,21 @@ empty (constraint-graph G) :-
 
 % D_π(C, C_A, C_B) is represented as two edges C -> C_A and C -> C_B
 % here one node from C to [C_A, C_B], and two nodes from C_A and C_B to C
-pred add-dep-pi i:class-id, i:class-id, i:class-id, i:constraint-graph, o:constraint-graph.
+func add-dep-pi class-id, class-id, class-id, constraint-graph -> constraint-graph.
 add-dep-pi ID IDA IDB (constraint-graph G) (constraint-graph G') :-
   util.map.update ID (internal.add-higher-node (node.var ct.pi [IDA, IDB])) G G1,
   util.map.update IDA (internal.add-lower-node (node.var ct.pi [ID])) G1 G2,
   util.map.update IDB (internal.add-lower-node (node.var ct.pi [ID])) G2 G'.
 
 % D_->(C, C_A, C_B) is similar
-pred add-dep-arrow i:class-id, i:class-id, i:class-id, i:constraint-graph, o:constraint-graph.
+func add-dep-arrow class-id, class-id, class-id, constraint-graph -> constraint-graph.
 add-dep-arrow ID IDA IDB (constraint-graph G) (constraint-graph G') :-
   util.map.update ID (internal.add-higher-node (node.var ct.arrow [IDA, IDB])) G G1,
   util.map.update IDA (internal.add-lower-node (node.var ct.arrow [ID])) G1 G2,
   util.map.update IDB (internal.add-lower-node (node.var ct.arrow [ID])) G2 G'.
 
 % D_□(C, C_R) is an edge C -> C_R, which is one node in each direction
-pred add-dep-type i:class-id, i:class-id, i:constraint-graph, o:constraint-graph.
+func add-dep-type class-id, class-id, constraint-graph -> constraint-graph.
 add-dep-type ID IDR (constraint-graph G) (constraint-graph G') :-
   util.map.update ID (internal.add-higher-node (node.var ct.type [IDR])) G G1,
   util.map.update IDR (internal.add-lower-node (node.var ct.type [ID])) G1 G'.
@@ -74,9 +74,8 @@ add-dep-type ID IDR (constraint-graph G) (constraint-graph G') :-
 % in its type, see the article for explanation
 % the constraint is represented here by one node from C to all the C_i
 % we store information in the node about K, its type, and the output variables
-pred add-dep-gref
-  i:class-id, i:gref, i:term, i:term, i:gref, i:list class-id, i:constraint-graph,
-  o:constraint-graph.
+func add-dep-gref
+  class-id, gref, term, term, gref, list class-id, constraint-graph -> constraint-graph.
 add-dep-gref ID GR T Tm' GRR IDs (constraint-graph G) (constraint-graph G') :-
   % the classes C_i (IDs) are not really "higher" than the output class C (ID)
   % here, higher is a way to say that they must be instantiated later than the output class
@@ -86,8 +85,8 @@ add-dep-gref ID GR T Tm' GRR IDs (constraint-graph G) (constraint-graph G') :-
       G'.
 
 % simple order constraint C >= C', handled differently if C and C' are constant classes or variables
-pred add-geq
-  i:or class-id param-class, i:or class-id param-class, i:constraint-graph, o:constraint-graph.
+func add-geq
+  or class-id param-class, or class-id param-class, constraint-graph -> constraint-graph.
 add-geq (inl IDA) (inl IDB) (constraint-graph G) (constraint-graph G') :-
   util.map.update IDB (internal.add-higher-node (node.var ct.geq [IDA])) G G1,
   util.map.update IDA (internal.add-lower-node (node.var ct.geq [IDB])) G1 G'.
@@ -225,13 +224,13 @@ filter-var [node.var _ IDs1|Nodes] IDs :-
 filter-var [node.const _|Nodes] IDs :-
   filter-var Nodes IDs.
 
-pred add-higher-node
-  i:node, o:option (pair (list node) (list node)), o:option (pair (list node) (list node)).
+func add-higher-node
+  node, option (pair (list node) (list node)) -> option (pair (list node) (list node)).
 add-higher-node Node none (some (pr [] [Node])).
 add-higher-node Node (some (pr LowerNodes HigherNodes)) (some (pr LowerNodes [Node|HigherNodes])).
 
-pred remove-higher-node
-  i:node, i:option (pair (list node) (list node)), o:option (pair (list node) (list node)).
+func remove-higher-node
+  node, option (pair (list node) (list node)) -> option (pair (list node) (list node)).
 remove-higher-node _ none none.
 remove-higher-node Node (some (pr LowerNodes HigherNodes)) Nodes :-
   util.delete Node HigherNodes HigherNodes',
@@ -239,13 +238,13 @@ remove-higher-node Node (some (pr LowerNodes HigherNodes)) Nodes :-
     (Nodes = none)
     (Nodes = some (pr LowerNodes HigherNodes')).
 
-pred add-lower-node
-  i:node, o:option (pair (list node) (list node)), o:option (pair (list node) (list node)).
+func add-lower-node
+  node, option (pair (list node) (list node)) -> option (pair (list node) (list node)).
 add-lower-node Node none (some (pr [Node] [])).
 add-lower-node Node (some (pr LowerNodes HigherNodes)) (some (pr [Node|LowerNodes] HigherNodes)).
 
-pred remove-lower-node
-  i:node, o:option (pair (list node) (list node)), o:option (pair (list node) (list node)).
+func remove-lower-node
+  node, option (pair (list node) (list node)) -> option (pair (list node) (list node)).
 remove-lower-node _ none none.
 remove-lower-node Node (some (pr LowerNodes HigherNodes)) Nodes :-
   util.delete Node LowerNodes LowerNodes',

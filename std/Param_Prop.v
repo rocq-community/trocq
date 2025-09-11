@@ -30,7 +30,6 @@ Local Open Scope param_scope.
 
 Elpi Command genmapprop.
 Elpi Accumulate Db trocq.db.
-Elpi Accumulate File class.
 Elpi Accumulate File param_prop_generation.
 
 Elpi Query lp:{{

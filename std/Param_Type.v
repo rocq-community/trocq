@@ -29,7 +29,6 @@ Local Open Scope param_scope.
 
 Elpi Command genmaptype.
 Elpi Accumulate Db trocq.db.
-Elpi Accumulate File class.
 Elpi Accumulate File param_type_generation.
 
 Elpi Query lp:{{
@@ -51,7 +50,6 @@ Elpi Query lp:{{
 
 Elpi Command genparamtype.
 Elpi Accumulate Db trocq.db.
-Elpi Accumulate File class.
 Elpi Accumulate File param_type_generation.
 
 Elpi Query lp:{{

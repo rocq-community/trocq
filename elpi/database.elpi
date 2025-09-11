@@ -41,7 +41,7 @@ pred rel o:param-class, o:gref, o:gref, o:gref, o:gref, o:gref.
 pred gref->class i:gref, o:param-class.
 gref->class Rel Class :- trocq.db.rel Class Rel _ _ _ _.
 
-pred r o:param-class, o:constant.
+func r param-class -> constant.
 :name "default-r"
 r C R :- var C, !,
   declare_constraint (r C R) [C].
@@ -82,25 +82,25 @@ ptype-or-pprop (pglobal (const PCst) _) PCst :- !,
 pred param-type o:param-class, o:param-class, o:constant.
 
 % pparam-type (M,N) {{ PParamTypeMN }}
-pred pparam-type o:param-class, o:constant.
+func pparam-type param-class -> constant.
 pparam-type C _ :-
-  logging.trace (coq.say "pparam" C), fail.
+  logging.trace (coq.say "pparam" C), fail, !.
 :name "default-pparam-type"
 pparam-type C PParamType :- var C, !,
   declare_constraint (pparam-type C PParamType) [C].
 
 % param-arrow (M,N) {{ ParamArrowMN }}
-pred param-arrow o:param-class, o:constant.
+func param-arrow param-class -> constant.
 param-arrow C _ :-
-  logging.trace (coq.say "arrow" C), fail.
+  logging.trace (coq.say "arrow" C), fail, !.
 :name "default-param-arrow"
 param-arrow C ParamArrow :- var C, !,
   declare_constraint (param-arrow C ParamArrow) [C].
 
 % param-forall (M,N) {{ ParamForallMN }}
-pred param-forall o:param-class, o:constant.
+func param-forall param-class -> constant.
 param-forall C _ :-
-  logging.trace (coq.say "forall" C), fail.
+  logging.trace (coq.say "forall" C), fail, !.
 :name "default-param-forall"
 param-forall C ParamForall :- var C, !,
   declare_constraint (param-forall C ParamForall) [C].

@@ -152,7 +152,7 @@ geq map1  M :- std.mem! [map0, map1] M.
 geq map0  map0.
 
 % minimal dependencies to translate a dependent product, see the table in the article
-pred dep-pi i:map-class, o:param-class, o:param-class.
+func dep-pi map-class -> param-class, param-class.
 dep-pi map0  (pc map0 map0)  (pc map0 map0).
 dep-pi map1  (pc map0 map2a) (pc map1 map0).
 dep-pi map2a (pc map0 map4)  (pc map2a map0).
@@ -161,7 +161,7 @@ dep-pi map3  (pc map0 map4)  (pc map3 map0).
 dep-pi map4  (pc map0 map4)  (pc map4 map0).
 
 % minimal dependencies to translate an arrow type, see the table in the article
-pred dep-arrow i:map-class, o:param-class, o:param-class.
+func dep-arrow map-class -> param-class, param-class.
 dep-arrow map0  (pc map0 map0)  (pc map0 map0).
 dep-arrow map1  (pc map0 map1)  (pc map1 map0).
 dep-arrow map2a (pc map0 map2b) (pc map2a map0).

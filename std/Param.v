@@ -34,11 +34,9 @@ Unset Universe Minimization ToSet.
 
 Elpi Command genpparam.
 Elpi Accumulate Db trocq.db.
-Elpi Accumulate File class.
 
 Elpi Command genpparamtype.
 Elpi Accumulate Db trocq.db.
-Elpi Accumulate File class.
 Elpi Accumulate File pparam_type_generation.
 
 Elpi Query lp:{{
@@ -57,7 +55,6 @@ Elpi Query lp:{{
 
 Elpi Tactic trocq.
 Elpi Accumulate Db trocq.db.
-Elpi Accumulate File class.
 Elpi Accumulate File simple_graph.
 Elpi Accumulate File constraints.
 Elpi Accumulate File annot.

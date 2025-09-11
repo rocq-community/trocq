@@ -103,13 +103,13 @@ namespace internal {
 % - constraints with a '-' suffix both get and delete information.
 
 % store all the variable classes encountered so far
-pred c.vars o:list class-id.
-pred c.vars? o:list class-id.
-pred c.vars! o:list class-id.
+func c.vars  list class-id.
+func c.vars? list class-id.
+func c.vars! list class-id.
 
-pred vars? o:list class-id.
+func vars? list class-id.
 vars? IDs :- !, declare_constraint (c.vars? IDs) [_].
-pred vars! i:list class-id.
+func vars! list class-id.
 vars! IDs :- !, declare_constraint (c.vars! IDs) [_].
 
 constraint c.vars c.vars? c.vars! {
@@ -118,14 +118,14 @@ constraint c.vars c.vars? c.vars! {
 }
 
 % link a class to an integer in the constraint store
-pred c.link o:param-class, o:class-id.
-pred c.link? o:param-class, o:class-id.
-pred c.link- o:param-class, o:class-id.
+func c.link param-class, class-id.
+func c.link? param-class, class-id.
+func c.link- param-class, class-id.
 
-pred link? o:param-class, o:class-id.
+func link? param-class -> class-id.
 link? C ID :- var C, !, declare_constraint (c.link? C ID) [_].
 link? _ (-1). % when the class is constant, it does not exist in the graph, default value is -1
-pred link- o:param-class, o:class-id.
+func link- param-class -> class-id.
 link- C ID :- declare_constraint (c.link- C ID) [_].
 
 constraint c.link c.link? c.link- {
@@ -148,11 +148,11 @@ constraint c.link c.link? c.link- {
 }
 
 % link a class C to a pair of Coq map classes
-pred c.univ-link o:param-class, o:term, o:term.
-pred c.univ-link? o:param-class, o:term, o:term.
-pred c.univ-link- o:param-class, o:term, o:term.
+func c.univ-link  param-class, term, term.
+func c.univ-link? param-class, term, term.
+func c.univ-link- param-class, term, term.
 
-pred univ-link- o:param-class, o:term, o:term.
+func univ-link- param-class, term, term.
 univ-link- C M N :- declare_constraint (c.univ-link- C M N) [_].
 
 constraint c.univ-link c.univ-link? c.univ-link- {
@@ -173,20 +173,20 @@ constraint c.univ-link c.univ-link? c.univ-link- {
 }
 
 % store the constraint graph in the Elpi constraint store
-pred c.graph o:constraint-graph.
+func c.graph constraint-graph.
 
 % stores the local db
-pred c.db o:list prop.
+func c.db list prop.
 
 % constraints to trigger addition of information to the constraint graph
-pred c.dep-pi o:class-id, o:class-id, o:class-id.
-pred c.dep-arrow o:class-id, o:class-id, o:class-id.
-pred c.dep-type o:class-id, o:class-id.
-pred c.dep-gref o:class-id, o:gref, o:term, o:term, o:gref, o:list class-id.
-pred c.geq o:or class-id param-class, o:or class-id param-class.
+func c.dep-pi class-id, class-id, class-id.
+func c.dep-arrow class-id, class-id, class-id.
+func c.dep-type class-id, class-id.
+func c.dep-gref class-id, gref, term, term, gref, list class-id.
+func c.geq or class-id param-class, or class-id param-class.
 
 % trigger reduction of the graph
-pred c.reduce-graph.
+func c.reduce-graph.
 
 constraint c.graph c.dep-pi c.dep-arrow c.dep-type c.dep-gref c.geq c.reduce-graph c.db {
   rule \ (c.graph G) (c.dep-pi ID IDA IDB) <=> (
