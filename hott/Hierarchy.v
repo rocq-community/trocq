@@ -28,7 +28,6 @@ Set Polymorphic Inductive Cumulativity.
 Elpi Command genhierarchy.
 Elpi Accumulate Db trocq.db.
 Elpi Accumulate File util_rocq.
-Elpi Accumulate File class.
 Elpi Accumulate File hierarchy_generation.
 
 (* Coq representation of the hierarchy *)
