@@ -8,3 +8,8 @@
 .*.d
 **/Makefile.rocq
 **/Makefile.rocq.conf
+
+# Symlink to /std/_CoqProject or /hott/_CoqProject
+/_CoqProject
+# Symlink to /tests/_CoqProject.std or /tests/_CoqProject.hott
+/tests/_CoqProject

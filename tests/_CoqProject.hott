@@ -1,0 +1,32 @@
+-arg -noinit
+-arg -indices-matter
+-arg -w -arg +elpi.typechecker
+
+-R ../hott/ Trocq
+-R ../elpi/ Trocq.Elpi
+
+
+# Weird syntax error
+# "./unit_arrow_contravariant.v", line 20, characters 21-23:
+# Error: Syntax error: ')' expected after [assumpt] (in [assum_coe]).
+# unit_arrow_contravariant.v
+# unit_simpleArrow.v
+# unit_relatedWith.v
+
+# Bug with trocq ?
+# The generated type has the wrong type
+# Trocq generates the following term that does not typecheck
+# Param01_forall A A' Rf B B' (fun (X : A) (X' : A') (XR : Param2a0.R A A' Rf X X') => Rg X X' XR
+# The XR makes the typechecking fail
+# unit_simplePi.v
+
+# Bug with trocq ?
+# The generated term has the wrong type
+# unit_typeArrow.v
+
+# Waiting for 'trocq to' syntax to be implemented and working
+# unit_twoTranslations.v
+
+# Failing with a elpi error «Unification problem outside the pattern fragment.»
+# Actually uses the constraint graph
+# unit_lambda_type.v
