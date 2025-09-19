@@ -11,7 +11,7 @@
 (*                            * see LICENSE file for the text of the license *)
 (*****************************************************************************)
 
-From Trocq Require Import Trocq.
+From Trocq Require Import Stdlib Trocq.
 
 Set Universe Polymorphism.
 

@@ -11,26 +11,34 @@
 (*                            * see LICENSE file for the text of the license *)
 (*****************************************************************************)
 
-From Trocq Require Import Stdlib Trocq.
+From Trocq Require Import Trocq.
 
 Set Universe Polymorphism.
 
-Section LambdaType.
-    Variable (U : Type) (U' : Type).
+Section SimplePi.
+    Variable (A A' : Type) (f : A -> A').
+    Variable (B : A -> Type) (B' : A' -> Type).
+    Variable (g : forall (X:A) (X':A'), B' X' -> B X).
+    Variable (U : Type).
 
-    Variable (fU : U' -> U).
-    Definition RU := mkParam01 fU.
-    Trocq Use RU.
+    Definition Rf := mkParam2a0 f.
+    Trocq Use Rf.
 
-    Goal (fun A : Type => U) (forall X : Type, U).
+    Definition Rg (X : A) (X' : A')
+        : Param01.Rel (B X) (B' X')
+        := mkParam01 (g X X').
+
+    Trocq Use Rg.
+
+    Trocq Logging trace.
+
+    Print Param01_forall.
+
+    (* D(0,1) = ((2a,0),(0,1)) *)
+    Goal forall X : A, B X.
         trocq.
-        enough (x : (fun A : Type => U') (forall X : Type, U')) by exact x.
+        enough (forall X' : A', B' X') by exact x.
     Abort.
 
-    Goal (fun A : Type => U) (forall X : Type, X).
-        trocq.
-        enough (x : (fun A : Type => U') (forall X : Type, X)) by exact x.
-    Abort.
-End LambdaType.
 
-
+End SimplePi.

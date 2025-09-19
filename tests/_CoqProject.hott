@@ -6,12 +6,9 @@
 -R ../elpi/ Trocq.Elpi
 
 
-# Weird syntax error
-# "./unit_arrow_contravariant.v", line 20, characters 21-23:
-# Error: Syntax error: ')' expected after [assumpt] (in [assum_coe]).
-# unit_arrow_contravariant.v
-# unit_simpleArrow.v
-# unit_relatedWith.v
+unit_arrow_contravariant.v
+unit_simpleArrow.v
+unit_relatedWith.v
 
 # Bug with trocq ?
 # The generated type has the wrong type
