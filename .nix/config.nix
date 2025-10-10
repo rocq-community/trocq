@@ -24,10 +24,8 @@
     }; };
     "rocq-9.1" = { rocqPackages = {
       rocq-core.override.version = "9.1";
-      rocq-elpi.override.elpi-version = "3.3.0";
     }; coqPackages = common-bundles // {
       coq.override.version = "9.1";
-      coq-elpi.override.elpi-version = "3.3.0";
       trocq-hott.job = false;  # HoTT isn't available yet for 9.1
       trocq.job = false;  # depends on trocq-hott
     }; };
