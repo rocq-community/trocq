@@ -7,6 +7,15 @@
 unit_arrow_contravariant.v
 unit_simpleArrow.v
 unit_relatedWith.v
+unit_type.v
+unit_transfer1.v
+unit_transfer2.v
+
+unit_transfer4.v
+unit_transfer5.v
+
+# Trocq produces an ill-typed term
+#unit_transfer3.v
 
 # Bug with trocq ?
 # The generated type has the wrong type

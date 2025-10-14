@@ -30,8 +30,6 @@ Section SimplePi.
 
     Trocq Use Rg.
 
-    Trocq Logging trace.
-
     Print Param01_forall.
 
     (* D(0,1) = ((2a,0),(0,1)) *)

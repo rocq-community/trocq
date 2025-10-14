@@ -11,23 +11,39 @@
 (*                            * see LICENSE file for the text of the license *)
 (*****************************************************************************)
 
-From Trocq Require Import Trocq.
+From Trocq Require Import Stdlib Trocq.
 
 Set Universe Polymorphism.
 
-Section TypeArrow.
+Section Transfer.
 
-    Variable (L : Type -> Type) (L' : Type -> Type).
-    Variable (f : forall (A : Type) (A' : Type), (A' -> A) -> L' A -> L A').
+    Variable (I I' : Type) (f : I' -> I) (f' : I -> I').
 
-    Definition RL (A : Type) (A' : Type) (AR : Param01.Rel A A')
-        := mkParam01 (f A A' (Map1.map _ (Param01.contravariant _ _ AR))).
+    Definition Rf := mkParam2a0 f.
+    Trocq Use Rf.
+    Definition Rf' := mkParam2a0 f'.
+    Trocq Use Rf'.
 
-    Trocq Use RL.
+    Variable (pe : I -> I -> Prop) (pe' : I' -> I' -> Prop).
+    Definition Rpe (m : I) (m' : I') (rm : (Rf') m m')
+        (n : I) (n' : I') (rn : (Rf') n n')
+        : Param2a1.Rel (pe n m) (pe' n' m').
+        admit.
+    Admitted.
+    Trocq Use Rpe.
 
-    Goal (forall A : Type, L A).
+    Variable (p : I -> I -> I) (p' : I' -> I' -> I').
+
+    Definition Rg (m : I) (m' : I') (rm : (Rf) m' m)
+        (n : I) (n' : I') (rn : (Rf) n' n)
+        : (Rf') (p n m) (p' n' m').
+        admit.
+    Admitted.
+    Trocq Use Rg.
+
+    Goal forall m : I, forall n : I, pe m (p n n) -> pe m n.
         trocq.
-        enough (x : (fun A : Type, L' A)) by exact x.
+        enough (forall m' : I', forall n' : I', pe' m' (p' n' n') -> pe' m' n') by exact x.
     Abort.
 
-End TypeArrow.
+End Transfer.
