@@ -14,19 +14,24 @@ std:
 .PHONY: std
 
 test-std: std
-	rm -f tests/_CoqProject
-	ln -s _CoqProject.std tests/_CoqProject
-	$(MAKE) -C tests all
+	$(MAKE) COQPROJECTFILE=./_CoqProject.std -C tests all
 .PHONY: test-std
 
+install-test-std: test-std
+	$(MAKE) COQPROJECTFILE=./_CoqProject.std -C tests install
+.PHONY: install-test-std
+
 test-hott: hott
-	rm -f tests/_CoqProject
-	ln -s _CoqProject.hott tests/_CoqProject
-	$(MAKE) -C tests all
+	$(MAKE) COQPROJECTFILE=./_CoqProject.hott -C tests all
 .PHONY: test-hott
+
+install-test-hott: test-hott
+	$(MAKE) COQPROJECTFILE=./_CoqProject.hott -C tests install
+.PHONY: install-test-std
 
 clean:
 	$(MAKE) -C hott clean
 	$(MAKE) -C std clean
-	$(MAKE) -C tests clean
+	$(MAKE) COQPROJECTFILE=./_CoqProject.std  -C tests clean
+	$(MAKE) COQPROJECTFILE=./_CoqProject.hott -C tests clean
 .PHONY: clean

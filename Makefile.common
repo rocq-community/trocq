@@ -1,13 +1,15 @@
+COQPROJECTFILE?=_CoqProject
+
 all: Makefile.rocq
 	$(MAKE) -f Makefile.rocq $@
 
-clean: _CoqProject
+clean: $(COQPROJECTFILE)
 	# We have to make the coq makefile in case it is missing
 	coq_makefile -f $< -o Makefile.rocq
 	$(MAKE) -f Makefile.rocq $@
 	rm Makefile.rocq Makefile.rocq.conf
 
-Makefile.rocq: _CoqProject
+Makefile.rocq: $(COQPROJECTFILE)
 	coq_makefile -f $< -o $@
 
 .DEFAULT:
