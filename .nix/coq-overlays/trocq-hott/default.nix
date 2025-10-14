@@ -10,10 +10,11 @@ mkCoqDerivation {
   pname = "trocq-hott";
   inherit (trocq) version;
 
-  makeFlags = [
-    "-C"
-    "hott"
-  ];
+  buildFlags = [ "hott" ];
+
+  checkTarget = [ "test-hott" ];
+
+  installTargets = [ "install-hott" ];
 
   propagatedBuildInputs = [
     coq-elpi

@@ -9,10 +9,11 @@ mkCoqDerivation {
   pname = "trocq-std";
   inherit (trocq) version;
 
-  makeFlags = [
-    "-C"
-    "std"
-  ];
+  buildFlags = [ "std" ];
+
+  checkTarget = [ "test-std" ];
+
+  installTargets = [ "install-std" ];
 
   propagatedBuildInputs = [
     coq-elpi
