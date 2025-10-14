@@ -9,6 +9,7 @@
 unit_arrow_contravariant.v
 unit_simpleArrow.v
 unit_relatedWith.v
+unit_type.v
 
 # Bug with trocq ?
 # The generated type has the wrong type
