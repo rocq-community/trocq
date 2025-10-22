@@ -173,3 +173,26 @@ End to.
 End Iso.
 End Iso.
 Arguments Iso.Build {A B map comap}.
+
+(* Utility funcitons for tests *)
+
+Definition mkParam00 {X Y : Type} : Param00.Rel X Y
+  := Param00.BuildRel X Y (fun x y => True) (Map0.BuildHas X Y _) (Map0.BuildHas Y X _).
+
+Definition mkParam10 {X Y : Type} (f : X -> Y) : Param10.Rel X Y
+  := Param10.BuildRel X Y (fun x y => True) (Map1.BuildHas X Y _ f) (Map0.BuildHas Y X _).
+
+Definition mkParam01 {X Y : Type} (f : X -> Y) : Param01.Rel Y X
+  := Param01.BuildRel Y X (fun x y => True) (Map0.BuildHas Y X _) (Map1.BuildHas X Y _ f).
+
+Definition mkParam11 {X Y : Type} (f : X -> Y) (g : Y -> X) : Param11.Rel X Y
+  := Param11.BuildRel X Y (fun x y => True) (Map1.BuildHas X Y _ f) (Map1.BuildHas Y X _ g).
+
+Definition mkParam2a0 {X Y : Type} (f : X -> Y) : Param2a0.Rel X Y
+  := Param2a0.BuildRel X Y (fun x y => f x = y) (Map2a.BuildHas X Y _ f (fun _ _ e => e)) (Map0.BuildHas Y X _).
+
+Definition mkParam2b0 {X Y : Type} (f : X -> Y) : Param2b0.Rel X Y
+  := Param2b0.BuildRel X Y (fun x y => f x = y) (Map2b.BuildHas X Y _ f (fun _ _ e => e)) (Map0.BuildHas Y X _).
+
+Definition mkParam30 {X Y : Type} (f : X -> Y) : Param30.Rel X Y
+  := Param30.BuildRel X Y (fun x y => f x = y) (Map3.BuildHas X Y _ f (fun _ _ e => e) (fun _ _ e => e)) (Map0.BuildHas Y X _).
