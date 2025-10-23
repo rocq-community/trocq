@@ -17,17 +17,18 @@ Set Universe Polymorphism.
 
 Section Transfer.
 
-    Variable (I I' : Type) (f : I' -> I) (f' : I -> I').
 
-    Definition Rf' := mkParam30 f'.
-    Trocq Use Rf'.
+    Variable (I I' : Type).
+    Variable (f : I -> I').
 
-    Variable (pe : I -> Prop) (pe' : I'  -> Prop).
-    Definition Rpe
-        (n : I) (n' : I') (rn : (Rf') n n')
-        : Param01.Rel (pe n) (pe' n').
-        admit.
-    Admitted.
+    Definition Rf := mkParam30 f.
+    Trocq Use Rf.
+
+    Variable (pe : I -> Prop) (pe' : I' -> Prop).
+    Variable (peR : forall (n : I) (n' : I'), Rf n n' -> pe' n' -> pe n).
+
+    Definition Rpe (n : I) (n' : I') (rn : Rf n n') :=
+        mkParam01 (peR n n' rn).
     Trocq Use Rpe.
 
     Goal forall (m : I), m = m -> pe m.
