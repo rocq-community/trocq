@@ -38,7 +38,7 @@ parametricity translation is fairly close to a pen-and-paper
 sequent-style presentation."""
 
 build: [make "-j%{jobs}%" "std"]
-install: [make "install" "-C std"]
+install: [make "install" "-C" "std"]
 depends: [
   "coq" {>= "9.0" & < "9.2"}
   "coq-elpi" {>= "2.5.2"}
