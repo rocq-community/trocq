@@ -23,10 +23,12 @@ Section TrocqCoercion.
     Definition R1 : Param10.Rel B A := mkParam10 f1.
     Definition R2 : Param10.Rel C A := mkParam10 f2.
 
-    Trocq Use R1.
-    Trocq Use R2.
+    Trocq DB Register R1.
 
-    Trocq Coercion On.
+    Trocq Use R1 : R1.
+    Trocq Use R2 : R1.
+
+    Trocq Coercion On with R1.
 
     Goal A.
         enough (x : B) by exact x.

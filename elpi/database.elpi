@@ -13,6 +13,8 @@
 
 accumulate "Trocq.Elpi/class".
 
+typeabbrev db gref. % distinguishes grefs used as DBs from the ones used as themselves.
+
 namespace trocq.db {
 
 %%% TROCQ HIERARCHY
@@ -89,27 +91,33 @@ pred funext o:constant.
 
 %%% TROCQ UI
 
-pred coercion-enabled.
+pred coercion-enabled o:list db.
 :name "coercion-enabled"
-coercion-enabled :- false.
+coercion-enabled L :- false.
 
 } % trocq.db
 
-% gref GR ω [α_1, ..., α_n] GR' GRR
+namespace trocq.db {
+
+  pred is-db o:gref. % Tracks the grefs registered as databases.
+  % { included DB1 DB2 } means that every translation in DB1 should be added to DB2.
+  pred included o:db, o:db.
+
+  % Tracks the gref registered as identity databases. Those databases should always be loaded.
+  pred is-id o:db.
+
+}
+
+% gref DB GR ω [α_1, ..., α_n] GR' GRR, means that, in DB:
 % - GR is related to GR' by witness GRR
 % - ω is the output class of GRR
 % - if GR is a type former then GRR : Param(ω) (GR ...) (GR' ...)
 % - the α_i are the classes present in the type of GR, to give the dependency information
 %   e.g. list44 : forall A A' (AR : Param44.Rel A A'), Param44.Rel (list A) (list A')
-%        gref {{ list }} (4, 4) [(4, 4)] {{ list }} {{ list44 }}
-pred trocq.db.gref o:gref, o:param-class, o:list param-class, o:gref, o:gref.
+%        gref ListDB {{ list }} (4, 4) [(4, 4)] {{ list }} {{ list44 }}
+pred trocq.db.gref o:db, o:gref, o:param-class, o:list param-class, o:gref, o:gref.
 
-% The predicate known-gref is similar to the last one with one extra arguments:
-%   known-gref BundleRel GR ω [α_1, ..., α_n] GR' GRR
-% where BundleRel is the underlying relation in use
-%
-% `known-gref` is used to find all translations associated to a given relation
-% so that `trocq.use Rel`, all the associated translations of the form `gref
-% Rel GR ω [α_1, ..., α_n] GR' GRR` will be used, i.e. added to the above
-% database gref.
-pred trocq.db.known-gref o:gref, o:gref, o:param-class, o:list param-class, o:gref, o:gref.
+% When inserting in the DB, this clause will serve as an anchor to add clauses to the top of the
+% database, making sure that new clauses will resolve first
+:name "top"
+trocq.db.gref _ _ _ _ _ _ :- fail.

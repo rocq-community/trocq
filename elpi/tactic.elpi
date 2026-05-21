@@ -19,25 +19,6 @@ evar _ _ _ :- !.
 :before "coq-assign-evar-refined"
 evar _ _ _ :- !.
 
-pred known->gref i:prop, o:prop.
-known->gref
-  (trocq.db.known-gref _Rel GR OutCl Classes GR' GRR)
-  (trocq.db.gref GR OutCl Classes GR' GRR :- !).
-
-pred load-rel i:gref, o:list prop.
-load-rel GRRel DB :- std.do! [
-  std.findall
-    (trocq.db.known-gref GRRel _GR _OutCl _Classes _GR' _GRR)
-    AllRel,
-  std.map AllRel known->gref DB
-].
-
-pred load-rels i:list gref, o:list prop.
-load-rels GRRels DB :- std.do! [
-  std.map GRRels load-rel DBs,
-  std.flatten DBs DB
-].
-
 pred parse-goal i:goal, o:term, o: term, o:term, o:list gref.
 parse-goal Goal _ _ _ _ :- logging.info (coq.say "[solve] trying to solve goal" Goal), fail.
 % trocq to G with A B C.
@@ -68,7 +49,7 @@ parse-goal Goal _ _ _ _ :- !,
 solve InitialGoal NewGoals :- std.do! [
   parse-goal InitialGoal G Ty G' GRArgs,
   logging.info (coq.say "[solve] loading rels" GRArgs),
-  load-rels GRArgs DB,
+  trocq.translations.load GRArgs DB,
   logging.info (coq.say "[solve] local DB" DB),
   logging.info (coq.say "[solve] goal" {coq.term->string G}),
   translate-goal DB Ty G (pc map0 map1) G' GR,

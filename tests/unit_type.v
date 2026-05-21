@@ -22,15 +22,16 @@ Section TypeTest.
 
     Definition R1 : Param10.Rel A B := mkParam10 f.
 
-    Trocq Use R1.
+    Trocq DB Register R1.
+    Trocq Use R1 : R1.
 
     Goal A -> Type.
-        trocq.
+        trocq with R1.
         enough (x : B -> Type) by exact x.
     Abort.
 
     Goal (fun X : Type => X) (A -> Type).
-        trocq.
+        trocq with R1.
         enough (x : (fun X : Type => X) (B -> Type)) by exact x.
     Abort.
     

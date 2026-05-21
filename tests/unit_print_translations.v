@@ -29,9 +29,11 @@ Section PrintTranslations.
     Variable (RC1 : forall X X' : Type, Param2a3.Rel X X' -> Param02b.Rel (C X) (C' X')).
     Variable (RC2 : forall X X'' : Type, Param2a2b.Rel X X'' -> Param43.Rel (C X) (C'' X'')).
 
-    Trocq Use RA1 RA2 RB1 RB2 RC1 RC2.
+    Trocq DB Register RA1.
 
-    Trocq Print Translations.
+    Trocq Use RA1 RA2 RB1 RB2 RC1 RC2 : RA1.
+    
+    Trocq Print DB *.
 
     Trocq Print Translations A.
 

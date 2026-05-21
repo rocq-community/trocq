@@ -39,12 +39,12 @@ translate-goal DB Ty G C G' GR' :- DB => std.do! [
 
 pred coercion i:goal-ctx, i:term, i:term, i:term, o:term.
 coercion Ctx T G G' T' :- std.do! [
-  trocq.db.coercion-enabled,
-  
+  trocq.db.coercion-enabled DBs,
+  trocq.translations.load DBs DB,
   % We have a coercion challenge to change a term T of type G to a term
   % T' of type T'.
   coq.typecheck G TG ok,
-  do-not-fail => translate-goal [] TG G (pc map1 map0) G' GR,
+  do-not-fail => translate-goal DB TG G (pc map1 map0) G' GR,
   util.mk-app {{ @map lp:G lp:G' lp:GR }} [T] T',
 ].
 

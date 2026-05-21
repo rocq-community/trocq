@@ -22,7 +22,7 @@
       rocqPackages = { rocq-core.override.version = "9.1"; };
       coqPackages = common-bundles // {
         coq.override.version = "9.1";
-        HoTT.override.version = "master"; # HoTT isn't available yet for 9.1
+	HoTT.override.version = "9dbe413246b53352d4891efb85cd2ea1a8d01c12"; # HoTT isn't available yet for 9.1
       };
     };
     ## Trocq is broken on Rocq-master

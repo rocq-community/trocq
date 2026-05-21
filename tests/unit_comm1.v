@@ -28,11 +28,12 @@ Section N.
         end.
 
     Definition NR : Param44.Rel N N. admit. Admitted.
-    Trocq Use NR.
+    Trocq DB Register NR.
+    Trocq Use NR : NR.
     Definition NS {n n': N} (Rr : NR n n'): NR (S n) (S n'). admit. Admitted.
-    Trocq Use NS. 
+    Trocq Use NS : NR.
     Definition Nad {n n' : N} (Rr : NR n n') {m m' : N} (Rr' : NR m m'): NR (ad n m) (ad n' m'). admit. Admitted.
-    Trocq Use Nad. 
+    Trocq Use Nad : NR.
 
     Variable (T : Type -> N -> Type) (T' : Type -> N -> Type).
     Variable (append : forall {A : Type} {n m : N}, T A n -> T A m -> T A (ad n m)).
@@ -42,7 +43,7 @@ Section N.
 
     Definition NT {A A' : Type} (AR : Param00.Rel A A')
         {n n' : N} (nR : NR n n'): Param2a2b.Rel (T A n) (T' A' n'). admit. Admitted.
-    Trocq Use NT.
+    Trocq Use NT : NR.
 
 
     Definition Ncons {A A' : Type} (AR : Param00.Rel A A')
@@ -50,7 +51,7 @@ Section N.
         {a : A} {a' : A'} (aR : AR a a')
         {t : T A n} {t' : T' A' n'} (tR : NT AR nR t t') :
         NT AR (NS nR) (cons a t) (cons' a' t'). admit. Admitted. 
-    Trocq Use Ncons.
+    Trocq Use Ncons : NR.
 
     Definition Nappend {A A' : Type} (AR : Param00.Rel A A')
         {n n' : N} (nR : NR n n')
@@ -58,7 +59,7 @@ Section N.
         {t : T A n} {t' : T' A' n'} (tR : NT AR nR t t')
         {u : T A m} {u' : T' A' m'} (uR : NT AR mR u u') :
         NT AR (Nad nR mR) (append t u) (append' t' u'). admit. Admitted. 
-    Trocq Use Nappend.
+    Trocq Use Nappend : NR.
 
     Variable (P : forall {A : Type} {n : N}, T A n -> Type).
     Variable (P' : forall {A : Type} {n : N}, T' A n -> Type).
@@ -67,12 +68,12 @@ Section N.
         {t : T A n} {t' : T' A' n'} {tR : NT AR nR t t'}
         : Param44.Rel (P t) (P' t').
         admit. Admitted.
-    Trocq Use RP.
+    Trocq Use RP : NR.
 
     Goal forall {A : Type} {n1 n2 : N}
         (v1 : T A n1) (v2 : T A n2) (a : A),
         P (cons a (append v1 v2)).
-        trocq.
+        trocq with NR.
         enough (x : forall {A' : Type} {n1' n2' : N}
             (v1' : T' A' n1') (v2' : T' A' n2') (a' : A'),
             P' (cons' a' (append' v1' v2'))) by exact x.

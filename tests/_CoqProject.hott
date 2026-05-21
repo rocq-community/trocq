@@ -16,7 +16,6 @@ unit_lambda_type.v
 unit_n.v
 unit_pi.v
 unit_print_translations.v
-unit_relatedWith.v
 unit_simpleArrow.v
 unit_simplePi.v
 unit_to.v

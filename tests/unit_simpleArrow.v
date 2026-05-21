@@ -19,10 +19,11 @@ Section SimpleArrow.
     Variable (A B : Type) (f : A -> B).
 
     Definition Rf := mkParam01 f.
-    Trocq Use Rf.
+    Trocq DB Register Rf.
+    Trocq Use Rf : Rf.
 
     Goal B.
-        trocq.
+        trocq with Rf.
         enough (x : A) by exact x.
     Abort.
 

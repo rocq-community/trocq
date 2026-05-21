@@ -21,7 +21,8 @@ Section Transfer.
     Variable (f : I -> I').
 
     Definition Rf := mkParam2a0 f.
-    Trocq Use Rf.
+    Trocq DB Register Rf.
+    Trocq Use Rf : Rf.
 
     Variable (pe : I -> I -> Prop) (pe' : I' -> I' -> Prop).
     Variable (peR : forall (n m : I) (n' m' : I'), Rf n n' -> Rf m m' -> pe' n' m' -> pe n m).
@@ -29,11 +30,11 @@ Section Transfer.
     Definition Rpe (m : I) (m' : I') (rm : Rf m m')
         (n : I) (n' : I') (rn : Rf n n') :=
         mkParam01 (peR n m n' m' rn rm).
-    Trocq Use Rpe.
+    Trocq Use Rpe : Rf.
 
     Goal forall (m : I), pe m m.
     Proof.
-    trocq.
+    trocq with Rf.
     enough (x : forall m' : I', pe' m' m') by exact x.
     Abort.
 

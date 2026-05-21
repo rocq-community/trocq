@@ -23,14 +23,15 @@ Section TwoTranslations.
     Definition R1 : Param01.Rel A B := mkParam01 f1.
     Definition R2 : Param01.Rel A C := mkParam01 f2.
 
-    Trocq Use R1 R2.
+    Trocq DB Register R1.
+    Trocq Use R1 R2 : R1.
 
     Goal A.
-        trocq to B.
+        trocq to B with R1.
         enough (x : B) by exact x.
     Abort.
     Goal A.
-        trocq to C.
+        trocq to C with R1.
         enough (x : C) by exact x.
     Abort.
 

@@ -22,12 +22,14 @@ Section TrocqCoercionOnOff.
 
     Definition R1 : Param10.Rel B A := mkParam10 f.
 
-    Trocq Use R1.
+    Trocq DB Register R1.
+
+    Trocq Use R1 : R1.
     Goal A.
         Fail (enough (x : B) by exact x).
     Abort.
 
-    Trocq Coercion On.
+    Trocq Coercion On with R1.
     Goal A.
         enough (x : B) by exact x.
     Abort.

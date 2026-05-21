@@ -20,5 +20,4 @@ From Trocq Require Export
 
 (* TODO: should we also export some variant-specific files, such as Param_Prop.v? *)
 
-Trocq Use Param10_paths.
-Trocq Use Param01_paths.
+Trocq Use Param10_paths Param01_paths : id_DB.

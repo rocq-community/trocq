@@ -13,6 +13,10 @@
 
 From elpi Require Export elpi.
 
+Polymorphic Definition id_DB (A: Type) (x: A) := x.
+
 Elpi Db trocq.db lp:{{
     accumulate "Trocq.Elpi/database".
+    trocq.db.is-db {{:gref id_DB}}.
+    trocq.db.is-id {{:gref id_DB}}.
 }}.

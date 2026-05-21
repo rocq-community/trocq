@@ -27,11 +27,12 @@ Section N.
         end.
 
     Definition NR : Param44.Rel N N. admit. Admitted.
-    Trocq Use NR.
+    Trocq DB Register NR.
+    Trocq Use NR : NR.
     Definition NS {n n': N} (Rr : NR n n'): NR (S n) (S n'). admit. Admitted.
-    Trocq Use NS.
+    Trocq Use NS : NR.
     Definition Nad {n n' : N} (Rr : NR n n') {m m' : N} (Rr' : NR m m'): NR (ad n m) (ad n' m'). admit. Admitted.
-    Trocq Use Nad. 
+    Trocq Use Nad : NR.
 
     Variable A : Type.
 
@@ -41,7 +42,7 @@ Section N.
 
     Definition NT
 {n n' : N} (nR : NR n n'): Param2a2b.Rel (T n) (T' n'). admit. Admitted.
-Trocq Use NT.
+Trocq Use NT : NR.
 
 
 Definition Nappend {n n' : N} (nR : NR n n')
@@ -49,7 +50,7 @@ Definition Nappend {n n' : N} (nR : NR n n')
     {t : T n} {t' : T' n'} (tR : NT nR t t')
     {u : T m} {u' : T' m'} (uR : NT mR u u') :
     NT (Nad nR mR) (append t u) (append' t' u'). admit. Admitted. 
-Trocq Use Nappend.
+Trocq Use Nappend : NR.
 
     Variable (P : forall {n : N}, T n -> Type).
     Variable (P' : forall {n : N}, T' n -> Type).
@@ -57,12 +58,12 @@ Trocq Use Nappend.
         {t : T n} {t' : T' n'} {tR : NT nR t t'}
         : Param44.Rel (P t) (P' t').
         admit. Admitted.
-    Trocq Use RP.
+    Trocq Use RP : NR.
 
     Goal forall {n1 n2 : N}
         (v1 : T n1) (v2 : T n2),
         P (append v1 v2).
-        trocq.
+        trocq with NR.
         enough (x : forall {n1 n2 : N}
             (v1 : T' n1) (v2 : T' n2),
             P' (append' v1 v2)) by exact x.

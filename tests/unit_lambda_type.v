@@ -20,15 +20,16 @@ Section LambdaType.
 
     Variable (fU : U' -> U).
     Definition RU := mkParam01 fU.
-    Trocq Use RU.
+    Trocq DB Register RU.
+    Trocq Use RU : RU. 
 
     Goal (fun A : Type => U) (forall X : Type, U).
-        trocq.
+        trocq with RU.
         enough (x : (fun A : Type => U') (forall X : Type, U')) by exact x.
     Abort.
 
     Goal (fun A : Type => U) (forall X : Type, X).
-        trocq.
+        trocq with RU.
         enough (x : (fun A : Type => U') (forall X : Type, X)) by exact x.
     Abort.
 End LambdaType.
