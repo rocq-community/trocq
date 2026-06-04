@@ -90,6 +90,7 @@ From Trocq.Elpi.constraints Extra Dependency "simple-graph.elpi" as simple_graph
 From Trocq.Elpi.constraints Extra Dependency "constraint-graph.elpi" as constraint_graph.
 From Trocq.Elpi.constraints Extra Dependency "constraints.elpi" as constraints.
 From Trocq.Elpi Extra Dependency "vernac.elpi" as vernac.
+From Trocq.Elpi Extra Dependency "param.elpi" as param.
 
 Section fibo_with_cache.
 Variable M : stateRunMonad (cache nat) idfun.
@@ -116,18 +117,17 @@ Fixpoint fibo_memo n : M nat :=
     end.
 
 End fibo_with_cache.
+Check fibo_memo.
 
 Elpi Command CustomTrocq.
 Elpi Accumulate Db trocq.db.
-Elpi Accumulate File util_rocq.
-Elpi Accumulate File annot.
-Elpi Accumulate File param_class_util.
-Elpi Accumulate File simple_graph.
-Elpi Accumulate File constraint_graph.
-Elpi Accumulate File constraints.
 Elpi Accumulate File vernac.
 Elpi Query lp:"
-  param {{fibo_memo}} X Y Z.
+  {{:gref fibo_memo}} = const FM,
+  coq.env.const FM OptBo Ty,
+  OptBo = some Bo,
+  term->aterm Bo F,
+  param F X Y Z.
 ".
 
 

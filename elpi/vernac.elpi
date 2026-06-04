@@ -14,6 +14,7 @@
 accumulate "Trocq.Elpi/param-class-util".
 accumulate "Trocq.Elpi/aterm".
 accumulate "Trocq.Elpi/data".
+accumulate "Trocq.Elpi/param".
 
 % command to register the univalence axiom
 main [str "Register", str "Univalence", str S] :- !, std.do! [
