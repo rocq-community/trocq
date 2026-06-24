@@ -11,7 +11,7 @@
 (*                            * see LICENSE file for the text of the license *)
 (*****************************************************************************)
 
-From mathcomp Require Import all_ssreflect all_algebra.
+From mathcomp Require Import boot all_algebra.
 From Trocq Require Import Stdlib Trocq.
 Import GRing.Theory.
 Local Open Scope bool_scope.

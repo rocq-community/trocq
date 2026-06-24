@@ -11,11 +11,12 @@
 (*                            * see LICENSE file for the text of the license *)
 (*****************************************************************************)
 
-From mathcomp Require Import all_ssreflect all_algebra.
+From mathcomp Require Import boot all_algebra.
 From Trocq Require Import Stdlib Trocq.
 
 Import GRing.Theory.
 Open Scope ring_scope.
+Unset SsrOldRewriteGoalsOrder.
 
 Set Universe Polymorphism.
 
@@ -129,13 +130,13 @@ wlog : x / exists n, x = Posz n.
   - rewrite modNz_nat //.
     rewrite -[Posz (1 +  _)%N - 1]/(2%int) -[(1 + _)%N]/(3%N) NegzE rmorphN /=.
     rewrite -[_.+2]/(9%N) modn_dvdm //.
-    rewrite modnB //=; last by rewrite [_%:~R]Zp_nat ltnW.
+    rewrite modnB //=; first by rewrite [_%:~R]Zp_nat ltnW.
     set x : 'I_9 := _.+1%:~R.
     rewrite -[(9 %% 3)%N]/(0%N) addn0.
     have {x} -> : x = (n.+1 %% 9)%N :> nat by rewrite {}/x [_%:~R]Zp_nat //.
     rewrite modn_dvdm // modnS; case: ifP => //= hn.
     - by rewrite mul0n subn0 -[n]/(n.+1.-1) modn_pred // hn.
-    - rewrite -[n]/(n.+1.-1) modn_pred // hn mul1n subSS subzn; last first.
+    - rewrite -[n]/(n.+1.-1) modn_pred // hn mul1n subSS subzn.
         by apply: (@leq_trans (n.+1 %% 3)); rewrite ?leq_pred // -ltnS ltn_pmod.
       rewrite [_%:~R]Zp_nat [LHS]modn_small //=.
       by apply: (@leq_trans 3) => //; rewrite ltnS leq_subr.
