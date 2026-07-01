@@ -25,8 +25,8 @@ type afun     name -> aterm -> (aterm -> aterm) -> aterm.     % fun x : t =>
 type aprod    name -> aterm -> (aterm -> aterm) -> aterm.         % forall x : t,
 type alet     name -> aterm -> aterm -> (aterm -> aterm) -> aterm. % let x : T := v in
 type aapp     list aterm -> aterm.                              % app [hd|args]
-type amatch   aterm -> aterm -> list aterm -> aterm.              % match t p [branch])
-type afix     name -> int -> aterm -> (term -> aterm) -> aterm.  % fix name rno ty bo
+type amatch   aterm -> aterm -> aterm -> list aterm -> aterm.              % match t T ret [branch])
+type afix     name -> int -> aterm -> (aterm -> aterm) -> aterm.  % fix name rno ty bo
 type aprimitive primitive-value -> aterm.
 
 % Forgets the term annotations of a term
@@ -44,6 +44,15 @@ aterm->term (aapp AL) (app L) :-
   std.map AL aterm->term L, !.
 aterm->term (uvar as AT) T :- !,
   declare_constraint (aterm->term AT T) [AT].
+%afix : name -> int -> aterm -> (aterm -> aterm) -> aterm.
+aterm->term (afix N I AT AF) (fix N I T F) :- !,
+  aterm->term AT T,
+  pi ax\ pi x \ aterm->term ax x => aterm->term (AF ax) (F x), !.
+%amatch : aterm -> aterm -> list aterm -> aterm.              % match t p [branch])
+aterm->term (amatch AT1 _ AT2 ATS) (match T1 T2 TS) :- !,
+  aterm->term AT1 T1,
+  aterm->term AT2 T2,
+  std.map ATS aterm->term TS, !.
 %TODO implement the other constructors
 
 % Adds fresh annotation variable on every sort inside a term
@@ -53,12 +62,21 @@ term->aterm (global GRef) (aglobal GRef) :- !.
 term->aterm (pglobal GRef U) (apglobal GRef U) :- !.
 term->aterm (fun Name T F) (afun Name AT AF) :- !,
   term->aterm T AT,
-  pi y\ pi ay\ term->aterm y ay => term->aterm (F y) (AF ay).
+  @pi-decl Name T y\ pi ay\ term->aterm y ay => term->aterm (F y) (AF ay).
 term->aterm (prod Name T F) (aprod Name AT AF) :- !,
   term->aterm T AT,
-  pi y\ pi ay\ term->aterm y ay => term->aterm (F y) (AF ay).
+  @pi-decl Name T y\ pi ay\ term->aterm y ay => term->aterm (F y) (AF ay).
 term->aterm (app L) (aapp AL) :- !,
   std.map L term->aterm AL.
+term->aterm (fix N I T F) (afix N I AT AF) :- !,
+  term->aterm T AT,
+  @pi-decl N T x\ pi ax \ term->aterm x ax => term->aterm (F x) (AF ax), !.
+term->aterm (match T1 T2 TS) (amatch AT1 ATY AT2 ATS) :- !,
+  term->aterm T1 AT1,
+  coq.typecheck T1 TY,
+  term->aterm TY ATY,
+  term->aterm T2 AT2,
+  std.map TS term->aterm ATS, !.
 %TODO implement the other constructors
 
 namespace aterm.util {
