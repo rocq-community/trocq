@@ -1,5 +1,5 @@
 opam-version: "2.0"
-maintainer: "Enzo Crance <enzo.crance@inria.fr>"
+maintainer: "Cyril Cohen <cyril.cohen@inria.fr>"
 version: "dev"
 
 homepage: "https://github.com/coq-community/trocq"
@@ -37,8 +37,8 @@ sequent-style presentation."""
 build: [make "-j%{jobs}%"]
 install: [make "install"]
 depends: [
-  "coq" {>= "8.20" & < "9.2"}
-  "coq-elpi" {>= "3.4.0"}
+  "coq" {>= "9.0" & < "9.3"}
+  "coq-elpi" {>= "3.5.0"}
   "coq-hott"
   "coq-mathcomp-algebra"
 ]
@@ -54,9 +54,12 @@ tags: [
   "keyword:parametricity"
   "logpath:Trocq"
 ]
+
 authors: [
+  "Samy Avrillon"
   "Cyril Cohen"
   "Enzo Crance"
   "Lucie Lahaye"
   "Assia Mahboubi"
+  "Tomas Vallejos"
 ]

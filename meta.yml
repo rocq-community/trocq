@@ -70,7 +70,7 @@ maintainers:
 - name: Tomas Vallejos
   nickname: Tvallejos
 
-opam-file-maintainer: Enzo Crance <enzo.crance@inria.fr>
+opam-file-maintainer: Cyril Cohen <cyril.cohen@inria.fr>
 
 opam-file-version: dev
 
