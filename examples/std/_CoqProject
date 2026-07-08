@@ -3,6 +3,9 @@
 
 -R . Trocq_examples
 
+
+gmap.v
+finmap.v
 artifact_paper_example.v
 flt3_step.v
 int_to_Zp.v

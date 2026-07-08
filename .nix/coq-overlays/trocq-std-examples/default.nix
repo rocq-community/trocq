@@ -1,6 +1,10 @@
 {
+  coq,
   lib,
   mathcomp,
+  mathcomp-finmap,
+  stdlib,
+  stdpp,
   mkCoqDerivation,
   version ? null,
   trocq,
@@ -39,8 +43,12 @@ mkCoqDerivation {
   ];
 
   propagatedBuildInputs = [
+    coq
     trocq.std
+    stdlib
+    stdpp
     mathcomp.ssreflect
     mathcomp.algebra
+    mathcomp-finmap
   ];
 }
