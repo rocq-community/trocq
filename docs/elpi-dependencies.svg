@@ -9,9 +9,9 @@
 <g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 922.75)">
 <polygon fill="white" stroke="none" points="-4,4 -4,-922.75 991,-922.75 991,4 -4,4"/>
 <g id="clust22" class="cluster">
-<title>cluster_assemblying</title>
+<title>cluster_assembling</title>
 <polygon fill="#c0c4fd" stroke="black" points="517,-340 517,-511.75 707,-511.75 707,-340 517,-340"/>
-<text xml:space="preserve" text-anchor="middle" x="612" y="-494.45" font-family="Times,serif" font-size="14.00">assemblying components</text>
+<text xml:space="preserve" text-anchor="middle" x="612" y="-494.45" font-family="Times,serif" font-size="14.00">assembling components</text>
 </g>
 <g id="clust23" class="cluster">
 <title>cluster_inductive_gen</title>

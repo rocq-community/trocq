@@ -76,9 +76,9 @@ digraph {
     "discriminate" -> {"mR"};
 
     ## CLUSTERS
-    subgraph cluster_assemblying {
+    subgraph cluster_assembling {
         margin=20;
-        label="assemblying components";
+        label="assembling components";
         style=filled;
         fillcolor="#c0c4fd";
         "rsymK" "mapn" "relnm";
@@ -110,10 +110,10 @@ digraph {
         "utils" "common_algo";
         "common_algo" -> {"mR"} [lhead=cluster_hierarchy];
         "common_algo" -> {"sym"} [lhead=cluster_symmetrization];
-        #"common_algo" -> {"mapn"} [lhead=cluster_assemblying];
+        #"common_algo" -> {"mapn"} [lhead=cluster_assembling];
         "utils" -> {"mR"} [lhead=cluster_hierarchy];
         "utils" -> {"sym"} [lhead=cluster_symmetrization];
-        #"utils" -> {"mapn"} [lhead=cluster_assemblying];
+        #"utils" -> {"mapn"} [lhead=cluster_assembling];
     }
     subgraph cluster_trocqdb {
         margin=30;
@@ -132,5 +132,5 @@ digraph {
     }
 
     ## CLUSTER DEPENDENCIES
-    "database" -> {"mapn" "relnm"} [lhead=cluster_assemblying ltail=cluster_trocqdb];
+    "database" -> {"mapn" "relnm"} [lhead=cluster_assembling ltail=cluster_trocqdb];
 }
