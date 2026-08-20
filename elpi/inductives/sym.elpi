@@ -1,6 +1,6 @@
 % -----------------------------------------------------------------------------
 % This plugin derives a function showing that parametricity translations are
-% symmetric
+% symmetric by induction on the translation
 % -----------------------------------------------------------------------------
 
 accumulate "Trocq.Elpi.inductives/common_algo".
