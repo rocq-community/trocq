@@ -1,3 +1,8 @@
+% -----------------------------------------------------------------------------
+% This plugin assembles instances of all kinds of map classes for an inductive
+% type, given the fields to build such a map
+% -----------------------------------------------------------------------------
+
 accumulate "Trocq.Elpi.inductives/common_algo".
 accumulate "Trocq.Elpi.inductives/utils".
 
