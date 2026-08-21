@@ -1,3 +1,8 @@
+% -----------------------------------------------------------------------------
+% This plugin derives a proof that symmetry for parametricity translations
+% is involutive by induction on the relation
+% -----------------------------------------------------------------------------
+
 accumulate "Trocq.Elpi.inductives/common_algo".
 accumulate "Trocq.Elpi.inductives/utils".
 

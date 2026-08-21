@@ -1,3 +1,9 @@
+% -----------------------------------------------------------------------------
+% This plugin derives a map for an inductive by pattern matching.
+% It maps every constructor to itself, and maps every argument of type T using
+% the map for T.
+% -----------------------------------------------------------------------------
+
 /* map over a container                                                      */
 /* license: GNU Lesser General Public License Version 2.1 or later           */
 /* ------------------------------------------------------------------------- */

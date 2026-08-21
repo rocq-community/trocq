@@ -1,3 +1,12 @@
+% -----------------------------------------------------------------------------
+% This plugin derives a proof that the graph of the map is included in the
+% parametricity translation.
+% Implemented by double pattern-matching on the inductives,
+% showing [|K|] in the diagonal, populating the relation for the arguments with
+% their respective map_in_R with a path derived from the assumption +
+% the projection of the argument.
+% -----------------------------------------------------------------------------
+
 accumulate "Trocq.Elpi.inductives/common_algo".
 accumulate "Trocq.Elpi.inductives/utils".
 accumulate "Trocq.Elpi.inductives/injection_lemmas".

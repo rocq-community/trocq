@@ -1,3 +1,13 @@
+% -----------------------------------------------------------------------------
+% This plugin derives a proof that map_in_R and R_in_map cancel out.
+% Implemented by induction on the tranlation, which instantiates both
+% inductives on the diagonal, thus both map_in_R and R_in_map reduce.
+% Every witness argument of [|K|] in the LHS has the following shape:
+% mR ((ap proj) o (ap K) Rm.
+% The composition of ap is dealt with injK and leaving mR Rm which cancels out.
+% The implementation assumes mRRmK is available for the arguments of K.
+% -----------------------------------------------------------------------------
+
 accumulate "Trocq.Elpi.inductives/common_algo".
 accumulate "Trocq.Elpi.inductives/utils".
 
