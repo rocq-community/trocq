@@ -157,17 +157,24 @@ apply: (@Param01.BuildRel (x ≡ y) (k = l) (fun _ _ => unit)) => //.
 by constructor; rewrite -exk -eyl.
 Qed.
 
-Trocq Use Rp Rmul Rzero Rone Radd Rmod3 Param10_paths Reqmodp01.
-Trocq Use Param01_sum.
-Trocq Use Param01_Empty.
-Trocq Use Param10_Empty.
+Trocq Register ℤ @ (PType map4 map2a) ~ (ℤ/9ℤ) because Rp.
+Trocq Register add @ (PTriple ℤ (ℤ/9ℤ) Rp -> PTriple ℤ (ℤ/9ℤ) Rp -> PTriple ℤ (ℤ/9ℤ) Rp)~ addp because Radd.
+Trocq Register mul @ (PTriple ℤ (ℤ/9ℤ) Rp -> PTriple ℤ (ℤ/9ℤ) Rp -> PTriple ℤ (ℤ/9ℤ) Rp)~ mulp because Rmul.
+Trocq Register mod3 @ (PTriple ℤ (ℤ/9ℤ) Rp -> PTriple ℤ (ℤ/9ℤ) Rp)~ modp3 because Rmod3.
+Trocq Register (0%ℤ) @ (PTriple ℤ (ℤ/9ℤ) Rp) ~ (0) because Rzero.
+Trocq Register (1%ℤ) @ (PTriple ℤ (ℤ/9ℤ) Rp) ~ (1) because Rone.
+Trocq Register eqmodp @ (PTriple ℤ (ℤ/9ℤ) Rp -> PTriple ℤ (ℤ/9ℤ) Rp -> PType map0 map1) ~ eq_Zmod9 because Reqmodp01.
+
+Trocq Register sum @ (PType map0 map1 -> PType map0 map1 -> PType map0 map1) ~ sum because Param01_sum.
+Trocq Register False @ (PType map0 map1) ~ False because Param01_Empty.
+Trocq Register False @ (PType map1 map0) ~ False because Param10_Empty.
 
 Lemma flt3_step : forall (m n p : ℤ),
   ((m * n * p)%Z % 3)%Z ≢ 0 -> (m³ + n³)%ℤ ≠ p³%ℤ.
 Proof.
 trocq=> /=.
 
-(* the following should be a call to troq to compute *)
+(* the following should be a call to trocq to compute *)
 move=> + + + /eqP + /eqP.
 by do 3![case; do 9?[case=> //=] => ?].
 

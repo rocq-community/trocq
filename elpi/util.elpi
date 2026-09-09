@@ -18,15 +18,16 @@
 
 pred do-not-fail.
 
-kind or type -> type -> type.
-type inl A -> or A B.
-type inr B -> or A B.
+% Elpi builtin fatal error react to do-not-fail
+:before "default-fatal-error"
+std.fatal-error _ :- do-not-fail, !, fail.
+:before "default-fatal-error-w-data"
+std.fatal-error-w-data _ _ :- do-not-fail, !, fail.
 
-kind verbosity type.
-type level.off verbosity.
-type level.info verbosity.
-type level.debug verbosity.
-type level.trace verbosity.
+% But Rocq-elpi moves before before our before
+% So we disable stop
+:before "stop:begin"
+stop _ :- do-not-fail, !, fail.
 
 % Returns the numeric level associated to a verbosity, the higher the more verbose.
 pred verbosity->int i:verbosity, o:int.
@@ -42,16 +43,22 @@ string->verbosity "info" level.info.
 string->verbosity "debug" level.debug.
 string->verbosity "trace" level.trace.
 
-pred log-level o:verbosity.
-:name "log-level"
-log-level level.info.
-
 func logging.info prop.
 logging.info P :- util.at-level level.info P.
 func logging.debug prop.
 logging.debug P :- util.at-level level.debug P.
 func logging.trace prop.
 logging.trace P :- util.at-level level.trace P.
+
+func util.at-level verbosity, prop.
+util.at-level MinimumLevel Log :- trocq.db.log-level CurrentLevel, !,
+  if ({verbosity->int CurrentLevel} >= {verbosity->int MinimumLevel}) Log true, !.
+util.at-level _ _.
+
+
+kind or type -> type -> type.
+type inl A -> or A B.
+type inr B -> or A B.
 
 namespace util {
 
@@ -64,11 +71,6 @@ pred cmp-int o:int, o:int, o:cmp.
 cmp-int A B lt :- A < B, !.
 cmp-int A B eq :- A = B, !.
 cmp-int _ _ gt.
-
-func at-level verbosity, prop.
-at-level MinimumLevel Log :- log-level CurrentLevel, !,
-  if ({verbosity->int CurrentLevel} >= {verbosity->int MinimumLevel}) Log true, !.
-at-level _ _.
 
 pred when i:prop, i:prop.
 when Condition Goal :-
@@ -97,6 +99,30 @@ map.update K F M M' :-
   F none (some V'), !,
   std.map.add K V' M M', !.     % add
 map.update _ _ M M.          % no-op
+
+% [mem-evar! L X] succeeds once if X is an evar and occurs inside L 
+pred mem-evar! -> list A, A.
+mem-evar! [X|_] Y :- X == Y, !.
+mem-evar! [_|L] Y :- mem-evar! L Y.
+
+% [split-last L L' A] is L = L ++ [X]
+pred split-last list A -> list A, A.
+split-last [] _ _ :- !, fail.
+split-last [X] [] X :- !.
+split-last [Y|L] [Y|L'] X :- split-last L L' X.
+
+% [append-uniq-evar L1 L2 L] adds elements of L2 into L1 if they are evars that did not occur
+pred append-uniq-evar -> list A, list A, list A.
+append-uniq-evar L1 [] L1.
+append-uniq-evar L1 [X|L2] L :- 
+  var X,
+  mem-evar! L1 X, !,
+  append-uniq-evar L1 L2 L.
+append-uniq-evar L1 [X|L2] L :-
+  var X, !,
+  append-uniq-evar [X|L1] L2 L.
+append-uniq-evar L1 [_|L2] L :- !, % X is not a var
+  append-uniq-evar L1 L2 L.
 
 func delete A, list A -> list A.
 delete A [A|Xs] Xs :- !.
@@ -157,6 +183,36 @@ lexicographic-cmp.curry _ [] [] eq :- !.
 lexicographic-cmp.curry F [X|_] [Y|_] Cmp :- F X Y Cmp, not (Cmp = eq), !.
 lexicographic-cmp.curry F [_|Xs] [_|Ys] Cmp :- lexicographic-cmp.curry F Xs Ys Cmp.
 lexicographic-cmp F (lexicographic-cmp.curry F).
+
+func mapTo2 list A, (func A -> B,C) -> list B, list C.
+mapTo2 [] F_ [] [].
+mapTo2 [X|L] F [X1|L1] [X2|L2] :- F X X1 X2, mapTo2 L F L1 L2.
+
+func mapTo3 list A, (func A -> B,C,D) -> list B, list C, list D.
+mapTo3 [] F_ [] [] [].
+mapTo3 [X|L] F [X1|L1] [X2|L2] [X3|L3] :- F X X1 X2 X3, mapTo3 L F L1 L2 L3.
+
+func mapBy3 list A, (func A,A,A -> B) -> list B.
+mapBy3 [] _ [].
+mapBy3 [X,Y,Z|L] F [W|L'] :- F X Y Z W, mapBy3 L F L'.
+
+% This version of split-at does no fatal error
+func split-at int, list A -> list A, list A.
+split-at 0 L [] L :- !.
+split-at N [X|XS] [X|LN] LM :- !, N1 is N - 1, split-at N1 XS LN LM.
+
+func behead list A -> A, list A.
+behead [X|L] X L.
+
+func beheads list (list A) -> list A, list (list A).
+beheads L H T :- mapTo2 L behead H T.
+
+func interleave list (list A) -> list A.
+interleave L Out :- beheads L LH LT, !, 
+  interleave LT Rest,
+  std.append LH Rest Out.
+% Else, lists are empty
+interleave L_ [].
 
 func bool->int bool -> int.
 bool->int tt 1.

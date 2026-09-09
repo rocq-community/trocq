@@ -33,6 +33,10 @@ Axiom add_morph :
   forall n n' : int, (n <= n')%int ->
   (m + n <= m' + n')%int.
 
+Definition add_morph_sym (m m' : int) (Rm : (m' <= m)%int)
+  (n n' : int) (Rn : (n' <= n)%int) : (m' + n' <= m + n)%int :=
+    add_morph m' m Rm n' n Rn.
+
 Lemma le_morph :
   forall m m' : int, (m <= m')%int ->
   forall n n' : int, (n' <= n)%int ->
@@ -53,13 +57,17 @@ apply: (@Param01.BuildRel (m <= n)%int (m' <= n')%int (fun _ _ => unit)).
 - by constructor => mn; apply (le_morph _ _ Rm _ _ Rn).
 Qed.
 
-Trocq Use le01 add_morph.
+Trocq Register le_int @ (PTriple int int le_int -> PTriple int int (sym_rel le_int) -> PType map0 map1) ~ le_int because le01.
+Trocq Register add @ (PTriple int int le_int -> PTriple int int le_int -> PTriple int int le_int) ~ add because add_morph.
+Trocq Register add @ (PTriple int int (sym_rel le_int) -> PTriple int int (sym_rel le_int) -> PTriple int int (sym_rel le_int)) ~ add because add_morph_sym.
 
 Parameters i j : int.
 Parameters ip : (j <= i)%int.
 Definition iid : (i <= i)%int := le_refl i.
 
-Trocq Use ip iid.
+Trocq Register j @ (PTriple int int le_int) ~ i because ip.
+Trocq Register i @ (PTriple int int le_int) ~ i because iid.
+Trocq Register i @ (PTriple int int (sym_rel le_int)) ~ i because iid.
 
 Example ipi : (j + i + j <= i + i + i)%int.
 Proof.
