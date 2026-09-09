@@ -24,17 +24,33 @@ accumulate "Trocq.Elpi/data".
 % x has annotated type AT
 macro @pi-adecl N PAD_AT PAD_F :-
   aterm.triple PAD_AT PAD_T PAD_T' PAD_TR,
-  util.mk-app PAD_TR [PAD_T,PAD_T'] PAD_TRx,
   coq.name-suffix N "'" N',
   coq.name-suffix N "R" NR,
   @pi-decl N PAD_T x\ (
   @pi-decl N' PAD_T' x'\ (
-  @pi-decl NR PAD_TRx xR\ (
+  util.mk-app PAD_TR [x, x'] (PAD_TRx x x'),
+  @pi-decl NR (PAD_TRx x x') xR\ (
   pi ax\ [
     adecl ax N x x' xR PAD_AT
   ] => (
     logging.trace (coq.say "[adecl]" ax "==" x "@" PAD_AT "~" x' "∵" xR),
     (PAD_F ax x x' xR)
+  )))).
+
+%XXX Enlever cette infamie parce que weakening appelle deux fois @pi-adec
+macro @pi-adecl2 N POD_AT POD_F :-
+  aterm.triple POD_AT POD_T POD_T' POD_TR,
+  coq.name-suffix N "'" N',
+  coq.name-suffix N "R" NR,
+  @pi-decl N POD_T x\ (
+  @pi-decl N' POD_T' x'\ (
+  util.mk-app POD_TR [x, x'] (POD_TRx x x'),
+  @pi-decl NR (POD_TRx x x') xR\ (
+  pi ax\ [
+    adecl ax N x x' xR POD_AT
+  ] => (
+    logging.trace (coq.say "[adecl]" ax "==" x "@" POD_AT "~" x' "∵" xR),
+    (POD_F ax x x' xR)
   )))).
 
 % curry f := fun x => f (fst x) (snd x)
@@ -53,10 +69,118 @@ trocq.data.rel C T :-
       coq.env.global Const T
   ).
 
+namespace annot {
+  func weakener aterm, aterm -> term.
+  weakener (asort _ C) (asort _ C') Weakener :- !,
+    trocq.data.forget C C' Weakener.
+  %TODO XXX We do not type the output function, as we have pi variable dependency issues appearing with this.
+  % We should do more pruning because this should work in the future
+  weakener (aprod N A P as AP) (aprod _ B Q as _BQ)
+      (fun _ _ t\ fun _ _ t'\ fun _ _ tr\ fun _ _ x\ fun _ _ x'\ fun _ _ xr\ 
+      %(fun _ TAP t\ fun _ TAP' t'\ fun _ RRTAP tr\ fun _ TB x\ fun _ TB' x'\ fun _ RRTB xr\ 
+        WeakenerF t t' tr x x' xr) :- !,
+    %aterm.triple AP TAP TAP' RTAP,
+    %aterm.triple BQ TB TB' RTB, % Property on subtype, we should have TA=TB and TA'=TB'
+    %util.mk-app RTAP [TAP,TAP'] RRTAP,
+    %util.mk-app RTB [TB,TB'] RRTB,
+    weakener B A BAWeakener,
+    @pi-adecl `t` AP (_\ t\ t'\ tr\
+    @pi-adecl2 N B (ax\ x\ x'\ xr\
+    sigma XRWeakened TRWeakened PQWeakener\ (
+      weakener (P ax) (Q ax) PQWeakener,
+      util.mk-app BAWeakener [x,x',xr] XRWeakened,
+      util.mk-app tr [x,x',XRWeakened] TRWeakened,
+      util.mk-app PQWeakener [app [t, x],app [t', x'],TRWeakened] (WeakenerF t t' tr x x' xr)
+    ))).
+  weakener (aapp [ (afun _ _ AF),AX1|AXs]) (aapp [(afun _ _ AF'),AX1'|AXs']) W :- !,
+    % We beta-reduce
+    weakener (aapp [(AF AX1) | AXs]) (aapp [(AF' AX1') | AXs']) W.
+  weakener (aapp [(uvar as XH)|_] as X) Y W :- declare_constraint (weakener X Y W) [XH], !.
+  weakener (aapp [X|_] as T) (aapp [_|_]) W :- !,
+    (name X ; X = aglobal _ _ _; X = apglobal _ _ _ _ ; trocq.error "[weakener] Input" T "is not a type"), !,
+    % because sub-type T T', we have that eq AXs AXs', and as names and globals are not annotated, all annotations are the same
+    W = fun _ _ t\ fun _ _ t'\ fun _ _ tr\ tr.
+  weakener (uvar as X) Y W :- declare_constraint (weakener X Y W) [X], !.
+  weakener X _ W :- (name X ; X = aglobal _ _ _ ; X = apglobal _ _ _ _ ), !,
+    % names and globals are not annotated, so weakener is identity
+    W = fun _ _ t\ fun _ _ t'\ fun _ _ tr\ tr.
+  weakener X _ _ :- !,
+    trocq.error "[weakener] Cannot weaken" X.
+
+
+  % weaken A A' t t' tr tr' is ⇓^A_A' {t} {t'} tr = tr'
+  pred weaken aterm, aterm, term, term, term -> term.
+  weaken A B T T' TR TR' :- !,
+    logging.trace (coq.say "[weaken] Weakening from" A "to" B "term" T "~" T' "∵" TR),
+    prune W [], % Weakening does not depend on context
+    weakener A B W,
+    util.mk-app W [T,T',TR] TR'.
+}
+
+namespace aterm.util {
+  % returns the weakest (resp. strongest) annotations for the given type
+  func bottomOf atype -> atype.
+  func topOf atype -> atype.
+  bottomOf T U :- logging.trace (coq.say "[bottomOf]" T "//" U), fail, !.
+  topOf T U :- logging.trace (coq.say "[topOf]" T "//" U), fail, !.
+  bottomOf (asort S _) (asort S Bot) :- !, param-class.bottom Bot.
+  topOf (asort S _) (asort S Top) :- !, param-class.top Top.
+  bottomOf (aprod N AT AF) (aprod N AT' AF') :- !,
+    topOf AT AT',
+    @pi-adecl N AT' (ax\ _\ _\ _\
+      % ax is also typed with AT because AT≤ AT'
+      bottomOf (AF ax) (AF' ax)
+    ), !.
+  topOf (aprod N AT AF) (aprod N AT' AF') :- !,
+    bottomOf AT AT',
+    @pi-adecl N AT (ax\ _\ _\ _\
+      % ax is also typed with AT' because AT'≤ AT
+      topOf (AF ax) (AF' ax)
+    ), !.
+  bottomOf (aapp [ (afun _ _ AF),AX1|AXs]) Out :- !,
+    % We beta-reduce
+    bottomOf (aapp [(AF AX1) | AXs]) Out.
+  topOf (aapp [ (afun _ _ AF),AX1|AXs]) Out :- !,
+    % We beta-reduce
+    topOf (aapp [(AF AX1) | AXs]) Out.
+  bottomOf (aapp [(uvar as XH)|_] as X) X' :- declare_constraint (bottomOf X X') [XH], !.
+  topOf (aapp [(uvar as XH)|_] as X) X' :- declare_constraint (topOf X X') [XH], !.
+  % sub-type is isovariant on arguments of an app, so we need equality
+  bottomOf (aapp [X|AXs] as T) (aapp [X'|AXs]) :- !,
+    (name X ; X = aglobal _ _ _ ; X = apglobal _ _ _ _ ; trocq.error "[bottomOf] Input" T "is not a type"), !,
+    bottomOf X X'.
+  topOf (aapp [X|AXs] as T) (aapp [X'|AXs]) :- !,
+    (name X ; X = aglobal _ _ _ ; X = apglobal _ _ _ _ ; trocq.error "[topOf] Input" T "is not a type"), !,
+    topOf X X'.
+  bottomOf X X :- !.
+  topOf X X :- !.
+
+  % Returns the raw parametry translation for the given type (set every annotation at 00)
+  func rawOf atype -> atype.
+  rawOf T U :- logging.trace (coq.say "[rawOf]" T "//" U), fail, !.
+  rawOf (asort S _) (asort S Bot) :- !, param-class.bottom Bot.
+  rawOf (aprod N AT AF) (aprod N AT' AF') :- !,
+    rawOf AT AT',
+    @pi-adecl N AT (ax\ _\ _\ _\
+    @pi-adecl N AT' (ax'\ _\ _\ _\
+      rawOf ax ax' =!=> rawOf (AF ax) (AF' ax')
+    )), !.
+  rawOf (aapp [ (afun _ _ AF),AX1|AXs]) Out :- !,
+    % We beta-reduce
+    rawOf (aapp [(AF AX1) | AXs]) Out.
+  rawOf (aapp [(uvar as XH)|_] as X) X' :- declare_constraint (rawOf X X') [XH], !.
+  rawOf (aapp [X|L] as T) (aapp [X'|L']) :- !,
+    (name X ; X = aglobal _ _ _ ; X = apglobal _ _ _ _ ; trocq.error "[bottomOf] Input" T "is not a type"), !,
+    rawOf X X',
+    std.map L rawOf L'.
+  rawOf X X :- !.
+}
+
 namespace aterm {
 
   func triple aterm -> term,term,term.
-  triple AX X X' RX :- adecl AX _ X X' RX _, !.
+  triple AX X X' RX0 :- adecl AX _ X X' RX _,
+    annot.weaken AX {aterm.util.bottomOf AX} X X' RX RX0, !.
   triple (atriple X X' RX) X X' RX.
   triple (asort S Cl) (sort S) (sort S) T :- 
     trocq.data.rel Cl T.
@@ -144,6 +268,82 @@ namespace aterm.util {
   mk-app T [] T :- !.
   mk-app (aapp L) XS (aapp L') :- !, std.append L XS L'.
   mk-app T XS (aapp [T|XS]) :- !.
+
+  macro @pi-decl1 XXXXXN XXXXXT XXXXXF :- pi xxxxxx\ decl xxxxxx XXXXXN XXXXXT =!=> XXXXXF xxxxxx.
+  % {mk-atriple A B R}  outputs an aterm AT such that aterm.triple AT A B R
+
+  % Checks that term T is {weaken (_ -> _) {X} {X'} RX}
+  %func extract-weaken term -> term, term, term.
+  %extract-weaken (app [Forget,X,X',FRX]) X X' RX :-
+  %  coq.env.global (const CForget) Forget,
+  %  trocq.db.forget _ _ CForget, !, 
+  %  extract-weaken FRX X X' RX.
+  %extract-weaken RX _ _ RX.
+
+  %func mk-atriple term,term,term -> aterm.
+  %mk-atriple X X' RX AT :-
+  %  logging.trace (coq.say "[mk-atriple] Making an atriple out of" "(" X "," X' "," RX ")" "->" AT), 
+  %  fail, !.
+  %mk-atriple (global G) B R (aglobal G B R) :- !.
+  %mk-atriple (pglobal G U) B R (apglobal G U B R) :- !.
+  %mk-atriple (sort S) (sort _) ParamMN (asort S C) :-
+  %  coq.env.global (const ParamMNCst) ParamMN,
+  %  trocq.db.r C ParamMNCst, !.
+  %mk-atriple (fun N T F) (fun _ T' F')
+  %    (fun _ T x\ fun _ T' x'\ fun _ TRx rx\ RF x x' rx) (afun N AT AF) :-
+  %  util.split-app-last 2 TRx RT [T, T'],
+  %  mk-atriple T T' RT AT,
+  %  @pi-adecl N AT (ay\ y\ y'\ ry\ mk-atriple (F y) (F' y') (RF y y' ry) (AF ay)),
+  %  !.
+  %mk-atriple (prod N T F) (prod N' T' F')
+  %    (fun _ FT f\ fun _ FT' f'\ prod _ T x\ prod _ T' x'\ prod _ (TRx x x') rx\ RFOut f f' x x' rx)
+  %    (aprod N AT AF) :-
+  %  sigma RT\ % RT should not depend on x nor on x'
+  %  @pi-decl1 N T (x\ @pi-decl1 N' T' (x'\ util.split-app-last 2 (TRx x x') RT [x,x'])),
+  %  mk-atriple T T' RT AT,
+  %  @pi-adecl N AT (ay\ y\ y'\ ry\
+  %    % RF should not depend on f nor on f'
+  %    @pi-decl1 `f` FT f\ (
+  %    @pi-decl1 `f'` FT' f'\ (
+  %      util.split-app-last 2 (RFOut f f' y y' ry) (RF y y' ry) [app [f, y], app [f', y']]
+  %    )),
+  %    mk-atriple (F y) (F' y') (RF y y' ry) (AF ay)
+  %  ),
+  %  !.
+  %mk-atriple (app [X|L]) (app [X'|L']) (app [RX|LLL]) (aapp [AX|AL]) :-
+  %  mk-atriple X X' RX AX,
+  %  util.mapBy3 LLL (x\ _\ _\ Out\ Out = x) L,
+  %  util.mapBy3 LLL (_\ x'\ _\ Out\ Out = x') L',
+  %  util.mapBy3 LLL mk-atriple AL, !.
+  %mk-atriple X X' RX AX :- adecl AX _ X X' RX' AT,
+  %  % This should rather check for convertibility rather than equality
+  %  coq.unify-eq RX RX' ok,
+  %  !.
+  % Atriple (X Y, X' Y', R)
+  %mk-atriple T T' (app [Rproj, R]) Out :-
+  %  util.split-app-last 1 T X [Y],
+  %  util.split-app-last 1 T' X' [Y'],
+  %  coq.typecheck Y TY ok,
+  %  coq.typecheck Y' TY' ok,
+  %  extract-weaken R Y Y' RXYYRY,
+  %  util.split-app-last 3 RXYYRY RX [Y, Y', RY],
+  %  mk-atriple Y Y' RY AY,
+  %  mk-atriple X X' RX AX, !,
+  %  aterm.util.mk-app AX [AY] Out.
+  
+  % Second to last resort, if relation has a head gref, we try to δ-reduce it
+  %mk-atriple T T' (app [H|Args]) AT :-
+  %  coq.env.global (const GH) H,
+  %  coq.env.const GH (some HB) _,
+  %  util.mk-app HB Args R',
+  %  coq.reduction.lazy.bi-norm R' R'',
+  %  mk-atriple T T' R'' AT, !.
+  
+  % Last resort, we make a atriple
+  %mk-atriple X X' RX AT :- 
+  %  trocq.error "[mk-atriple] Could not make a non-generic atriple", !.
+  % XXX Generic atriples are disabled for now
+  %mk-atriple X X' RX (atriple X X' RX).
 
   % classes returns a list of all non-output param classes of an aterm and the _potential_ output param class
   % all-classes returns a list of all param-classes in an aterm (potential output included)
@@ -283,58 +483,4 @@ namespace aterm.util {
     trocq.data.forget _ _ Weakener, !,
     remove-weakenings T T'.
   remove-weakenings T T.
-
-  % returns the weakest (resp. strongest) annotations for the given type
-  func bottomOf atype -> atype.
-  func topOf atype -> atype.
-  bottomOf T U :- logging.trace (coq.say "[bottomOf]" T "//" U), fail, !.
-  topOf T U :- logging.trace (coq.say "[topOf]" T "//" U), fail, !.
-  bottomOf (asort S C) (asort S Bot) :- !, param-class.bottom Bot.
-  topOf (asort S C) (asort S Top) :- !, param-class.top Top.
-  bottomOf (aprod N AT AF) (aprod N AT' AF') :- !,
-    topOf AT AT',
-    @pi-adecl N AT' (ax\ _\ _\ _\
-      % ax is also typed with AT because AT≤ AT'
-      bottomOf (AF ax) (AF' ax)
-    ), !.
-  topOf (aprod N AT AF) (aprod N AT' AF') :- !,
-    bottomOf AT AT',
-    @pi-adecl N AT (ax\ _\ _\ _\
-      % ax is also typed with AT' because AT'≤ AT
-      topOf (AF ax) (AF' ax)
-    ), !.
-  bottomOf (aapp [ (afun _ _ AF),AX1|AXs]) Out :- !,
-    % We beta-reduce
-    bottomOf (aapp [(AF AX1) | AXs]) Out.
-  topOf (aapp [ (afun _ _ AF),AX1|AXs]) Out :- !,
-    % We beta-reduce
-    topOf (aapp [(AF AX1) | AXs]) Out.
-  bottomOf (aapp [(uvar as XH)|_] as X) X' :- declare_constraint (bottomOf X X') [XH], !.
-  topOf (aapp [(uvar as XH)|_] as X) X' :- declare_constraint (topOf X X') [XH], !.
-  % sub-type is isovariant on arguments of an app, so we need equality
-  bottomOf (aapp [X|AXs] as T) (aapp [X'|AXs]) :- !,
-    (name X ; X = aglobal _ _ _ ; X = apglobal _ _ _ _ ; trocq.error "[bottomOf] Input" T "is not a type"), !,
-    bottomOf X X'.
-  topOf (aapp [X|AXs] as T) (aapp [X'|AXs]) :- !,
-    (name X ; X = aglobal _ _ _ ; X = apglobal _ _ _ _ ; trocq.error "[topOf] Input" T "is not a type"), !,
-    topOf X X'.
-  bottomOf X X :- !.
-  topOf X X :- !.
-
-  % {infer-aterm TR AT T T'} infers AT, T, and T' such that
-  % TR = [[AT]] T T'
-  func infer-aterm term -> aterm, term, term.
-  infer-aterm T _ _ _ :-
-    coq.say "Inferring on" T, fail, !.
-  infer-aterm (prod N T x\ prod N' T' x'\ prod NR (RTxx x x') rx\ RU x x' rx)
-    (aprod N AT ax\ AU ax)
-    (prod N T x\ U x)
-    (prod N' T' x'\ U' x') :-
-    @pi-decl N T x\ @pi-decl N' T' x'\ infer-aterm (RTxx x x') AT x x',
-    @pi-adecl N AT ax\ x\ x'\ rx\ (
-      infer-aterm (RU x x' rx) (AU ax) (U x) (U' x')
-    ).
-  infer-aterm (app [ParamRelCl,T,T']) (asort S Cl) T T' :-
-    trocq.data.param.rel->param-class ParamRelCl Cl, !,
-    coq.typecheck T (sort S) ok.
 }

@@ -41,12 +41,12 @@ type cstr-eq param-class -> param-class -> cstr.
 
 macro @pi-adecl N PAD_AT PAD_F :-
   aterm.triple PAD_AT PAD_T PAD_T' PAD_TR,
-  util.mk-app PAD_TR [PAD_T,PAD_T'] PAD_TRx,
   coq.name-suffix N "'" N',
   coq.name-suffix N "R" NR,
   @pi-decl N PAD_T x\ (
   @pi-decl N' PAD_T' x'\ (
-  @pi-decl NR PAD_TRx xR\ (
+  util.mk-app PAD_TR [x, x'] (PAD_TRx x x'),
+  @pi-decl NR (PAD_TRx x x') xR\ (
   pi ax\ [
     adecl ax N x x' xR PAD_AT
   ] => (
@@ -130,7 +130,7 @@ namespace param-class-cstr {
 }
 
 func aterm.certain aterm ->.
-aterm.certain (uvar as X) :- !, fail.
+aterm.certain uvar :- !, fail.
 aterm.certain X :- name X, !.
 aterm.certain (asort _ C) :- !, param-class-cstr.certain C.
 aterm.certain (aprod N T F) :- !,
@@ -144,8 +144,8 @@ aterm.certain (afun N T F) :- !,
         aterm.certain (F ax)
     ).
 aterm.certain (aapp L) :- !, std.forall L aterm.certain.
-aterm.certain (aglobal _ X' RX) :- not (var X), not (var RX), !.
-aterm.certain (apglobal _ _ X' RX) :- not (var X), not (var RX), !.
+aterm.certain (aglobal _ X RX) :- not (var X), not (var RX), !.
+aterm.certain (apglobal _ _ X RX) :- not (var X), not (var RX), !.
 %XXX We should expand that with checking the gref
 % and with checking wether we have multiple copies of the gref in the database.
 

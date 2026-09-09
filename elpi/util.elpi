@@ -18,6 +18,17 @@
 
 pred do-not-fail.
 
+% Elpi builtin fatal error react to do-not-fail
+:before "default-fatal-error"
+std.fatal-error _ :- do-not-fail, !, fail.
+:before "default-fatal-error-w-data"
+std.fatal-error-w-data _ _ :- do-not-fail, !, fail.
+
+% But Rocq-elpi moves before before our before
+% So we disable stop
+:before "stop:begin"
+stop _ :- do-not-fail, !, fail.
+
 % Returns the numeric level associated to a verbosity, the higher the more verbose.
 pred verbosity->int i:verbosity, o:int.
 verbosity->int level.off -1.
@@ -180,6 +191,15 @@ mapTo2 [X|L] F [X1|L1] [X2|L2] :- F X X1 X2, mapTo2 L F L1 L2.
 func mapTo3 list A, (func A -> B,C,D) -> list B, list C, list D.
 mapTo3 [] F_ [] [] [].
 mapTo3 [X|L] F [X1|L1] [X2|L2] [X3|L3] :- F X X1 X2 X3, mapTo3 L F L1 L2 L3.
+
+func mapBy3 list A, (func A,A,A -> B) -> list B.
+mapBy3 [] _ [].
+mapBy3 [X,Y,Z|L] F [W|L'] :- F X Y Z W, mapBy3 L F L'.
+
+% This version of split-at does no fatal error
+func split-at int, list A -> list A, list A.
+split-at 0 L [] L :- !.
+split-at N [X|XS] [X|LN] LM :- !, N1 is N - 1, split-at N1 XS LN LM.
 
 func behead list A -> A, list A.
 behead [X|L] X L.

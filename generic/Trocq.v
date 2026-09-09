@@ -19,5 +19,5 @@ From Trocq Require Export
   Param_nat Param_list Param_bool Param_lemmas.
 
 (* TODO: should we also export some variant-specific files, such as Param_Prop.v? *)
-Trocq Register Param01_paths.
-Trocq Register Param10_paths.
+Trocq Register Param01_paths rel pathsR.
+Trocq Register Param10_paths rel pathsR.

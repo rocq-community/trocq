@@ -166,6 +166,19 @@ mk-app HD [] HD :- !.
 mk-app (app L) Args R :- !, std.append L Args LArgs, R = app LArgs.
 mk-app HD Args (app [HD|Args]).
 
+% split-app-last N T T0 Args is such that
+% std.length Args = N and util.mk-app T0 Args T
+func split-app-last int, term -> term, list term.
+split-app-last 0 T T [] :- !.
+split-app-last N (app [T00|TArgs]) T0 Args :-
+  std.length TArgs TArgsLength,
+  std.split-at {calc (TArgsLength - N)} TArgs T0Args Args,
+  util.mk-app T00 T0Args T0.
+
+func head-term term -> term.
+head-term (app [H|_]) H :- !.
+head-term X X.
+
 func equals-ignore term -> term.
 equals-ignore (prod N AT F) (prod _ AT' F') :- !,
   equals-ignore AT AT',
