@@ -14,6 +14,7 @@
 accumulate "Trocq.Elpi/param-class-util".
 accumulate "Trocq.Elpi/aterm".
 accumulate "Trocq.Elpi/data".
+accumulate "Trocq.Elpi/logging".
 
 % command to register the univalence axiom
 main [str "Register", str "Univalence", str S] :- !, std.do! [
@@ -155,7 +156,7 @@ main [str "Usage"] :- !, coq.info {usage-msg}.
 main [str "Logging", str StrLevel] :- !,
   string->verbosity StrLevel Level,
   util.accumulate-replacing-named-clause _ "trocq.db" "log-level" (
-    log-level Level
+    trocq.db.log-level Level
   ).
 
 main [str "Coercion", str "On"] :- !,

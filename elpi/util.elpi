@@ -22,37 +22,6 @@ kind or type -> type -> type.
 type inl A -> or A B.
 type inr B -> or A B.
 
-kind verbosity type.
-type level.off verbosity.
-type level.info verbosity.
-type level.debug verbosity.
-type level.trace verbosity.
-
-% Returns the numeric level associated to a verbosity, the higher the more verbose.
-pred verbosity->int i:verbosity, o:int.
-verbosity->int level.off -1.
-verbosity->int level.info 0.
-verbosity->int level.debug 1.
-verbosity->int level.trace 2.
-
-% Returns the verbosity level given a name.
-pred string->verbosity i:string o:verbosity.
-string->verbosity "off" level.off.
-string->verbosity "info" level.info.
-string->verbosity "debug" level.debug.
-string->verbosity "trace" level.trace.
-
-pred log-level o:verbosity.
-:name "log-level"
-log-level level.info.
-
-func logging.info prop.
-logging.info P :- util.at-level level.info P.
-func logging.debug prop.
-logging.debug P :- util.at-level level.debug P.
-func logging.trace prop.
-logging.trace P :- util.at-level level.trace P.
-
 namespace util {
 
 func option.value option A, A -> A.
@@ -64,11 +33,6 @@ pred cmp-int o:int, o:int, o:cmp.
 cmp-int A B lt :- A < B, !.
 cmp-int A B eq :- A = B, !.
 cmp-int _ _ gt.
-
-func at-level verbosity, prop.
-at-level MinimumLevel Log :- log-level CurrentLevel, !,
-  if ({verbosity->int CurrentLevel} >= {verbosity->int MinimumLevel}) Log true, !.
-at-level _ _.
 
 pred when i:prop, i:prop.
 when Condition Goal :-

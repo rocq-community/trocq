@@ -6,6 +6,7 @@ digraph {
     ## ELPI FILES
     "class" [shape=box, URL="https://github.com/rocq-community/trocq/blob/master/elpi/class.elpi"];
     "util" [shape=box, URL="https://github.com/rocq-community/trocq/blob/master/elpi/util.elpi"];
+    "logging" [shape=box, URL="https://github.com/rocq-community/trocq/blob/master/elpi/logging.elpi"];
     "util-rocq" [URL="https://github.com/rocq-community/trocq/blob/master/elpi/util-rocq.elpi"];
     "database" [shape=box, URL="https://github.com/rocq-community/trocq/blob/master/elpi/database.elpi"];
     "aterm" [URL="https://github.com/rocq-community/trocq/blob/master/elpi/aterm.elpi"];
@@ -23,6 +24,7 @@ digraph {
 
     ## DEPENDENCIES
     "util" -> {"aterm" "util-rocq"};
+    "logging" -> {"constraint-graph" "vernac"};
     "util-rocq" -> {"data" "param-class-util" "simple-graph"};
     "class" -> "database";
     "class" -> "aterm";
