@@ -12,6 +12,13 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 accumulate "Trocq.Elpi/class".
+accumulate "Trocq.Elpi/util".
+
+kind verbosity type.
+type level.off verbosity.
+type level.info verbosity.
+type level.debug verbosity.
+type level.trace verbosity.
 
 namespace trocq.db {
 
@@ -107,6 +114,11 @@ pred funext o:constant.
 pred coercion-enabled.
 :name "coercion-enabled"
 coercion-enabled :- false.
+
+pred log-level o:verbosity.
+:name "log-level"
+log-level level.info.
+
 
 } % trocq.db
 

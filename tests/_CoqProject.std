@@ -13,6 +13,7 @@ unit_coercion.v
 unit_comm1.v
 unit_comm2.v
 unit_lambda_type.v
+unit_logging.v
 unit_n.v
 unit_pi.v
 unit_print_translations.v

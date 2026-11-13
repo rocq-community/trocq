@@ -15,6 +15,7 @@
 % -----------------------------------------------------------------------------
 accumulate "Trocq.Elpi.constraints/simple-graph".
 accumulate "Trocq.Elpi/data".
+accumulate "Trocq.Elpi/logging".
 
 % in the constraint graph, parametricity classes are represented with integers (it is easier to
 % index on this type than on variables of type param-class)
