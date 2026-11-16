@@ -40,8 +40,9 @@ sequent-style presentation."""
 build: [make "-j%{jobs}%" "std"]
 install: [make "install" "-C" "std"]
 depends: [
-  "coq" {>= "9.0" & < "9.3"}
-  "coq-elpi" {>= "3.4.0"}
+  "rocq-core" {>= "9.0"}
+  "rocq-stdlib"
+  "rocq-elpi" {>= "3.4.0"}
 ]
 
 tags: [
