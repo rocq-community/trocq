@@ -29,7 +29,7 @@ Section Logging.
     Variable (f : A' -> A).
     Definition RA := mkParam01 f.
 
-    Trocq Use RA.
+    Trocq Register RA.
 
     Trocq Logging trace.
     Goal A.

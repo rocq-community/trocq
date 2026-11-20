@@ -1,0 +1,161 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%                            %                     Trocq                      %
+%  _______                   %        Copyright (C) 2023 Inria & MERCE        %
+% |__   __|                  %     (Mitsubishi Electric R&D Centre Europe)    %
+%    | |_ __ ___   ___ __ _  %        Cyril Cohen <cyril.cohen@inria.fr>      %
+%    | | '__/ _ \ / __/ _` | %        Enzo Crance <enzo.crance@inria.fr>      %
+%    | | | | (_) | (_| (_| | %    Assia Mahboubi <assia.mahboubi@inria.fr>    %
+%    |_|_|  \___/ \___\__, | %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%                        | | %   This file is distributed under the terms of  %
+%                        |_| %   GNU Lesser General Public License Version 3  %
+%                            % (see LICENSE file for the text of the license) %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% -----------------------------------------------------------------------------
+% Convertion from/into fake aterms.
+% -----------------------------------------------------------------------------
+
+accumulate "Trocq.Elpi/aterm".
+
+% `@pi-adecl N AT (ax\ x\ x'\ xr\ F x x' xr)` declares elpi pi-variables x x' xr with adecl
+% x has annotated type AT
+macro @pi-adecl N PAD_AT PAD_F :-
+  aterm.raw-triple PAD_AT PAD_T PAD_T' PAD_RT,
+  util.name-suffix N "'" N',
+  util.name-suffix N "R" NR,
+  @pi-decl N PAD_T x\ (
+  @pi-decl N' PAD_T' x'\ (
+  util.mk-app PAD_RT [x, x'] (PAD_RTx x x'),
+  @pi-decl NR (PAD_RTx x x') xR\ (
+  pi ax\ [
+    adecl ax N x x' xR PAD_AT
+  ] => (
+    logging.trace (coq.say "[adecl]" ax "==" x "@" PAD_AT "~" x' "∵" xR),
+    (PAD_F ax x x' xR)
+  )))).
+
+typeabbrev fake-map-class term.
+typeabbrev fake-aterm term.
+
+% Converts a fake-map-class into a map-class.
+func fake-map-class->map-class fake-map-class -> map-class.
+fake-map-class->map-class (uvar as E) _ :- !,
+  trocq.error "[fake-map-class->map-class] called on the evar" {coq.term->string E}.
+fake-map-class->map-class T N :-
+  coq.env.global G T,
+  trocq.db.map-class->indc-class N G, !.
+
+% Converts a map-class into a fake-map-class.
+%
+% Unification variables as input are supported, returning a Rocq evar.
+% If the unification variable is assigned, the Rocq evar will be resolved too.
+func map-class->fake-map-class map-class -> fake-map-class.
+map-class->fake-map-class (uvar as E) T :- !, std.do![
+  util.uvar-to-evar E T,
+  declare_constraint (map-class->fake-map-class E T) [E]
+].
+map-class->fake-map-class N T :-
+  trocq.db.map-class->indc-class N G,
+  coq.env.global G T, !.
+
+% Converts a fake-aterm into an aterm.
+func fake-aterm->aterm fake-aterm -> aterm.
+fake-aterm->aterm (app [PType|L]) (asort (typ U) Cl) :-
+  trocq.data.ptype PType, !,
+  L = [TM, TN],
+  fake-map-class->map-class TM M,
+  fake-map-class->map-class TN N,
+  if (var M, var N)
+    (Cl = _)
+    (Cl = pc M N),
+  coq.univ.new U.
+fake-aterm->aterm (app [PTriple|L]) Out :-
+  trocq.data.ptriple PTriple,
+  L = [_,_,_,X,X',RX|L'], !,
+  std.map L' fake-aterm->aterm AL',
+  % XXX Reactivate this, but think about it first
+  %coq.elaborate-skeleton RX (prod `_` X _\ prod `_` X' _\ sort _) RXR Diag,
+  %(Diag = ok, ! ; trocq.error {coq.term->string RX} "is not a relation between" {coq.term->string X} "and" {coq.term->string X'} Diag), !,
+  RXR = RX,
+  if (X = global G)
+    (OutT = aglobal G X' RXR)
+  (if (X = pglobal G U)
+    (OutT = apglobal G U X' RXR)
+    (OutT = atriple X X' RXR)),
+  std.map L' fake-aterm->aterm AL',
+  aterm.util.mk-app OutT AL' Out.
+fake-aterm->aterm (sort S) (asort S Cl) :- !,
+  prune Cl []. %XXX Check whether those prunes will cause any trouble.
+fake-aterm->aterm (global G) (aglobal G G' RG) :- !,
+  prune G' [],
+  prune RG [].
+fake-aterm->aterm (pglobal G U) (apglobal G U G' RG) :- !,
+  prune G' [],
+  prune RG [].
+fake-aterm->aterm (fun Name T F) (afun Name AT AF) :- !,
+  fake-aterm->aterm T AT,
+  @pi-adecl Name AT (ay\ y\ _\ _\
+    fake-aterm->aterm (F y) (AF ay)
+  ).
+fake-aterm->aterm (prod Name T F) (aprod Name AT AF) :- !,
+  fake-aterm->aterm T AT,
+  @pi-adecl Name AT (ay\ y\ _\ _\ 
+    fake-aterm->aterm (F y) (AF ay)
+  ).
+fake-aterm->aterm (app L) (aapp AL) :- !,
+  std.map L fake-aterm->aterm AL.
+fake-aterm->aterm X AX :- adecl AX _ X _ _ _, !.
+fake-aterm->aterm (uvar as E) _ :- !,
+  trocq.error "[fake-aterm->aterm] cannot create an annotated term out of an evar:" {coq.term->string E}.
+fake-aterm->aterm T _ :-
+  trocq.error "[fake-aterm->aterm] not implemented for the subterm:" {coq.term->string T}.
+
+func normalize-apps term -> term.
+normalize-apps (app [app [A|L]|L']) T :- !,
+  std.append L L' L'',
+  normalize-apps (app [A|L'']) T.
+normalize-apps T T.
+
+% Converts a fake-aterm into an aterm.
+func aterm->fake-aterm aterm -> fake-aterm.
+aterm->fake-aterm (asort (typ _U) PC) (app [PType, NT, MT]) :- !,
+  % TODO: the universe level U cannot be represented in the fake-aterm because PType is not universe-polymorphic.
+  trocq.data.ptype PType,
+  PC = pc N M,
+  map-class->fake-map-class N NT,
+  map-class->fake-map-class M MT.
+aterm->fake-aterm (asort S _) _ :- !,
+  trocq.error "[aterm->fake-aterm] sort" S "cannot be represented via a fake-aterm.".
+aterm->fake-aterm (atriple N N' NR) (app [PTriple, _, _, _, N, N', NR]) :- !,
+  trocq.data.ptriple PTriple.
+aterm->fake-aterm (aglobal G G' RG) (app [PTriple, _, _, _, global G, G', RG]) :- !,
+  trocq.data.ptriple PTriple.
+aterm->fake-aterm (apglobal G UI G' RG) (app [PTriple, _, _, _, pglobal G UI, G', RG]) :- !,
+  trocq.data.ptriple PTriple.
+aterm->fake-aterm (afun N A B) (fun N A' B') :- !, std.do! [
+  aterm->fake-aterm A A',
+  @pi-adecl N A (ax\ x\ _\ _\
+    aterm->fake-aterm (B ax) (B' x)
+  )
+].
+aterm->fake-aterm (aprod N A B) (prod N A' B') :- !, std.do! [
+  aterm->fake-aterm A A',
+  @pi-adecl N A (ax\ x\ _\ _\
+    aterm->fake-aterm (B ax) (B' x)
+  )
+].
+aterm->fake-aterm (alet _ _ _ _) _ :- !,
+  trocq.error "[aterm->fake-aterm] unsupported construct match".
+aterm->fake-aterm (aapp AL) T :- !,
+  std.map AL aterm->fake-aterm L,
+  % L could be `[app ..|..]`, so `app T` could be not normalized.
+  normalize-apps (app L) T.
+aterm->fake-aterm (amatch _ _ _) _ :- !,
+  trocq.error "[aterm->fake-aterm] unsupported construct match".
+aterm->fake-aterm (afix _ _ _ _) _ :- !,
+  trocq.error "[aterm->fake-aterm] unsupported construct afix".
+aterm->fake-aterm (aprimitive _) _ :- !,
+  trocq.error "[aterm->fake-aterm] unsupported construct aprimitive".
+aterm->fake-aterm (uvar as E) T :- !,
+  util.uvar-to-evar E T, !,
+  declare_constraint (aterm->fake-aterm E T) [E].
+aterm->fake-aterm AX X :- adecl AX _ X _ _ _, !.

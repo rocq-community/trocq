@@ -10,11 +10,14 @@ digraph {
     "util-rocq" [URL="https://github.com/rocq-community/trocq/blob/master/elpi/util-rocq.elpi"];
     "database" [shape=box, URL="https://github.com/rocq-community/trocq/blob/master/elpi/database.elpi"];
     "aterm" [URL="https://github.com/rocq-community/trocq/blob/master/elpi/aterm.elpi"];
-    "constraints" [URL="https://github.com/rocq-community/trocq/blob/master/elpi/constraints/constraints.elpi"];
+    "fake-aterm" [URL="https://github.com/rocq-community/trocq/blob/master/elpi/fake-aterm.elpi"];
+    "aterm-type" [shape=box, URL="https://github.com/rocq-community/trocq/blob/master/elpi/aterm-type.elpi"];
+    "c/constraints" [URL="https://github.com/rocq-community/trocq/blob/master/elpi/constraints/constraints.elpi"];
+    "constraints" [URL="https://github.com/rocq-community/trocq/blob/master/elpi/constraints.elpi"];
     "coercion" [URL="https://github.com/rocq-community/trocq/blob/master/elpi/coercion.elpi"];
-    "simple-graph" [URL="https://github.com/rocq-community/trocq/blob/master/elpi/constraints/simple-graph.elpi"];
-    "constraint-graph" [URL="https://github.com/rocq-community/trocq/blob/master/elpi/constraints/constraint-graph.elpi"];
-    "constraints-impl" [URL="https://github.com/rocq-community/trocq/blob/master/elpi/constraints/constraints-impl.elpi"];
+    "c/simple-graph" [URL="https://github.com/rocq-community/trocq/blob/master/elpi/constraints/simple-graph.elpi"];
+    "c/constraint-graph" [URL="https://github.com/rocq-community/trocq/blob/master/elpi/constraints/constraint-graph.elpi"];
+    "c/constraints-impl" [URL="https://github.com/rocq-community/trocq/blob/master/elpi/constraints/constraints-impl.elpi"];
     "annot" [URL="https://github.com/rocq-community/trocq/blob/master/elpi/annot.elpi"];
     "data" [URL="https://github.com/rocq-community/trocq/blob/master/elpi/data.elpi"];
     "param-class-util" [URL="https://github.com/rocq-community/trocq/blob/master/elpi/param-class-util.elpi"];
@@ -23,20 +26,22 @@ digraph {
     "vernac" [URL="https://github.com/rocq-community/trocq/blob/master/elpi/vernac.elpi"];
 
     ## DEPENDENCIES
-    "util" -> {"aterm" "util-rocq"};
-    "logging" -> {"constraint-graph" "vernac"};
-    "util-rocq" -> {"data" "param-class-util" "simple-graph"};
-    "class" -> "database";
-    "class" -> "aterm";
-    "database" -> {"data" "param-class-util"};
-    "aterm" -> {"constraints" "vernac"};
-    "constraints" -> "simple-graph";
-    "simple-graph" -> "constraint-graph";
-    "constraint-graph" -> "constraints-impl";
-    "constraints-impl" -> "annot";
-    "annot" -> "param";
-    "data" -> {"param"  "constraint-graph" "vernac"};
-    "param-class-util" -> "vernac";
+    "util" -> {"database"};
+    "logging" -> {"util-rocq"};
+    "util-rocq" -> {"param-class-util"};
+    "class" -> {"aterm-type"};
+    "database" -> {"logging" "param-class-util"};
+    "aterm" -> {"c/constraints" "fake-aterm"};
+    "aterm-type" -> {"database"};
+    "fake-aterm" -> {"vernac"}
+    "constraints" -> "annot";
+    "c/constraints" -> "c/simple-graph";
+    "c/simple-graph" -> "c/constraint-graph";
+    "c/constraint-graph" -> "c/constraints-impl";
+    "c/constraints-impl" -> {"constraints"};
+    "annot" -> {"vernac" "param"};
+    "data" -> "aterm";
+    "param-class-util" -> {"data"};
     "param" -> {"coercion" "tactic"};
 
     ## CLUSTERS
@@ -44,7 +49,7 @@ digraph {
         label="trocq.db header";
         style=filled;
         fillcolor="#dffdc0";
-        "class" "database";
+        "class" "database" "util" "aterm-type";
     }
     subgraph cluster_constraints {
         labelloc="r";
@@ -52,6 +57,6 @@ digraph {
         style=filled;
         fillcolor=lightyellow;
         URL="https://github.com/rocq-community/trocq/tree/master/elpi/constraints";
-        "constraints" "simple-graph" "constraint-graph" "constraints-impl";
+        "c/constraints" "c/simple-graph" "c/constraint-graph" "c/constraints-impl";
     }
 }
