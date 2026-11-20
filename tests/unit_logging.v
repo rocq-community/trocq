@@ -15,28 +15,29 @@ From Trocq Require Import Stdlib Trocq.
 
 Set Universe Polymorphism.
 
-Section TrocqLogging.
+Section Logging.
 
-    Variable (A B: Type).
-    Variable (f : B -> A).
+    Trocq Logging trace.
 
-    Definition R1 : Param01.Rel A B := mkParam01 f.
-    Trocq Register R1.
+    Trocq Logging debug.
 
-    Goal A.
-        trocq.
-        enough (x : B) by exact x.
-    Abort.
+    Trocq Logging info.
+
+    Trocq Logging off.
+
+    Variable (A A' : Type).
+    Variable (f : A' -> A).
+    Definition RA := mkParam01 f.
+
+    Trocq Register RA.
 
     Trocq Logging trace.
     Goal A.
         trocq.
-        enough (x : B) by exact x.
+        enough (x : A') by exact x.
     Abort.
 
-    Trocq Logging info.
-    Goal A.
-        trocq.
-        enough (x : B) by exact x.
-    Abort.
-End TrocqLogging.
+    Trocq Logging off.
+
+
+End Logging.

@@ -14,7 +14,6 @@
 % definition of the constraint graph
 % -----------------------------------------------------------------------------
 accumulate "Trocq.Elpi.constraints/simple-graph".
-accumulate "Trocq.Elpi/data".
 
 %XXX This is only here for this file
 pred annot.weaken i:aterm, i:aterm, i:term, i:term, i:term, o:term.

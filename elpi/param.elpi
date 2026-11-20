@@ -15,7 +15,6 @@
 % -----------------------------------------------------------------------------
 
 accumulate "Trocq.Elpi/annot".
-accumulate "Trocq.Elpi/data".
 
 macro @pi-adecl N PAD_AT PAD_F :-
   aterm.raw-triple PAD_AT PAD_T PAD_T' PAD_RT,

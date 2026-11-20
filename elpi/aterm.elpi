@@ -14,11 +14,8 @@
 % Annotated terms
 % -----------------------------------------------------------------------------
 
-accumulate "Trocq.Elpi/aterm-type".
-accumulate "Trocq.Elpi/util".
-accumulate "Trocq.Elpi/util-rocq".
-accumulate "Trocq.Elpi/param-class-util".
 accumulate "Trocq.Elpi/data".
+accumulate "Trocq.Elpi/logging".
 
 % `@pi-adecl N AT (ax\ x\ x'\ xr\ F x x' xr)` declares elpi pi-variables x x' xr with adecl
 % x has annotated type AT
@@ -450,7 +447,7 @@ namespace aterm.util {
   func infer-aterm term -> aterm, term, term.
   infer-aterm T _ _ _ :-
     coq.say "Inferring on" T, fail, !.
-  infer-aterm (prod N T x\ prod N' T' x'\ prod NR (RTxx x x') rx\ RU x x' rx)
+  infer-aterm (prod N T x\ prod N' T' x'\ prod _ (RTxx x x') rx\ RU x x' rx)
     (aprod N AT ax\ AU ax)
     (prod N T x\ U x)
     (prod N' T' x'\ U' x') :-

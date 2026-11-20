@@ -13,7 +13,6 @@
 
 accumulate "Trocq.Elpi/annot".
 
-
 % API
 
 func check-infer -> term,term,term,term,aterm,term,term,term,term,aterm.

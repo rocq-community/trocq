@@ -11,8 +11,8 @@
 %                            % (see LICENSE file for the text of the license) %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-accumulate "Trocq.Elpi/class".
 accumulate "Trocq.Elpi/aterm-type".
+accumulate "Trocq.Elpi/util".
 
 kind verbosity type.
 type level.off verbosity.

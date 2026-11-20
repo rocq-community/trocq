@@ -14,8 +14,6 @@
 % Constaints data
 % -----------------------------------------------------------------------------
 
-accumulate "Trocq.Elpi/data".
-accumulate "Trocq.Elpi/aterm".
 accumulate "Trocq.Elpi.constraints/constraints-impl".
 
 kind cstr type.
