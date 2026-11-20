@@ -15,7 +15,6 @@
 % -----------------------------------------------------------------------------
 
 accumulate "Trocq.Elpi/data".
-accumulate "Trocq.Elpi/logging".
 
 % `@pi-adecl N AT (ax\ x\ x'\ xr\ F x x' xr)` declares elpi pi-variables x x' xr with adecl
 % x has annotated type AT
@@ -296,54 +295,6 @@ namespace aterm.util {
   annotate-legacy (pglobal G U) [] none (apglobal G U TG TG) :-
     coq.env.global G TG.
 
-
-  func fake-term->aterm term -> aterm.
-  fake-term->aterm (app [PType|L]) (asort (typ U) Cl) :-
-    trocq.data.ptype PType, !,
-    L = [TM, TN],
-    trocq.data.term->map-class TM M,
-    trocq.data.term->map-class TN N,
-    if (var M, var N)
-    (Cl = _)
-    (Cl = pc M N),
-    coq.univ.new U.
-  fake-term->aterm (app [PTriple|L]) Out :-
-    trocq.data.ptriple PTriple,
-    L = [_,_,_,X,X',RX|L'], !,
-    std.map L' fake-term->aterm AL',
-    % XXX Reactivate this, but think about it first
-    %coq.elaborate-skeleton RX (prod `_` X _\ prod `_` X' _\ sort _) RXR Diag,
-    %(Diag = ok, ! ; trocq.error {coq.term->string RX} "is not a relation between" {coq.term->string X} "and" {coq.term->string X'} Diag), !,
-    RXR = RX,
-    if (X = global G)
-    (OutT = aglobal G X' RXR)
-    (if (X = pglobal G U)
-    (OutT = apglobal G U X' RXR)
-    (OutT = atriple X X' RXR)),
-    std.map L' fake-term->aterm AL',
-    aterm.util.mk-app OutT AL' Out.
-  fake-term->aterm (sort S) (asort S Cl) :- !,
-    prune Cl []. %XXX Check wether those prunes will cause any trouble.
-  fake-term->aterm (global G) (aglobal G G' RG) :- !,
-    prune G' [],
-    prune RG [].
-  fake-term->aterm (pglobal G U) (apglobal G U G' RG) :- !,
-    prune G' [],
-    prune RG [].
-  fake-term->aterm (fun Name T F) (afun Name AT AF) :- !,
-    fake-term->aterm T AT,
-    @pi-adecl Name AT (ay\ y\ _\ _\
-      fake-term->aterm (F y) (AF ay)
-    ).
-  fake-term->aterm (prod Name T F) (aprod Name AT AF) :- !,
-    fake-term->aterm T AT,
-    @pi-adecl Name AT (ay\ y\ _\ _\ 
-      fake-term->aterm (F y) (AF ay)
-    ).
-  fake-term->aterm (app L) (aapp AL) :- !,
-    std.map L fake-term->aterm AL.
-  fake-term->aterm X AX :- adecl AX _ X _ _ _, !.
-
   % From a full aterm in the database, instantiates a aterm with holes
   func equals-ignore aterm -> aterm.
   equals-ignore X X' :-
@@ -441,21 +392,4 @@ namespace aterm.util {
     topOf X X'.
   bottomOf X X :- !.
   topOf X X :- !.
-
-  % {infer-aterm TR AT T T'} infers AT, T, and T' such that
-  % TR = [[AT]] T T'
-  func infer-aterm term -> aterm, term, term.
-  infer-aterm T _ _ _ :-
-    coq.say "Inferring on" T, fail, !.
-  infer-aterm (prod N T x\ prod N' T' x'\ prod _ (RTxx x x') rx\ RU x x' rx)
-    (aprod N AT ax\ AU ax)
-    (prod N T x\ U x)
-    (prod N' T' x'\ U' x') :-
-    @pi-decl N T x\ @pi-decl N' T' x'\ infer-aterm (RTxx x x') AT x x',
-    @pi-adecl N AT ax\ x\ x'\ rx\ (
-      infer-aterm (RU x x' rx) (AU ax) (U x) (U' x')
-    ).
-  infer-aterm (app [ParamRelCl,T,T']) (asort S Cl) T T' :-
-    trocq.data.param.rel->param-class ParamRelCl Cl, !,
-    coq.typecheck T (sort S) ok.
 }

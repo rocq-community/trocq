@@ -12,6 +12,7 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 accumulate "Trocq.Elpi/annot".
+accumulate "Trocq.Elpi/fake-aterm".
 
 % API
 
@@ -75,7 +76,7 @@ func vernac.infer-aterm term -> aterm.
 vernac.infer-aterm uvar _AT :- !.
 vernac.infer-aterm T AT :-
   (coq.elaborate-skeleton T _ ET ok,
-  aterm.util.fake-term->aterm ET AT 
+  fake-aterm->aterm ET AT
   ; trocq.error "Could not make an annotated term out of term" {coq.term->string T}), !,
   logging.trace (coq.say "[infer-aterm] Inferred annotated term" AT).
 

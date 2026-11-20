@@ -10,6 +10,7 @@ digraph {
     "util-rocq" [URL="https://github.com/rocq-community/trocq/blob/master/elpi/util-rocq.elpi"];
     "database" [shape=box, URL="https://github.com/rocq-community/trocq/blob/master/elpi/database.elpi"];
     "aterm" [URL="https://github.com/rocq-community/trocq/blob/master/elpi/aterm.elpi"];
+    "fake-aterm" [URL="https://github.com/rocq-community/trocq/blob/master/elpi/fake-aterm.elpi"];
     "aterm-type" [shape=box, URL="https://github.com/rocq-community/trocq/blob/master/elpi/aterm-type.elpi"];
     "c/constraints" [URL="https://github.com/rocq-community/trocq/blob/master/elpi/constraints/constraints.elpi"];
     "constraints" [URL="https://github.com/rocq-community/trocq/blob/master/elpi/constraints.elpi"];
@@ -25,13 +26,14 @@ digraph {
     "vernac" [URL="https://github.com/rocq-community/trocq/blob/master/elpi/vernac.elpi"];
 
     ## DEPENDENCIES
-    "util" -> {"database" "util-rocq"};
-    "logging" -> {"aterm"};
+    "util" -> {"database"};
+    "logging" -> {"util-rocq"};
     "util-rocq" -> {"param-class-util"};
     "class" -> {"aterm-type"};
     "database" -> {"logging" "param-class-util"};
-    "aterm" -> {"c/constraints"};
-    "aterm-type" -> {"database" "util-rocq"};
+    "aterm" -> {"c/constraints" "fake-aterm"};
+    "aterm-type" -> {"database"};
+    "fake-aterm" -> {"vernac"}
     "constraints" -> "annot";
     "c/constraints" -> "c/simple-graph";
     "c/simple-graph" -> "c/constraint-graph";

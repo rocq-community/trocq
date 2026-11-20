@@ -14,8 +14,7 @@
 % utility predicates related to Rocq
 % -----------------------------------------------------------------------------
 
-accumulate "Trocq.Elpi/util".
-accumulate "Trocq.Elpi/aterm-type".
+accumulate "Trocq.Elpi/logging".
 
 % Some of the Coq native predicates raise errors in Elpi, stopping all
 % ongoing computations. Adding a custom flag like do-not-fail gives us an
@@ -197,6 +196,32 @@ func name-suffix name, any -> name.
 name-suffix uvar _ _ :- !.
 name-suffix X S O :- coq.name-suffix X S O.
 
+func uvar-evar-mapping? any, term ->.
+uvar-evar-mapping? (uvar as U) E :- !,
+  declare_constraint (uvar-evar-mapping? U E) [_].
+uvar-evar-mapping? _ _ :- !,
+  trocq.error "[uvar-evar-mapping] not called on a uvar!".
+
+func uvar-evar-mapping! any, term ->.
+uvar-evar-mapping! (uvar as U) E :- !,
+  declare_constraint (uvar-evar-mapping! U E) [_].
+uvar-evar-mapping! _ _ :- !,
+  trocq.error "[uvar-evar-mapping] not called on a uvar!".
+
+constraint uvar-evar-mapping? uvar-evar-mapping! {
+  rule (uvar-evar-mapping! U T1) \ (uvar-evar-mapping? U T2) <=> (T2 = T1).
+  rule                           \ (uvar-evar-mapping? U _) <=> false.
+}
+
+% `uvar-to-evar U E` provides a way to associated an Elpi uvar `E` to a Rocq evar `U`.
+% The mapping is unique: if `uvar-to-evar` is called once again on the same uvar `U`, the same Rocq evar will be returned.
+% The uvar resolving will not cause an assignment to the evar.
+pred uvar-to-evar any -> term.
+uvar-to-evar U E :-
+  uvar-evar-mapping? U E.
+uvar-to-evar U E :-
+  logging.trace (coq.say "[uvar-evar-mapping]" U "↔" {coq.term->string E}),
+  uvar-evar-mapping! U E.
 
 % Elpi does not allow replacing a named clause with a named clause. This is not allowed:
 %   coq.elpi.accumulate Scope Database (clause ClauseName (replace ClauseName) Content)

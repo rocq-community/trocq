@@ -154,18 +154,6 @@ namespace trocq.data {
   ptriple T :-
     coq.env.global G T, !,
     trocq.db.fake-aterm-ptype _ G, !.
-
-  func term->map-class term -> map-class.
-  term->map-class T N :-
-    coq.env.global G T,
-    trocq.db.map-class->indc-class N G, !.
-
-  func param.rel->param-class term -> param-class.
-  param.rel->param-class T Cl :-
-    coq.env.global G T,
-    trocq.db.rel Cl G _ _ _ _,
-    !.
-
 } % trocq.data
 
 namespace trocq {
