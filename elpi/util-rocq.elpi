@@ -14,8 +14,7 @@
 % utility predicates related to Rocq
 % -----------------------------------------------------------------------------
 
-accumulate "Trocq.Elpi/util".
-accumulate "Trocq.Elpi/aterm-type".
+accumulate "Trocq.Elpi/logging".
 
 % Some of the Coq native predicates raise errors in Elpi, stopping all
 % ongoing computations. Adding a custom flag like do-not-fail gives us an

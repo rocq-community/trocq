@@ -14,22 +14,18 @@
 % Convertion from/into fake aterms.
 % -----------------------------------------------------------------------------
 
-accumulate "Trocq.Elpi/database".
-accumulate "Trocq.Elpi/data".
 accumulate "Trocq.Elpi/aterm".
-accumulate "Trocq.Elpi/util-rocq".
-accumulate "Trocq.Elpi/class".
 
 % `@pi-adecl N AT (ax\ x\ x'\ xr\ F x x' xr)` declares elpi pi-variables x x' xr with adecl
 % x has annotated type AT
 macro @pi-adecl N PAD_AT PAD_F :-
-  aterm.triple PAD_AT PAD_T PAD_T' PAD_TR,
-  util.mk-app PAD_TR [PAD_T,PAD_T'] PAD_TRx,
-  coq.name-suffix N "'" N',
-  coq.name-suffix N "R" NR,
+  aterm.raw-triple PAD_AT PAD_T PAD_T' PAD_RT,
+  util.name-suffix N "'" N',
+  util.name-suffix N "R" NR,
   @pi-decl N PAD_T x\ (
   @pi-decl N' PAD_T' x'\ (
-  @pi-decl NR PAD_TRx xR\ (
+  util.mk-app PAD_RT [x, x'] (PAD_RTx x x'),
+  @pi-decl NR (PAD_RTx x x') xR\ (
   pi ax\ [
     adecl ax N x x' xR PAD_AT
   ] => (

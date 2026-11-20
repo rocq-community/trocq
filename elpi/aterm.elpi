@@ -14,10 +14,6 @@
 % Annotated terms
 % -----------------------------------------------------------------------------
 
-accumulate "Trocq.Elpi/aterm-type".
-accumulate "Trocq.Elpi/util".
-accumulate "Trocq.Elpi/util-rocq".
-accumulate "Trocq.Elpi/param-class-util".
 accumulate "Trocq.Elpi/data".
 
 % `@pi-adecl N AT (ax\ x\ x'\ xr\ F x x' xr)` declares elpi pi-variables x x' xr with adecl

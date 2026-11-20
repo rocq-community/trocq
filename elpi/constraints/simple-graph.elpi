@@ -15,7 +15,6 @@
 % -----------------------------------------------------------------------------
 
 accumulate "Trocq.Elpi.constraints/constraints".
-accumulate "Trocq.Elpi/util-rocq".
 
 kind simple-graph type -> type.
 type simple-graph std.map A (list A) -> simple-graph A.

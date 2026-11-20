@@ -14,9 +14,7 @@
 % Accessors to the Trocq database
 % -----------------------------------------------------------------------------
 
-accumulate "Trocq.Elpi/util-rocq".
 accumulate "Trocq.Elpi/param-class-util".
-accumulate "Trocq.Elpi/database".
 
 namespace trocq.data {
 

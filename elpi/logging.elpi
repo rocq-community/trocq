@@ -1,0 +1,44 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%                            %                     Trocq                      %
+%  _______                   %        Copyright (C) 2023 Inria & MERCE        %
+% |__   __|                  %     (Mitsubishi Electric R&D Centre Europe)    %
+%    | |_ __ ___   ___ __ _  %        Cyril Cohen <cyril.cohen@inria.fr>      %
+%    | | '__/ _ \ / __/ _` | %        Enzo Crance <enzo.crance@inria.fr>      %
+%    | | | | (_) | (_| (_| | %    Assia Mahboubi <assia.mahboubi@inria.fr>    %
+%    |_|_|  \___/ \___\__, | %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%                        | | %   This file is distributed under the terms of  %
+%                        |_| %   GNU Lesser General Public License Version 3  %
+%                            % (see LICENSE file for the text of the license) %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% -----------------------------------------------------------------------------
+% Logging predicates
+% -----------------------------------------------------------------------------
+
+accumulate "Trocq.Elpi/database".
+
+% Runs a predicate if the current log level is above requested level
+func at-level verbosity, prop.
+at-level MinimumLevel Log :- trocq.db.log-level CurrentLevel, !,
+  if ({verbosity->int CurrentLevel} >= {verbosity->int MinimumLevel}) Log true, !.
+at-level _ _.
+
+% Returns the numeric level associated to a verbosity, the higher the more verbose.
+pred verbosity->int i:verbosity, o:int.
+verbosity->int level.off -1.
+verbosity->int level.info 0.
+verbosity->int level.debug 1.
+verbosity->int level.trace 2.
+
+% Returns the verbosity level given a name.
+pred string->verbosity i:string o:verbosity.
+string->verbosity "off" level.off.
+string->verbosity "info" level.info.
+string->verbosity "debug" level.debug.
+string->verbosity "trace" level.trace.
+
+func logging.info prop.
+logging.info P :- at-level level.info P.
+func logging.debug prop.
+logging.debug P :- at-level level.debug P.
+func logging.trace prop.
+logging.trace P :- at-level level.trace P.
