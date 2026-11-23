@@ -10,6 +10,7 @@
 %                        |_| %   GNU Lesser General Public License Version 3  %
 %                            % (see LICENSE file for the text of the license) %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+accumulate "Trocq.Elpi/database".
 
 accumulate "Trocq.Elpi/util-rocq".
 

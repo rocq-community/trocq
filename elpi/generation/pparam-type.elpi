@@ -10,6 +10,7 @@
 %                        |_| %   GNU Lesser General Public License Version 3  %
 %                            % (see LICENSE file for the text of the license) %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+accumulate "Trocq.Elpi/database".
 
 pred generate-branch i:univ-instance, i:param-class, i:param-class, o:term.
 generate-branch UI2 Class RClass (pglobal ParamType UI2) :-

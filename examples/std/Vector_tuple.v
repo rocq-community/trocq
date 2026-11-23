@@ -77,7 +77,7 @@ Definition vector_to_tupleK {A : Type} :
     fix F n v :=
       match v with
       | Vector.nil => erefl
-      | Vector.cons _ a v' => ap (Vector.cons a) (F _ v')
+      | @Vector.cons _ _ a v' => ap (Vector.cons a) (F _ v')
       end.
 
 Definition tuple_to_vectorK {A : Type} :

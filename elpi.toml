@@ -1,0 +1,16 @@
+# The project of the Elpi files of Trocq, for elpi-lsp (outside Rocq).
+# rocq-elpi gives the prelude of an Elpi Command (the shim of its quotations,
+# the documentation of its builtins, the template of a command) and the
+# logical paths of its files and of derive.
+name = "trocq"
+use = ["+rocq-elpi"]
+
+[warnings]
+flex-clause = "off"
+
+# the logical paths of std/_CoqProject (-R ../elpi/ Trocq.Elpi, recursive)
+[paths]
+"Trocq.Elpi"             = "+/elpi"
+"Trocq.Elpi.constraints" = "+/elpi/constraints"
+"Trocq.Elpi.generation"  = "+/elpi/generation"
+"Trocq.Elpi.inductives"  = "+/elpi/inductives"

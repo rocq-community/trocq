@@ -169,7 +169,7 @@ namespace aterm.util {
       std.split-at XN csxs CSX csxs',
       mk-aterm.all x CSX ax
     ) AXs [].
-  mk-aterm (global G) _ _ (aglobal G) :- !.
+  mk-aterm (.global G) _ _ (aglobal G) :- !.
   mk-aterm (pglobal G U) _ _ (apglobal G U) :- !.
   mk-aterm T _ _ AT :- name T, !, term->aterm T AT.
 }
